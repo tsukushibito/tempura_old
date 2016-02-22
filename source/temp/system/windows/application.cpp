@@ -15,8 +15,9 @@ namespace system {
 class Application::Impl {
 public:
     Impl() {
-        initialize_function_ = []() { OutputDebugString("default initialize function called!\n"); };
-        update_function_ = []() { OutputDebugString("default update function called!\n"); };
+        initialize_function_ = [](){};
+        update_function_ = [](){};
+		terminate_function_ = [](){};
         exit_flag_ = 0;
     }
 
