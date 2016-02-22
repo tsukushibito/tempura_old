@@ -11,6 +11,8 @@
 
 #include <cstdint>
 #include <memory>
+#include <string>
+#include <vector>
 
 namespace temp {
 
@@ -27,6 +29,10 @@ using UInt64 = std::uint64_t;
 using Bool = bool;
 using Char = char;
 using Size = size_t;
+
+using String = std::string;
+template < typename T >
+using Vector = std::vector< T >;
 
 class Uncopyable {
 protected:
