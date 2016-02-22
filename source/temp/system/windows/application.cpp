@@ -17,7 +17,7 @@ public:
     Impl() {
         initialize_function_ = [](){};
         update_function_ = [](){};
-        terminate_function_ = [](){};
+		terminate_function_ = [](){};
         exit_flag_ = 0;
     }
 
@@ -84,4 +84,4 @@ Int32 Application::run() { return impl_->run(); }
 void Application::exit() { return impl_->exit(); }
 }
 }
-#endif
+#endif:

@@ -98,4 +98,4 @@ Window::SPtr Window::create(Size width, Size height) {
 }
 }
 }
-#endif // TEMP_PLATFORM_WINDOWS
+#endif TEMP_PLATFORM_WINDOWS
