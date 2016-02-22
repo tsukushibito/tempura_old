@@ -1,2 +1,9 @@
 build/DerivedData/
+build/Debug/
+buidl/Release/
 *.xcodeproj
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.opensdf
+*.sdf

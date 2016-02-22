@@ -1,7 +1,8 @@
-﻿#include "TempuraCommon.h"
+﻿#include "temp/define.h"
 #ifdef TEMP_PLATFORM_WINDOWS
 #include <Windows.h>
-#include "System/Window.h"
+
+#include "temp/system/window.h"
 
 namespace temp {
 namespace system {
@@ -79,13 +80,13 @@ private:
     HDC hDc_;
 };
 
-Window::Window(Size width, Size height) : upImpl_(new Impl(width, height)) {}
+Window::Window(Size width, Size height) : impl_(new Impl(width, height)) {}
 
 Window::~Window() {}
 
-WindowHandle Window::getWindowHandle() const { return upImpl_->getWindowHandle(); }
+WindowHandle Window::getWindowHandle() const { return impl_->getWindowHandle(); }
 
-ViewHandle Window::getViewHandle() const { return upImpl_->getViewHandle(); }
+ViewHandle Window::getViewHandle() const { return impl_->getViewHandle(); }
 
 Window::SPtr Window::create(Size width, Size height) {
     struct Creator : public Window {

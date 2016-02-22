@@ -15,16 +15,16 @@ namespace system {
 class Application::Impl {
 public:
     Impl() {
-        initializeFunction_ = []() { OutputDebugString("default initialize function called!\n"); };
-        updateFunction_ = []() { OutputDebugString("default update function called!\n"); };
-        exitFlag_ = 0;
+        initialize_function_ = []() { OutputDebugString("default initialize function called!\n"); };
+        update_function_ = []() { OutputDebugString("default update function called!\n"); };
+        exit_flag_ = 0;
     }
 
-    void setInitializeFunction(const std::function<void(void)> &func) { initializeFunction_ = func; }
+    void setInitializeFunction(const std::function<void(void)> &func) { initialize_function_ = func; }
 
-    void setUpdateFunction(const std::function<void(void)> &func) { updateFunction_ = func; }
+    void setUpdateFunction(const std::function<void(void)> &func) { update_function_ = func; }
 
-    void setTerminateFunction(const std::function<void(void)> &func) { terminateFunction_ = func; }
+    void setTerminateFunction(const std::function<void(void)> &func) { terminate_function_ = func; }
 
     Int32 run() {
         main_thread_.reset(new std::thread(std::bind(&Impl::mainLoop, this)));
@@ -34,21 +34,21 @@ public:
             DispatchMessage(&msg);
         }
 
-        exitFlag_ = 1;
+        exit_flag_ = 1;
         main_thread_->join();
 
         return static_cast< Int32 >(msg.wParam);
     }
 
-    void exit() { exitFlag_ = true; }
+    void exit() { exit_flag_ = true; }
 
 private:
     using ThreadUPtr = std::unique_ptr< std::thread >;
     ThreadUPtr main_thread_;
-    std::atomic_char exitFlag_;
-    InitializeFunction initialize_function_;
-    UpdateFunction update_function_;
-    TerminateFunction terminate_function_;
+    std::atomic_char exit_flag_;
+    std::function<void(void)> initialize_function_;
+    std::function<void(void)> update_function_;
+    std::function<void(void)> terminate_function_;
 
     void mainLoop() {
         initialize_function_();
