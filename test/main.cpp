@@ -8,6 +8,12 @@
 
 #include "temp.h"
 
+class Test : public temp::resource::ResourceBase<Test> {
+public:
+	Test(const temp::system::Path &path) : ResourceBase(path) {}
+};
+using TestResource = temp::resource::ResourceBase<Test>;
+
 int main(int argc, char const* argv[])
 {
     using namespace temp;
@@ -17,6 +23,10 @@ int main(int argc, char const* argv[])
 
 	setCurrentDirectory("../");
 	ConsoleLogger::trace("Current directory : {}", getCurrentDirectory().getAbsolute());
+
+	auto thread_pool = ThreadPool::create("Load", 1);
+	TestResource::initialize(thread_pool);
+	auto res = TestResource::create("");
 
     auto window = Window::create();
 

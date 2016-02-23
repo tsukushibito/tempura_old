@@ -14,10 +14,12 @@
 namespace temp {
 namespace system {
 class Application : public Singleton< Application > {
-public:
+	friend class Singleton< Application >;
+private:
     Application();
     ~Application();
 
+public:
     void setInitializeFunction(const std::function< void(void)> &func);
     void setUpdateFunction(const std::function< void(void)> &func);
     void setTerminateFunction(const std::function< void(void)> &func);

@@ -16,3 +16,5 @@
 #include "temp/system/logger.h"
 #include "temp/system/thread_pool.h"
 #include "temp/system/timer.h"
+
+#include "temp/resource/resource_base.h"

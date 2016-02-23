@@ -23,7 +23,7 @@
 namespace temp {
 namespace system {
 
-class ThreadPool : SmartPointerObject<ThreadPool> {
+class ThreadPool : public SmartPointerObject<ThreadPool> {
 public:
     using JobType = std::function< void(void)>;
 
