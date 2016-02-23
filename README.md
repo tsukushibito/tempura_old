@@ -1,9 +1,9 @@
 # tempura
 Game engine project
 
-memo:
-EWindowsŠÂ‹«‚Å‚ÌGLEW‚Ìƒrƒ‹ƒhè‡
-‚Pjmsys2‚ğƒCƒ“ƒXƒg[ƒ‹
-‚Qjmsys2‚ÉPerl‚ÆPython‚ğƒCƒ“ƒXƒg[ƒ‹ipacman -S perlApacman -S pythonj
-‚Rjthird_party/glew‚ÌƒtƒHƒ‹ƒ_‚Åmake extensions(•K—v‚Èƒwƒbƒ_‚ªì¬‚³‚ê‚Ü‚·)
-‚Sjthird_party/glew/build/vsXX‚Ìƒ\ƒŠƒ…[ƒVƒ‡ƒ“‚Åƒrƒ‹ƒh
+memo:  
+ãƒ»Windowsç’°å¢ƒã§ã®GLEWã®ãƒ“ãƒ«ãƒ‰æ‰‹é †  
+ï¼‘ï¼‰msys2ã‚’ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«  
+ï¼’ï¼‰msys2ã«Perlã¨Pythonã‚’ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ï¼ˆpacman -S perlã€pacman -S pythonï¼‰  
+ï¼“ï¼‰third_party/glewã®ãƒ•ã‚©ãƒ«ãƒ€ã§make extensions(å¿…è¦ãªãƒ˜ãƒƒãƒ€ãŒä½œæˆã•ã‚Œã¾ã™)  
+ï¼”ï¼‰third_party/glew/build/vsXXã®ã‚½ãƒªãƒ¥ãƒ¼ã‚·ãƒ§ãƒ³ã§ãƒ“ãƒ«ãƒ‰  
