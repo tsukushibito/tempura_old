@@ -18,11 +18,17 @@
 
 namespace temp {
 namespace resource {
-
 template < typename T >
-class ResourceBase : public SmartPointerObject<ResourceBase<T>> {
+class ResourceBase : public SmartPointerObject< ResourceBase< T > > {
 public:
+    using SmartPtrType = SmartPointerObject< ResourceBase< T > >;
+    using UPtr = typename SmartPtrType::UPtr;
+    using SPtr = typename SmartPtrType::SPtr;
+    using WPtr = typename SmartPtrType::WPtr;
 
+    /**
+     * @brief loading state
+     */
     enum class State {
         NotLoaded,
         Loading,
@@ -75,12 +81,12 @@ private:
     void logout(); // どのスレッドで実行されるか不定
 
 protected:
-	virtual void loginImpl();
-	virtual void logoutImpl();
+    virtual void loginImpl();
+    virtual void logoutImpl();
 
     // depend on platform
-	// static void initializeSpecificPlatform();
-	// static void terminateSpecificPlatform();
+    // static void initializeSpecificPlatform();
+    // static void terminateSpecificPlatform();
 
     static system::ThreadPool::SPtr s_load_thread;
     // static graphics::GraphicsDevice::SPtr s_spGraphicsDevice;
@@ -94,6 +100,7 @@ protected:
     State state_;
     String buffer_;
 };
+
 }
 }
 

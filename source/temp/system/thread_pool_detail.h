@@ -68,7 +68,7 @@ auto ThreadPool::pushJob(F &&function, Args &&... args) -> std::future< typename
     {
         std::unique_lock< std::mutex > lock(queue_mutex_);
         if (stop_) {
-            TEMP_ASSERT(false, "");
+            // TEMP_ASSERT(false, "");
             return result;
         }
 
@@ -91,7 +91,7 @@ auto ThreadPool::pushJobToSpecificThreadQueue(Size threadIndex, F &&function, Ar
     {
         std::unique_lock< std::mutex > lock(queue_mutex_);
         if (stop_) {
-            TEMP_ASSERT(false, "");
+            // TEMP_ASSERT(false, "");
             return result;
         }
 
