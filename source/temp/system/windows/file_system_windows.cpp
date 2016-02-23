@@ -40,9 +40,9 @@ void Path::convertToAbsolutePath(String &string) {
     }
 }
 
-void setCurrentDirectory(const Path &path) { setCurrentDirectoryImpl(path); }
+void setCurrentDirectory(const Path &path) { windows::setCurrentDirectoryImpl(path); }
 
-Path getCurrentDirectory() { return getCurrentDirectoryImpl(); }
+Path getCurrentDirectory() { return windows::getCurrentDirectoryImpl(); }
 
 } // namespace system
 } // namespace temp

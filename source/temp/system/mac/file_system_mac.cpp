@@ -44,6 +44,10 @@ void Path::convertToAbsolutePath(String &string) {
     }
 }
 
+void setCurrentDirectory(const Path &path) { mac::setCurrentDirectoryImpl(path); }
+
+Path getCurrentDirectory() { return mac::getCurrentDirectoryImpl(); }
+
 } // namespace system
 } // namespace temp
 

@@ -7,16 +7,22 @@
  */
 
 #include "temp.h"
-#include "temp/system/application.h"
-#include "temp/system/window.h"
 
 int main(int argc, char const* argv[])
 {
     using namespace temp;
     using namespace temp::system;
     
+	ConsoleLogger::initialize();
+
+	setCurrentDirectory("../");
+	ConsoleLogger::trace("Current directory : {}", getCurrentDirectory().getAbsolute());
+
     auto window = Window::create();
+
     Application::getInstance().run();
+
+	ConsoleLogger::terminate();
     
     return 0;
 }

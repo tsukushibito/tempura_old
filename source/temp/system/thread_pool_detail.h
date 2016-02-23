@@ -30,7 +30,7 @@ inline ThreadPool::ThreadPool(const String &name, Size threadCount)
                 if (job) job();
             }
         };
-        workerThreads_.emplace_back(worker_function);
+        worker_threads_.emplace_back(worker_function);
     }
 }
 

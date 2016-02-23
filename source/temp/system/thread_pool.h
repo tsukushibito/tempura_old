@@ -18,11 +18,12 @@
 #include <condition_variable>
 #include "temp/define.h"
 #include "temp/type.h"
+#include "temp/container.h"
 
 namespace temp {
 namespace system {
 
-class ThreadPool : SmartPointerObject<T> {
+class ThreadPool : SmartPointerObject<ThreadPool> {
 public:
     using JobType = std::function< void(void)>;
 
