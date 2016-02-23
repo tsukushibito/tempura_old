@@ -7,3 +7,4 @@ buidl/Release/
 *.vcxproj.filters
 *.opensdf
 *.sdf
+*.suo
