@@ -18,12 +18,14 @@ ResourceBase< T >::ResourceBase(const system::Path &path)
 
 template < typename T >
 ResourceBase< T >::~ResourceBase() {
+    // リソース解放
     unload();
 
     std::unique_lock< std::mutex > lock(s_table_mutex);
-    // TEMP_ASSERT(s_resource_table->find(hash_) != s_resource_table->end(),
-    //             "Not exist in the table. Management is out of resources.");
+    TEMP_ASSERT(s_resource_table->find(hash_) != s_resource_table->end()
+                && "Not exist in the table. Management is out of resources.");
 
+    // 管理テーブルから削除
     s_resource_table->erase(hash_);
 }
 
@@ -36,11 +38,13 @@ template < typename T >
 typename ResourceBase< T >::SPtr ResourceBase< T >::create(const system::Path &path) {
     std::unique_lock< std::mutex > lock(s_table_mutex);
 
+    // 管理テーブルに既に存在しているパスであれば、それを返す
     Size hash = path.getHash();
     if (s_resource_table->find(hash) != s_resource_table->end()) {
         return std::move((*s_resource_table)[hash].lock());
     }
 
+    // リソース作成
     struct Creator : public T {
         explicit Creator(const system::Path &path)
             : T(path) {}
@@ -66,7 +70,7 @@ void ResourceBase< T >::terminate() {
 
     // s_graphics_device = nullptr;
     s_load_thread = nullptr;
-    TEMP_ASSERT(s_resource_table->empty(), "解放されていないリソースがあります");
+    TEMP_ASSERT(s_resource_table->empty() && "Exists not released resource.");
     s_resource_table.release();
 }
 
@@ -151,19 +155,21 @@ void ResourceBase< T >::loadImpl(bool isAsync) {
 
 template < typename T >
 void ResourceBase< T >::login() {
-    static_cast< T * >(this)->loginImpl();
+    // 静的多態の場合
+    // static_cast< T * >(this)->loginImpl();
+
+    // 動的多態の場合
+    loginImpl();
 }
 
 template < typename T >
 void ResourceBase< T >::logout() {
-    static_cast< T * >(this)->logoutImpl();
+    // 静的多態の場合
+    // static_cast< T * >(this)->logoutImpl();
+
+    // 動的多態の場合
+    logoutImpl();
 }
-
-template < typename T >
-void ResourceBase< T >::loginImpl() { }
-
-template < typename T >
-void ResourceBase< T >::logoutImpl() { }
 
 template < typename T >
 system::ThreadPool::SPtr ResourceBase< T >::s_load_thread = nullptr;

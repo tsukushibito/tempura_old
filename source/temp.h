@@ -9,6 +9,7 @@
 #include "temp/define.h"
 #include "temp/type.h"
 #include "temp/container.h"
+#include "temp/assert.h"
 
 #include "temp/system/application.h"
 #include "temp/system/window.h"

@@ -81,8 +81,8 @@ private:
     void logout(); // どのスレッドで実行されるか不定
 
 protected:
-    virtual void loginImpl();
-    virtual void logoutImpl();
+    virtual void loginImpl() = 0;
+    virtual void logoutImpl() = 0;
 
     // depend on platform
     // static void initializeSpecificPlatform();

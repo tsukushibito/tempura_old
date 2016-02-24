@@ -6,13 +6,17 @@
  * @date 2016-02-20
  */
 
+#include <cassert>
 #include "temp.h"
 
 class Test : public temp::resource::ResourceBase<Test> {
+	// friend class temp::resource::ResourceBase<Test>;
 public:
 	Test(const temp::system::Path &path) : ResourceBase(path) {}
+private:
+	virtual void loginImpl(){}
+	virtual void logoutImpl(){}
 };
-using TestResource = temp::resource::ResourceBase<Test>;
 
 int main(int argc, char const* argv[])
 {
@@ -25,8 +29,8 @@ int main(int argc, char const* argv[])
 	ConsoleLogger::trace("Current directory : {}", getCurrentDirectory().getAbsolute());
 
 	auto thread_pool = ThreadPool::create("Load", 1);
-	TestResource::initialize(thread_pool);
-	auto res = TestResource::create("");
+	Test::initialize(thread_pool);
+	auto res = Test::create("");
 
     auto window = Window::create();
 
