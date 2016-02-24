@@ -26,6 +26,9 @@ namespace temp {
         log << file << " : line[" << line << "] : " << msg << std::endl;
         OutputDebugStringA(log.str().c_str());
         DebugBreak();
+#else
+       std::cout << file << " : line[" << line << "] : " << msg << std::endl;
+       __builtin_trap();
 #endif
    } 
 } // namespace temp
