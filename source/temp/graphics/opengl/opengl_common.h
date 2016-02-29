@@ -57,6 +57,7 @@ T checkError() {
             msg = "Unknown";
             break;
         }
+
         system::ConsoleLogger::error("OpenGL ERROR : 0x{0:x}'{1}'\n", errorCode, msg);
 
         errorCode = glGetError();

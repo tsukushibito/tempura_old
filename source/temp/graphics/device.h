@@ -22,8 +22,17 @@ public:
     static void initialize();
     static void terminate();
     static SPtr create();
+
 private:
-    Int8 impl_buffer_[kImplSize];
+    Device();
+
+private:
+    union ImplBuffer {
+        Int8 buffer_[kImplSize];
+        void *pointer_;
+    };
+
+    ImplBuffer impl_buffer_;
 };
     
 } // namespace graphics
