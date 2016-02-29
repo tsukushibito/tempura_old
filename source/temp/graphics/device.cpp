@@ -5,6 +5,7 @@
  * @version 0.0.1
  * @date 2016-02-29
  */
+#include <new>
 
 #include "temp/define.h"
 #include "temp/type.h"
@@ -12,7 +13,7 @@
 #include "temp/graphics/device.h"
 #if defined TEMP_GRAPHICS_D3D11
 #include "temp/graphics/d3d11/device_d3d11.h"
-#elif defined TEMP_GRAPHICS_OPEGL
+#elif defined TEMP_GRAPHICS_OPENGL
 #include "temp/graphics/d3d11/device_opengl.h"
 #endif
 
