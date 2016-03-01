@@ -8,6 +8,9 @@
 
 #include "temp/define.h"
 #include "temp/system/file_system.h"
+namespace {
+	char dummy;	// VisualStudio ‚Ì warning LNK4221 ‰ñ”ð‚Ì‚½‚ß
+}
 #ifdef TEMP_PLATFORM_MAC
 #include <stdlib.h>
 #include <unistd.h>

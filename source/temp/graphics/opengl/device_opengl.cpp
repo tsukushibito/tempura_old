@@ -10,20 +10,6 @@
 
 namespace temp {
 namespace graphics {
-
-void Device::initialize() {
-}
-
-void Device::terminate() {
-}
-
-Device::SPtr Device::create() {
-    struct Creator : public Device {
-    };
-
-    auto ptr = std::make_shared<Creator>();
-    return std::move(ptr);
-}
     
 } // namespace graphics
 } // namespace temp

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file opengl_common.h
  * @brief opengl utility
  * @author tsukushibito
@@ -22,6 +22,7 @@
 #include <GL/wglew.h>
 #endif
 
+#include "temp/temp_assert.h"
 #include "temp/system/logger.h"
 
 namespace temp {
@@ -62,7 +63,7 @@ T checkError() {
 
         errorCode = glGetError();
     } while (errorCode != GL_NO_ERROR);
-    TEMP_ASSERT(false, "OpenGL ERROR");
+    TEMP_ASSERT(false && "OpenGL ERROR");
 }
 
 template < class T = void >

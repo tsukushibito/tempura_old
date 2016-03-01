@@ -9,15 +9,16 @@
 #ifndef GUARD_fe71dbd70e5c46bca52dfc7c608632dd
 #define GUARD_fe71dbd70e5c46bca52dfc7c608632dd
 
-#include "temp/graphics/opengl_common.h"
+#include "temp/graphics/opengl/opengl_common.h"
 #include "temp/graphics/device.h"
 
 namespace temp {
 namespace graphics {
 
 class DeviceOpengl {
-public:
+	friend class Device;
 private:
+
 };
     
 } // namespace graphics
