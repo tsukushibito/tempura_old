@@ -54,13 +54,10 @@ public:
 
         ShowWindow(hWnd_, SW_SHOW); /* ウインドウを表示 */
         UpdateWindow(hWnd_);
-
-        hDc_ = GetDC(hWnd_);
     }
 
     ~Impl() {
         // DestroyWindow(hWnd_);
-        ReleaseDC(hWnd_, hDc_);
     }
 
     WindowHandle getWindowHandle() {
@@ -69,15 +66,8 @@ public:
         return handle;
     }
 
-    ViewHandle getViewHandle() {
-        ViewHandle handle;
-        handle.pointer_ = hDc_;
-        return handle;
-    }
-
 private:
     HWND hWnd_;
-    HDC hDc_;
 };
 
 Window::Window(Size width, Size height) : impl_(new Impl(width, height)) {}
@@ -85,8 +75,6 @@ Window::Window(Size width, Size height) : impl_(new Impl(width, height)) {}
 Window::~Window() {}
 
 WindowHandle Window::getWindowHandle() const { return impl_->getWindowHandle(); }
-
-ViewHandle Window::getViewHandle() const { return impl_->getViewHandle(); }
 
 Window::SPtr Window::create(Size width, Size height) {
     struct Creator : public Window {

@@ -28,8 +28,8 @@ HWND createDummyWindow() {
 
     RegisterClassEx(&wcex);
 
-    return CreateWindow(window_class_name, "", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, 0, CW_USEDEFAULT,
-                        0, NULL, NULL, instance_handle, NULL);
+    return CreateWindow(window_class_name, "", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL,
+                        instance_handle, NULL);
 }
 
 // ダミーコンテキスト作成
@@ -53,82 +53,25 @@ HGLRC createDummyOpenglContext(HDC hdc) {
     return wglCreateContext(hdc);
 }
 
-}	// namespace
-
+} // namespace
 
 namespace temp {
 namespace graphics {
 namespace opengl {
 namespace windows {
 
-void GLAPIENTRY debugProc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,
-                           const GLchar *message, const void *user_param) {
-
-    using namespace std;
-    ostringstream ss;
-    ss << "---------------------opengl-callback-start------------" << endl;
-    ss << "message: " << message << endl;
-    ss << "type: ";
-    switch (type) {
-    case GL_DEBUG_TYPE_ERROR:
-        ss << "ERROR";
-        break;
-    case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
-        ss << "DEPRECATED_BEHAVIOR";
-        break;
-    case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
-        ss << "UNDEFINED_BEHAVIOR";
-        break;
-    case GL_DEBUG_TYPE_PORTABILITY:
-        ss << "PORTABILITY";
-        break;
-    case GL_DEBUG_TYPE_PERFORMANCE:
-        ss << "PERFORMANCE";
-        break;
-    case GL_DEBUG_TYPE_OTHER:
-        ss << "OTHER";
-        break;
-    }
-    ss << endl;
-
-    ss << "id: " << id << endl;
-    ss << "severity: ";
-    switch (severity) {
-    case GL_DEBUG_SEVERITY_LOW:
-        ss << "LOW";
-        break;
-    case GL_DEBUG_SEVERITY_MEDIUM:
-        ss << "MEDIUM";
-        break;
-    case GL_DEBUG_SEVERITY_HIGH:
-        ss << "HIGH";
-        break;
-    }
-    ss << endl;
-	ss << "source: " << source << endl;
-	ss << "length: " << length << endl;
-	if (user_param != nullptr)
-	{
-		ss << "user_param" << user_param << endl;
-	}
-    ss << "---------------------opengl-callback-end--------------" << endl;
-
-    temp::system::ConsoleLogger::trace(ss.str().c_str());
-}
-
-
-OpenglContexts createContextWithGLEW(HDC hdc) {
-	// glew初期化用のダミーウィンドウとコンテキストを作成
-	auto dummy_window_handle = createDummyWindow();
-	auto dummy_device_context = GetDC(dummy_window_handle);
-	auto dummy_opengl_context = createDummyOpenglContext(dummy_device_context);
-	glCallWithErrorCheck(wglMakeCurrent, dummy_device_context, dummy_opengl_context);
+OpenglContexts createContextWithGLEW(HWND hwnd) {
+    // glew初期化用のダミーウィンドウとコンテキストを作成
+    auto dummy_window_handle = createDummyWindow();
+    auto dummy_device_context = GetDC(dummy_window_handle);
+    auto dummy_opengl_context = createDummyOpenglContext(dummy_device_context);
+    glCallWithErrorCheck(wglMakeCurrent, dummy_device_context, dummy_opengl_context);
 
     // glewの初期化
     GLenum error = glewInit();
 
     // 拡張機能によるコンテキストの作成
-    const FLOAT fAtribList[] = {0, 0};
+    const FLOAT fAtribList[] = { 0, 0 };
 
     // ピクセルフォーマット指定用
     const int pixel_format_attrib_list[] = {
@@ -136,14 +79,14 @@ OpenglContexts createContextWithGLEW(HDC hdc) {
         // WGL_CONTEXT_MINOR_VERSION_ARB, 0,
         WGL_DRAW_TO_WINDOW_ARB, GL_TRUE, //
         WGL_SUPPORT_OPENGL_ARB, GL_TRUE, //
-        WGL_DOUBLE_BUFFER_ARB, GL_TRUE,  //
+        WGL_DOUBLE_BUFFER_ARB,  GL_TRUE, //
         // WGL_DOUBLE_BUFFER_ARB, GL_FALSE, //
-        WGL_ACCELERATION_ARB, WGL_FULL_ACCELERATION_ARB, //
-        WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,           //
-        WGL_COLOR_BITS_ARB, 32,                          //
-        WGL_DEPTH_BITS_ARB, 24,                          //
-        WGL_STENCIL_BITS_ARB, 8,                         //
-        0, 0,                                            //
+        WGL_ACCELERATION_ARB,   WGL_FULL_ACCELERATION_ARB, //
+        WGL_PIXEL_TYPE_ARB,     WGL_TYPE_RGBA_ARB,         //
+        WGL_COLOR_BITS_ARB,     32,                        //
+        WGL_DEPTH_BITS_ARB,     24,                        //
+        WGL_STENCIL_BITS_ARB,   8,                         //
+        0,                      0,                         //
     };
 
     // コンテキスト作成用
@@ -164,10 +107,10 @@ OpenglContexts createContextWithGLEW(HDC hdc) {
 
     int pixelFormat = 0;
     UINT numFormats = 0;
+    HDC hdc = GetDC(hwnd);
 
     // ピクセルフォーマット選択
-    BOOL isValid = wglChoosePixelFormatARB(hdc, pixel_format_attrib_list, fAtribList, 1,
-                                           &pixelFormat, &numFormats);
+    BOOL isValid = wglChoosePixelFormatARB(hdc, pixel_format_attrib_list, fAtribList, 1, &pixelFormat, &numFormats);
 
     error = glGetError();
     if (isValid == FALSE) {
@@ -205,11 +148,11 @@ OpenglContexts createContextWithGLEW(HDC hdc) {
     wglShareLists((HGLRC)output.context_for_render, (HGLRC)output.context_for_load);
 
     // カレントコンテキストを解除
-	glCallWithErrorCheck(wglMakeCurrent, dummy_device_context, (HGLRC)NULL);
+    glCallWithErrorCheck(wglMakeCurrent, dummy_device_context, (HGLRC)NULL);
 
     // ダミーのコンテキストとウィンドウを削除
     glCallWithErrorCheck(wglDeleteContext, dummy_opengl_context);
-	ReleaseDC(dummy_window_handle, dummy_device_context);
+    ReleaseDC(dummy_window_handle, dummy_device_context);
     DestroyWindow(dummy_window_handle);
 
     return output;

@@ -19,11 +19,6 @@ union WindowHandle {
     Size value_;
 };
 
-union ViewHandle {
-    void *pointer_;
-    Size value_;
-};
-
 class Window : public SmartPointerObject<Window> {
 private:
     Window(Size width = 1280, Size height = 720);
@@ -32,7 +27,6 @@ public:
     ~Window();
 
     WindowHandle getWindowHandle() const;
-    ViewHandle getViewHandle() const;
 
 private:
     class Impl;

@@ -29,64 +29,26 @@ namespace temp {
 namespace graphics {
 namespace opengl {
 
-template < class T = void >
-T checkError() {
-    GLenum errorCode = glGetError();
-    if (errorCode == GL_NO_ERROR) {
-        return;
-    }
+/**
+ * @brief OpenGL デバッグプロシージャ
+ *
+ * @param source
+ * @param type
+ * @param id
+ * @param severity
+ * @param length
+ * @param message
+ * @param user_param
+ *
+ * @return
+ */
+void GLAPIENTRY
+debugProc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *user_param);
 
-    do {
-        const char *msg = "";
-        switch (errorCode) {
-        case GL_INVALID_ENUM:
-            msg = "INVALID_ENUM";
-            break;
-        case GL_INVALID_VALUE:
-            msg = "INVALID_VALUE";
-            break;
-        case GL_INVALID_OPERATION:
-            msg = "INVALID_OPERATION";
-            break;
-        case GL_OUT_OF_MEMORY:
-            msg = "OUT_OF_MEMORY";
-            break;
-        case GL_INVALID_FRAMEBUFFER_OPERATION:
-            msg = "INVALID_FRAMEBUFFER_OPERATION";
-            break;
-        default:
-            msg = "Unknown";
-            break;
-        }
 
-        system::ConsoleLogger::error("OpenGL ERROR : 0x{0:x}'{1}'\n", errorCode, msg);
+void checkError();
 
-        errorCode = glGetError();
-    } while (errorCode != GL_NO_ERROR);
-    TEMP_ASSERT(false && "OpenGL ERROR");
-}
-
-template < class T = void >
-T printShaderCompileInfoLog(GLuint shader) {
-
-    GLint result;
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
-    // if(result == GL_FALSE) debugLog("[ERROR] GLSL faled to compile.");
-    if (result == GL_FALSE) system::ConsoleLogger::error("[ERROR] GLSL faled to compile.");
-    GLint bufSize = 0;
-    glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &bufSize);
-
-    if (bufSize > 1) {
-        std::string infoLog(bufSize, '\n');
-
-        GLsizei length;
-
-        /* シェーダのコンパイル時のログの内容を取得する */
-        glGetShaderInfoLog(shader, bufSize, &length, &infoLog[0]);
-        // debugLog("ShaderInfoLog:\n%s\n\n", infoLog.c_str());
-        system::ConsoleLogger::error("ShaderInfoLog:\n{0}\n\n", infoLog.c_str());
-    }
-}
+void printShaderCompileInfoLog(GLuint shader);
 
 template < typename ReturnType, typename F, typename... Args >
 struct glCallWithErrorCheck_Impl {
