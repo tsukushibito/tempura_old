@@ -15,24 +15,35 @@
 #include "temp/graphics/graphics_common.h"
 
 namespace temp {
+namespace system {
+class ThreadPool;
+}
+}
+
+namespace temp {
 namespace graphics {
 
 class Device : public SmartPointerObject<Device> {
 public:
-    static void initialize();
-    static void terminate();
-    static SPtr create();
+	using ThreadPoolSPtr = std::shared_ptr<system::ThreadPool>;
+
+    static SPtr create(const ThreadPoolSPtr &render_thread, const ThreadPoolSPtr &load_thread);
 
 private:
-    Device();
+    Device(const ThreadPoolSPtr &render_thread, const ThreadPoolSPtr &load_thread);
 
 private:
+	class Impl;
     union ImplBuffer {
         Int8 buffer_[kImplSize];
         void *pointer_;
     };
 
     ImplBuffer impl_buffer_;
+	Impl *impl_;
+
+	ThreadPoolSPtr render_thread_;
+	ThreadPoolSPtr load_thread_;
 };
     
 } // namespace graphics

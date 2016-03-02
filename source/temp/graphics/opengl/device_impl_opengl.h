@@ -1,5 +1,5 @@
 /**
- * @file device_opengl.h
+ * @file device_impl_opengl.h
  * @brief opengl graphics device
  * @author tsukushibito
  * @version 0.0.1
@@ -15,10 +15,10 @@
 namespace temp {
 namespace graphics {
 
-class DeviceOpengl {
+class Device::Impl {
 	friend class Device;
 private:
-
+	void dummy();
 };
     
 } // namespace graphics
