@@ -1,8 +1,30 @@
 ﻿#include "temp/graphics/opengl/opengl_common.h"
 
+#if defined TEMP_PLATFORM_WINDOWS
+#include "temp/graphics/opengl/windows/opengl_windows.h"
+#elif defined TEMP_PLATFORM_MAC
+#include "temp/graphics/opengl/windows/opengl_mac.h"
+#endif
+
 namespace temp {
 namespace graphics {
 namespace opengl {
+
+OpenglContexts createContext(void *window_handle) {
+#if defined TEMP_PLATFORM_WINDOWS
+	return windows::createContext(static_cast<HWND>(window_handle));
+#elif defined TEMP_PLATFORM_MAC
+	return mac::createContext(window_handle);
+#endif
+}
+
+void makeCurrent(void *window_handle, void *context) {
+#if defined TEMP_PLATFORM_WINDOWS
+	return windows::makeCurrent(static_cast<HWND>(window_handle), static_cast<HGLRC>(context));
+#elif defined TEMP_PLATFORM_MAC
+	return mac::makeCurrent(window_handle, context);
+#endif
+}
 
 void GLAPIENTRY
 debugProc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *user_param) {

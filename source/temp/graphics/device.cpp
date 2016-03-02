@@ -22,20 +22,19 @@
 namespace temp {
 namespace graphics {
 
-Device::SPtr Device::create(const ThreadPoolSPtr &render_thread, const ThreadPoolSPtr &load_thread) {
+Device::SPtr Device::create(const DeviceParameter &param) {
     struct Creator : public Device {
-		Creator(const ThreadPoolSPtr &render_thread, const ThreadPoolSPtr &load_thread) 
-			: Device(render_thread, load_thread)
+		Creator(const DeviceParameter &param) 
+			: Device(param)
 		{};
     };
 
-    auto ptr = std::make_shared<Creator>(render_thread, load_thread);
+    auto ptr = std::make_shared<Creator>(param);
     return std::move(ptr);
 }
 
-Device::Device(const ThreadPoolSPtr &render_thread, const ThreadPoolSPtr &load_thread) 
-	: render_thread_(render_thread)
-	, load_thread_(load_thread)
+Device::Device(const DeviceParameter &param) 
+	: parameter_(param)
 { 
 	impl_ = new(impl_buffer_.pointer_) Impl;
 }

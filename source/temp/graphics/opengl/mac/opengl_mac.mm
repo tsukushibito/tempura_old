@@ -62,7 +62,7 @@ OpenglContexts createContext(NsWindow window) {
     return contexts;
 }
 
-void makeCurrent(NsOpenglContext context) {
+void makeCurrent(NsWindow window, NsOpenglContext context) {
     if (context == nullptr) {
         [NSOpenGLContext clearCurrentContext];
     }

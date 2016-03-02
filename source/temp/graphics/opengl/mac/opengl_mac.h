@@ -30,7 +30,7 @@ struct OpenglContexts {
 
 OpenglContexts createContext(NsWindow window);
 
-void makeCurrent(NsOpenglContext context);
+void makeCurrent(NsWindow window, NsOpenglContext context);
 
 } // namespace mac
 } // namespace opengl

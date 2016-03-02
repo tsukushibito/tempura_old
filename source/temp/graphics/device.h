@@ -23,14 +23,17 @@ class ThreadPool;
 namespace temp {
 namespace graphics {
 
+struct DeviceParameter {
+	std::shared_ptr<system::ThreadPool> render_thread;
+	std::shared_ptr<system::ThreadPool> load_thread;
+};
+
 class Device : public SmartPointerObject<Device> {
 public:
-	using ThreadPoolSPtr = std::shared_ptr<system::ThreadPool>;
-
-    static SPtr create(const ThreadPoolSPtr &render_thread, const ThreadPoolSPtr &load_thread);
+    static SPtr create(const DeviceParameter &parameter);
 
 private:
-    Device(const ThreadPoolSPtr &render_thread, const ThreadPoolSPtr &load_thread);
+    Device(const DeviceParameter &parameter);
 
 private:
 	class Impl;
@@ -42,8 +45,7 @@ private:
     ImplBuffer impl_buffer_;
 	Impl *impl_;
 
-	ThreadPoolSPtr render_thread_;
-	ThreadPoolSPtr load_thread_;
+	DeviceParameter parameter_;
 };
     
 } // namespace graphics

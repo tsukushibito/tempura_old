@@ -22,19 +22,16 @@ namespace graphics {
 namespace opengl {
 namespace windows {
 
-struct OpenglContexts {
-    HGLRC context_for_render;
-    HGLRC context_for_load;
-};
-
 /**
  * @brief GLEWを使用してOpenGLコンテキストを作成
  *
- * @param hwnd Window handle
+ * @param window_handle Window handle
  *
  * @return OpenGLコンテキスト（描画用とロード用の二つ）
  */
-OpenglContexts createContextWithGLEW(HWND hwnd);
+OpenglContexts createContext(HWND window_handle);
+
+void makeCurrent(HWND window_handle, HGLRC context);
 
 } // namespace windows
 } // namespace opengl

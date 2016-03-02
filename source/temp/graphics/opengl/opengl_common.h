@@ -29,6 +29,15 @@ namespace temp {
 namespace graphics {
 namespace opengl {
 
+struct OpenglContexts {
+	void *context_for_render;
+	void *context_for_load;
+};
+
+OpenglContexts createContext(void *window_handle);
+
+void makeCurrent(void *window_handle, void *context);
+
 /**
  * @brief OpenGL デバッグプロシージャ
  *

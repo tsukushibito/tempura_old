@@ -60,7 +60,7 @@ namespace graphics {
 namespace opengl {
 namespace windows {
 
-OpenglContexts createContextWithGLEW(HWND hwnd) {
+OpenglContexts createContext(HWND window_handle) {
     // glew初期化用のダミーウィンドウとコンテキストを作成
     auto dummy_window_handle = createDummyWindow();
     auto dummy_device_context = GetDC(dummy_window_handle);
@@ -107,7 +107,7 @@ OpenglContexts createContextWithGLEW(HWND hwnd) {
 
     int pixelFormat = 0;
     UINT numFormats = 0;
-    HDC hdc = GetDC(hwnd);
+    HDC hdc = GetDC(window_handle);
 
     // ピクセルフォーマット選択
     BOOL isValid = wglChoosePixelFormatARB(hdc, pixel_format_attrib_list, fAtribList, 1, &pixelFormat, &numFormats);
@@ -156,6 +156,11 @@ OpenglContexts createContextWithGLEW(HWND hwnd) {
     DestroyWindow(dummy_window_handle);
 
     return output;
+}
+
+void makeCurrent(HWND window_handle, HGLRC context) {
+	HDC hdc = GetDC(window_handle);
+	wglMakeCurrent(hdc, context);
 }
 
 } // namespace windows
