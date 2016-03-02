@@ -24,8 +24,8 @@ namespace temp {
 namespace graphics {
 
 struct DeviceParameter {
-	std::shared_ptr<system::ThreadPool> render_thread;
-	std::shared_ptr<system::ThreadPool> load_thread;
+    std::shared_ptr<system::ThreadPool> render_thread;
+    std::shared_ptr<system::ThreadPool> load_thread;
 };
 
 class Device : public SmartPointerObject<Device> {
@@ -36,16 +36,16 @@ private:
     Device(const DeviceParameter &parameter);
 
 private:
-	class Impl;
+    class Impl;
     union ImplBuffer {
         Int8 buffer_[kImplSize];
         void *pointer_;
     };
 
     ImplBuffer impl_buffer_;
-	Impl *impl_;
+    Impl *impl_;
 
-	DeviceParameter parameter_;
+    DeviceParameter parameter_;
 };
     
 } // namespace graphics

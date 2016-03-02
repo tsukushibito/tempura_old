@@ -16,9 +16,13 @@ namespace temp {
 namespace graphics {
 
 class Device::Impl {
-	friend class Device;
+    friend class Device;
 private:
-	void dummy();
+    Impl();
+    
+    ~Impl();
+
+    void dummy();
 };
     
 } // namespace graphics

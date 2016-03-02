@@ -12,6 +12,12 @@
 namespace temp {
 namespace graphics {
 
+Device::Impl::Impl() {
+}
+
+Device::Impl::~Impl() {
+}
+
 void Device::Impl::dummy() {
 }
     
