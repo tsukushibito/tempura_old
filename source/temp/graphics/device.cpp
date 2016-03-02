@@ -36,7 +36,8 @@ Device::SPtr Device::create(const DeviceParameter &param) {
 Device::Device(const DeviceParameter &param) 
 	: parameter_(param)
 { 
-	impl_ = new(impl_buffer_.pointer_) Impl;
+	static_assert(sizeof(Impl) <= sizeof(impl_buffer_), "size of impl_buffer_ is small.");
+	impl_ = new(impl_buffer_.pointer_) Impl(this);
 }
     
 } // namespace graphics

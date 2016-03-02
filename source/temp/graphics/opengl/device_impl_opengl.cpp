@@ -12,13 +12,10 @@
 namespace temp {
 namespace graphics {
 
-Device::Impl::Impl() {
+Device::Impl::Impl(Device *device) : device_(device) {
 }
 
 Device::Impl::~Impl() {
-}
-
-void Device::Impl::dummy() {
 }
     
 } // namespace graphics

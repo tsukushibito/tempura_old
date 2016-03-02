@@ -14,7 +14,7 @@
 namespace temp {
 namespace graphics {
 
-static const Size kImplSize = 64;
+static const Size kImplSize = 4 * sizeof(void*);
 
 } // namespace graphics
 } // namespace temp

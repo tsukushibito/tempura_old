@@ -18,11 +18,12 @@ namespace graphics {
 class Device::Impl {
     friend class Device;
 private:
-    Impl();
-    
+    Impl(Device *device);
+ 
     ~Impl();
 
-    void dummy();
+private:
+	Device *device_;
 };
     
 } // namespace graphics
