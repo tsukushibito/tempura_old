@@ -16,6 +16,17 @@ namespace graphics {
 
 static const Size kImplSize = 4 * sizeof(void*);
 
+// Buffer class for fast pimpl idiom
+class FastPImpl {
+protected:
+    union ImplBuffer {
+        Int8 buffer_[kImplSize];
+        void *pointer_;
+    };
+
+    ImplBuffer impl_buffer_;
+};
+
 } // namespace graphics
 } // namespace temp
 

@@ -39,6 +39,22 @@ Device::Device(const DeviceParameter &param)
 	static_assert(sizeof(Impl) <= sizeof(impl_buffer_), "size of impl_buffer_ is small.");
 	impl_ = new(impl_buffer_.pointer_) Impl(this);
 }
+
+Device::VertexShaderSPtr Device::createVertexShaderFromSource(const String &source) {
+	return impl_->createVertexShaderFromSource(source);
+}
+
+Device::VertexShaderSPtr Device::createVertexShaderFromBinary(const String &binary) {
+	return impl_->createVertexShaderFromBinary(binary);
+}
+
+Device::PixelShaderSPtr Device::createPixelShaderFromSource(const String &source) {
+	return impl_->createPixelShaderFromSource(source);
+}
+
+Device::PixelShaderSPtr Device::createPixelShaderFromBinary(const String &binary) {
+	return impl_->createPixelShaderFromBinary(binary);
+}
     
 } // namespace graphics
 } // namespace temp

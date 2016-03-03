@@ -9,7 +9,7 @@
 #ifndef GUARD_fe71dbd70e5c46bca52dfc7c608632dd
 #define GUARD_fe71dbd70e5c46bca52dfc7c608632dd
 
-#include "temp/graphics/opengl/opengl_common.h"
+#include "temp/type.h"
 #include "temp/graphics/device.h"
 
 namespace temp {
@@ -22,6 +22,11 @@ private:
  
     ~Impl();
 
+	VertexShaderSPtr createVertexShaderFromSource(const String &source);
+	VertexShaderSPtr createVertexShaderFromBinary(const String &binary);
+
+	PixelShaderSPtr createPixelShaderFromSource(const String &source);
+	PixelShaderSPtr createPixelShaderFromBinary(const String &binary);
 private:
 	Device *device_;
 };
