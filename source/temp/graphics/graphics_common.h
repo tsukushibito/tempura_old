@@ -14,6 +14,13 @@
 namespace temp {
 namespace graphics {
 
+struct NativeHandle {
+    union {
+        void *pointer_;
+        Size value_;
+    };
+};
+
 static const Size kImplSize = 4 * sizeof(void*);
 
 // Buffer class for fast pimpl idiom

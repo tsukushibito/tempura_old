@@ -22,19 +22,19 @@ Device::Impl::~Impl() {
 }
 
 Device::VertexShaderSPtr Device::Impl::createVertexShaderFromSource(const String &source) {
-	return nullptr;
+    return nullptr;
 }
 
 Device::VertexShaderSPtr Device::Impl::createVertexShaderFromBinary(const String &binary) {
-	return nullptr;
+    return nullptr;
 }
 
 Device::PixelShaderSPtr Device::Impl::createPixelShaderFromSource(const String &source) {
-	return nullptr;
+    return nullptr;
 }
 
 Device::PixelShaderSPtr Device::Impl::createPixelShaderFromBinary(const String &binary) {
-	return nullptr;
+    return nullptr;
 }
 
 } // namespace graphics

@@ -17,13 +17,13 @@
 namespace temp {
 namespace graphics {
 
-class VertexShader : public SmartPointerObject<VertexShader> {
-	friend class Device;
+class VertexShader : public SmartPointerObject<VertexShader> , public FastPImpl {
+    friend class Device;
 private:
 
 private:
-	class Impl;
-	Impl *_impl;
+    class Impl;
+    Impl *_impl;
 };
     
 } // namespace graphics
