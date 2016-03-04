@@ -22,6 +22,7 @@
 #include <GL/wglew.h>
 #endif
 
+#include "temp/container.h"
 #include "temp/temp_assert.h"
 #include "temp/system/logger.h"
 
@@ -30,11 +31,13 @@ namespace graphics {
 namespace opengl {
 
 struct OpenglContexts {
-	void *context_for_render;
-	void *context_for_load;
+	void *context_for_main_thread;
+	void *context_for_render_thread;
+	void *context_for_load_thread;
+	Vector<void*> contexts_for_worker_thread;
 };
 
-OpenglContexts createContext(void *window_handle);
+OpenglContexts createContext(void *window_handle, Size worker_thread_count);
 
 void makeCurrent(void *window_handle, void *context);
 

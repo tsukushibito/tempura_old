@@ -60,7 +60,7 @@ namespace graphics {
 namespace opengl {
 namespace windows {
 
-OpenglContexts createContext(HWND window_handle) {
+OpenglContexts createContext(HWND window_handle, Size worker_thread_count) {
     // glew初期化用のダミーウィンドウとコンテキストを作成
     auto dummy_window_handle = createDummyWindow();
     auto dummy_device_context = GetDC(dummy_window_handle);
@@ -129,8 +129,8 @@ OpenglContexts createContext(HWND window_handle) {
     OpenglContexts output;
 
     // 描画スレッド用
-    output.context_for_render = wglCreateContextAttribsARB(hdc, NULL, context_attrib_list);
-    while (output.context_for_render == NULL) {
+    output.context_for_render_thread = wglCreateContextAttribsARB(hdc, NULL, context_attrib_list);
+    while (output.context_for_render_thread == NULL) {
         // 成功するまでバージョンを下げる
         context_attrib_list[3] -= 1;
         if (context_attrib_list[3] < 0) {
@@ -140,12 +140,22 @@ OpenglContexts createContext(HWND window_handle) {
                 break;
             }
         }
-        output.context_for_render = wglCreateContextAttribsARB(hdc, NULL, context_attrib_list);
+        output.context_for_render_thread = wglCreateContextAttribsARB(hdc, NULL, context_attrib_list);
     }
 
+    // メインスレッド用
+    output.context_for_main_thread = wglCreateContextAttribsARB(hdc, NULL, context_attrib_list);
+    wglShareLists((HGLRC)output.context_for_render_thread, (HGLRC)output.context_for_main_thread);
+
     // ロードスレッド用
-    output.context_for_load = wglCreateContextAttribsARB(hdc, NULL, context_attrib_list);
-    wglShareLists((HGLRC)output.context_for_render, (HGLRC)output.context_for_load);
+    output.context_for_load_thread = wglCreateContextAttribsARB(hdc, NULL, context_attrib_list);
+    wglShareLists((HGLRC)output.context_for_render_thread, (HGLRC)output.context_for_load_thread);
+
+	for (Size i = 0; i < worker_thread_count; ++i) {
+        auto context = wglCreateContextAttribsARB(hdc, NULL, context_attrib_list);
+		output.contexts_for_worker_thread.push_back(context);
+        wglShareLists((HGLRC)output.context_for_render_thread, context);
+	}
 
     // カレントコンテキストを解除
     glCallWithErrorCheck(wglMakeCurrent, dummy_device_context, (HGLRC)NULL);
