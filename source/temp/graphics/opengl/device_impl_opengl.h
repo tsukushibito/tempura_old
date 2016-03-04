@@ -27,6 +27,7 @@ private:
 
 	PixelShaderSPtr createPixelShaderFromSource(const String &source);
 	PixelShaderSPtr createPixelShaderFromBinary(const String &binary);
+
 private:
 	Device *device_;
 };
