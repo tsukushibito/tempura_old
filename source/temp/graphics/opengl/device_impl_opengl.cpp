@@ -26,9 +26,11 @@ Device::Impl::Impl(Device *device) : device_(device) {
 }
 
 Device::Impl::~Impl() {
+	opengl::deleteContexts(contexts_);
 }
 
 Device::VertexShaderSPtr Device::Impl::createVertexShaderFromSource(const String &source) {
+	auto vertex_shader = opengl::glCallWithErrorCheck(glCreateShader, GL_VERTEX_SHADER);
     return nullptr;
 }
 
