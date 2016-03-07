@@ -21,7 +21,7 @@ struct NativeHandle {
     };
 };
 
-static const Size kImplSize = 4 * sizeof(void*);
+static const Size kImplSize = 8 * sizeof(void*);
 
 // Buffer class for fast pimpl idiom
 class FastPImpl {

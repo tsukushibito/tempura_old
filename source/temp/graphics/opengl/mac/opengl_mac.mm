@@ -7,7 +7,7 @@ namespace graphics {
 namespace opengl {
 namespace mac {
 
-OpenglContexts createContext(NsWindow window) {
+OpenglContexts createContexts(NsWindow window, Size worker_thread_count) {
     // ピクセルフォーマット指定
     NSOpenGLPixelFormatAttribute att[] = {
         NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion4_1Core,
@@ -23,11 +23,9 @@ OpenglContexts createContext(NsWindow window) {
     NSOpenGLPixelFormat *pixelFormat = [[NSOpenGLPixelFormat alloc] initWithAttributes:att];
     if (pixelFormat == nil) return; // TODO: バージョンを下げた設定で作成し直す
 
-    // 
+    // コンテキストの作成
     NSOpenGLContext *context_for_render =
         [[NSOpenGLContext alloc] initWithFormat:pixelFormat shareContext:nil];
-    NSOpenGLContext *context_for_load =
-        [[NSOpenGLContext alloc] initWithFormat:pixelFormat shareContext:context_for_render];
 
     NSWindow *ns_window = (__bridge NSWindow *)window;
     NSView *ns_view = [ns_window contentView];
@@ -54,12 +52,32 @@ OpenglContexts createContext(NsWindow window) {
     msg = std::string("GLSL version : ") + (const char *)glslVersion;
     std::cout << msg.c_str() << std::endl;
 
+    // 戻り値用に保存
     OpenglContexts contexts;
+    contexts.context_for_render_thread = context_for_render;
+
+    // 他スレッド用のコンテキストを作成
+    // メインスレッド用
+    NSOpenGLContext *context_for_main =
+    [[NSOpenGLContext alloc] initWithFormat:pixelFormat shareContext:context_for_render];
+    contexts.context_for_load_thread = context_for_main;
     
-    contexts.context_for_render = context_for_render;
-    contexts.context_for_load = context_for_load;
+    // ロードスレッド用
+    NSOpenGLContext *context_for_load =
+        [[NSOpenGLContext alloc] initWithFormat:pixelFormat shareContext:context_for_render];
+    contexts.context_for_load_thread = context_for_load;
+    
+    // ワーカースレッド用
+    for (Size i = 0; i < worker_thread_count; ++i) {
+        NSOpenGLContext *context =
+            [[NSOpenGLContext alloc] initWithFormat:pixelFormat shareContext:context_for_render];
+        contexts.contexts_for_worker_thread.push_back(context);
+    }
     
     return contexts;
+}
+    
+void deleteContexts(const OpenglContexts &contexts) {
 }
 
 void makeCurrent(NsWindow window, NsOpenglContext context) {

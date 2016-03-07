@@ -60,7 +60,7 @@ namespace graphics {
 namespace opengl {
 namespace windows {
 
-OpenglContexts createContext(HWND window_handle, Size worker_thread_count) {
+OpenglContexts createContexts(HWND window_handle, Size worker_thread_count) {
     // glew初期化用のダミーウィンドウとコンテキストを作成
     auto dummy_window_handle = createDummyWindow();
     auto dummy_device_context = GetDC(dummy_window_handle);

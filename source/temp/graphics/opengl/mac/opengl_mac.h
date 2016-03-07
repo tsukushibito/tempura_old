@@ -23,7 +23,8 @@ namespace mac {
 using NsWindow = void*;
 using NsOpenglContext = void*;
 
-OpenglContexts createContext(NsWindow window);
+OpenglContexts createContexts(NsWindow window, Size worker_thread_count);
+void deleteContext(const OpenglContexts &contexts);
 
 void makeCurrent(NsWindow window, NsOpenglContext context);
 

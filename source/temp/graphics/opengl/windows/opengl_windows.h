@@ -29,7 +29,7 @@ namespace windows {
  *
  * @return OpenGLコンテキスト（描画用とロード用の二つ）
  */
-OpenglContexts createContext(HWND window_handle, Size worker_thread_count);
+OpenglContexts createContexts(HWND window_handle, Size worker_thread_count);
 
 void makeCurrent(HWND window_handle, HGLRC context);
 

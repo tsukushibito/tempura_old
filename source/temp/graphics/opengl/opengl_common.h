@@ -31,13 +31,14 @@ namespace graphics {
 namespace opengl {
 
 struct OpenglContexts {
-	void *context_for_main_thread;
-	void *context_for_render_thread;
-	void *context_for_load_thread;
-	Vector<void*> contexts_for_worker_thread;
+    void *context_for_main_thread;
+    void *context_for_render_thread;
+    void *context_for_load_thread;
+    Vector<void*> contexts_for_worker_thread;
 };
 
-OpenglContexts createContext(void *window_handle, Size worker_thread_count);
+OpenglContexts createContexts(void *window_handle, Size worker_thread_count);
+void deleteContexts(const OpenglContexts &contexts);
 
 void makeCurrent(void *window_handle, void *context);
 
