@@ -12,6 +12,8 @@
 #include "temp/type.h"
 #include "temp/graphics/device.h"
 
+#include "temp/graphics/opengl/opengl_common.h"
+
 namespace temp {
 namespace graphics {
 
@@ -22,13 +24,15 @@ private:
  
     ~Impl();
 
-	VertexShaderSPtr createVertexShaderFromSource(const String &source);
-	VertexShaderSPtr createVertexShaderFromBinary(const String &binary);
+    VertexShaderSPtr createVertexShaderFromSource(const String &source);
+    VertexShaderSPtr createVertexShaderFromBinary(const String &binary);
 
-	PixelShaderSPtr createPixelShaderFromSource(const String &source);
-	PixelShaderSPtr createPixelShaderFromBinary(const String &binary);
+    PixelShaderSPtr createPixelShaderFromSource(const String &source);
+    PixelShaderSPtr createPixelShaderFromBinary(const String &binary);
+
 private:
-	Device *device_;
+    Device *device_;
+    opengl::OpenglContexts contexts_;
 };
     
 } // namespace graphics
