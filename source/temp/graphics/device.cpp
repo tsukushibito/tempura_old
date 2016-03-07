@@ -24,9 +24,9 @@ namespace graphics {
 
 Device::SPtr Device::create(const DeviceParameter &param) {
     struct Creator : public Device {
-        Creator(const DeviceParameter &param) 
-            : Device(param)
-        {};
+		Creator(const DeviceParameter &param) 
+			: Device(param)
+		{};
     };
 
     auto ptr = std::make_shared<Creator>(param);
@@ -34,26 +34,26 @@ Device::SPtr Device::create(const DeviceParameter &param) {
 }
 
 Device::Device(const DeviceParameter &param) 
-    : parameter_(param)
+	: parameter_(param)
 { 
-    static_assert(sizeof(Impl) <= sizeof(impl_buffer_), "size of impl_buffer_ is small.");
-    impl_ = new(impl_buffer_.pointer_) Impl(this);
+	static_assert(sizeof(Impl) <= sizeof(impl_buffer_), "size of impl_buffer_ is small.");
+	impl_ = new(impl_buffer_.pointer_) Impl(this);
 }
 
 Device::VertexShaderSPtr Device::createVertexShaderFromSource(const String &source) {
-    return impl_->createVertexShaderFromSource(source);
+	return impl_->createVertexShaderFromSource(source);
 }
 
 Device::VertexShaderSPtr Device::createVertexShaderFromBinary(const String &binary) {
-    return impl_->createVertexShaderFromBinary(binary);
+	return impl_->createVertexShaderFromBinary(binary);
 }
 
 Device::PixelShaderSPtr Device::createPixelShaderFromSource(const String &source) {
-    return impl_->createPixelShaderFromSource(source);
+	return impl_->createPixelShaderFromSource(source);
 }
 
 Device::PixelShaderSPtr Device::createPixelShaderFromBinary(const String &binary) {
-    return impl_->createPixelShaderFromBinary(binary);
+	return impl_->createPixelShaderFromBinary(binary);
 }
     
 } // namespace graphics

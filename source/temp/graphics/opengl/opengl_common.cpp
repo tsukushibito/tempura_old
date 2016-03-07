@@ -10,11 +10,11 @@ namespace temp {
 namespace graphics {
 namespace opengl {
 
-OpenglContexts createContext(void *window_handle, Size worker_thread_count) {
+OpenglContexts createContext(void *window_handle) {
 #if defined TEMP_PLATFORM_WINDOWS
-	return windows::createContext(static_cast<HWND>(window_handle), worker_thread_count);
+	return windows::createContext(static_cast<HWND>(window_handle));
 #elif defined TEMP_PLATFORM_MAC
-	return mac::createContext(window_handle, worker_thread_count);
+	return mac::createContext(window_handle);
 #endif
 }
 

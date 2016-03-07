@@ -26,11 +26,10 @@ namespace windows {
  * @brief GLEWを使用してOpenGLコンテキストを作成
  *
  * @param window_handle Window handle
- * @param worker_thread_count Worker Thread count
  *
- * @return OpenGLコンテキスト（各スレッド用に複数作成）
+ * @return OpenGLコンテキスト（描画用とロード用の二つ）
  */
-OpenglContexts createContext(HWND window_handle, Size worker_thread_count);
+OpenglContexts createContext(HWND window_handle);
 
 void makeCurrent(HWND window_handle, HGLRC context);
 

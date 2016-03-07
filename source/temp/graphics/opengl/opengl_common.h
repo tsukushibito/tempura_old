@@ -10,7 +10,6 @@
 #define GUARD_30a587128c704bc6afdf3171ce02ce8c
 
 #include "temp/define.h"
-#include "temp/container.h"
 
 #ifdef TEMP_PLATFORM_WINDOWS
 #include <Windows.h>
@@ -31,13 +30,11 @@ namespace graphics {
 namespace opengl {
 
 struct OpenglContexts {
-	void *context_for_main;
 	void *context_for_render;
 	void *context_for_load;
-	Vector<void*> contexts_for_worker;
 };
 
-OpenglContexts createContext(void *window_handle, Size worker_thread_count);
+OpenglContexts createContext(void *window_handle);
 
 void makeCurrent(void *window_handle, void *context);
 

@@ -18,7 +18,6 @@
 namespace temp {
 namespace system {
 class ThreadPool;
-class Window;
 }
 }
 
@@ -38,10 +37,8 @@ class Texture;
 class Context;
 
 struct DeviceParameter {
-	std::shared_ptr<system::Window> window_;
     std::shared_ptr<system::ThreadPool> render_thread;
     std::shared_ptr<system::ThreadPool> load_thread;
-    std::shared_ptr<system::ThreadPool> worker_thread;
 };
 
 class Device : public SmartPointerObject<Device> , public FastPImpl {
