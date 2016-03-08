@@ -20,10 +20,14 @@ namespace graphics {
 class VertexShader : public SmartPointerObject<VertexShader> , public FastPImpl {
     friend class Device;
 private:
+	VertexShader(const NativeHandle &native_handle);
 
+	const NativeHandle &getNativeHandle() const { return native_handle_; }
 private:
     class Impl;
-    Impl *_impl;
+    Impl *impl_;
+
+	NativeHandle native_handle_;
 };
     
 } // namespace graphics

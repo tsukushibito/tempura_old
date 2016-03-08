@@ -24,7 +24,7 @@ using NsWindow = void*;
 using NsOpenglContext = void*;
 
 OpenglContexts createContexts(NsWindow window, Size worker_thread_count);
-void deleteContext(const OpenglContexts &contexts);
+void deleteContexts(const OpenglContexts &contexts);
 
 void makeCurrent(NsWindow window, NsOpenglContext context);
 

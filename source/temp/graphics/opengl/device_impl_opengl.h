@@ -20,7 +20,7 @@ namespace graphics {
 class Device::Impl {
     friend class Device;
 private:
-    Impl(Device *device);
+    Impl(Device &device);
  
     ~Impl();
 
@@ -31,7 +31,7 @@ private:
     PixelShaderSPtr createPixelShaderFromBinary(const String &binary);
 
 private:
-    Device *device_;
+    Device &device_;
     opengl::OpenglContexts contexts_;
 };
     

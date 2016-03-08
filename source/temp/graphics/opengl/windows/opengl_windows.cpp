@@ -168,6 +168,16 @@ OpenglContexts createContexts(HWND window_handle, Size worker_thread_count) {
     return output;
 }
 
+void deleteContexts(const OpenglContexts &contexts) {
+	glCallWithErrorCheck(wglDeleteContext, static_cast<HGLRC>(contexts.context_for_main_thread));
+	glCallWithErrorCheck(wglDeleteContext, static_cast<HGLRC>(contexts.context_for_render_thread));
+	glCallWithErrorCheck(wglDeleteContext, static_cast<HGLRC>(contexts.context_for_load_thread));
+	for (auto &&context : contexts.contexts_for_worker_thread)
+	{
+		glCallWithErrorCheck(wglDeleteContext, static_cast<HGLRC>(context));
+	}
+}
+
 void makeCurrent(HWND window_handle, HGLRC context) {
 	HDC hdc = GetDC(window_handle);
 	wglMakeCurrent(hdc, context);

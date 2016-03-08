@@ -22,7 +22,7 @@ void deleteContexts(const OpenglContexts contexts) {
 #if defined TEMP_PLATFORM_WINDOWS
     windows::deleteContexts(contexts);
 #elif defined TEMP_PLATFORM_MAC
-    mac::deleteContext(contexts);
+    mac::deleteContexts(contexts);
 #endif
 }
 
