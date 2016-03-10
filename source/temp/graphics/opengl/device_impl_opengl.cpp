@@ -33,7 +33,7 @@ Device::VertexShaderSPtr Device::Impl::createVertexShaderFromSource(const String
 	using namespace opengl;
 	GLuint vertex_shader = glCallWithErrorCheck(glCreateShader, GL_VERTEX_SHADER);
 	const GLchar *src_string = source.c_str();
-	const GLint length = source.size();
+	const GLint length = static_cast<GLint>(source.size());
 	glCallWithErrorCheck(glShaderSource, vertex_shader, (GLsizei)1, &src_string, &length);
 	glCompileShader(vertex_shader);
 

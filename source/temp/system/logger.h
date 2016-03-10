@@ -14,7 +14,7 @@
 #pragma warning(push)
 #pragma warning(disable : 4244)
 #endif
-#include <spdlog.h>
+#include <spdlog/spdlog.h>
 #ifdef TEMP_PLATFORM_WINDOWS
 #pragma warning(pop)
 #endif

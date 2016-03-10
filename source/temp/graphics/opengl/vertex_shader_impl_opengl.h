@@ -23,6 +23,7 @@ public:
     Impl(VertexShader &vertex_shader);
     ~Impl();
 
+	Impl &operator=(const Impl&) = delete;
 private:
 	VertexShader &vertex_shader_;
 };

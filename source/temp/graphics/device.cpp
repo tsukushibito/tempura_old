@@ -37,7 +37,7 @@ Device::Device(const DeviceParameter &param)
 	: parameter_(param)
 { 
 	static_assert(sizeof(Impl) <= sizeof(impl_buffer_), "size of impl_buffer_ is small.");
-	impl_ = new(impl_buffer_.pointer_) Impl(*this);
+	impl_ = new(impl_buffer_) Impl(*this);
 }
 
 Device::VertexShaderSPtr Device::createVertexShaderFromSource(const String &source) {

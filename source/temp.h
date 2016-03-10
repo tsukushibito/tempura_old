@@ -18,4 +18,8 @@
 #include "temp/system/thread_pool.h"
 #include "temp/system/timer.h"
 
+#include "temp/graphics/graphics.h"
+#include "temp/graphics/device.h"
+#include "temp/graphics/vertex_shader.h"
+
 #include "temp/resource/resource_base.h"

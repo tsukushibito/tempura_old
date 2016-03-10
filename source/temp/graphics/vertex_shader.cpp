@@ -21,9 +21,11 @@
 namespace temp {
 namespace graphics {
 
-VertexShader::VertexShader(const NativeHandle &native_handle) {
+VertexShader::VertexShader(const NativeHandle &native_handle) 
+	: native_handle_(native_handle)
+{
 	static_assert(sizeof(Impl) <= sizeof(impl_buffer_), "size of impl_buffer_ is small.");
-	impl_ = new(impl_buffer_.pointer_) Impl(*this);
+	impl_ = new(impl_buffer_) Impl(*this);
 }
 
 } // namespace graphics

@@ -18,7 +18,7 @@ OpenglContexts createContexts(void *window_handle, Size worker_thread_count) {
 #endif
 }
     
-void deleteContexts(const OpenglContexts contexts) {
+void deleteContexts(const OpenglContexts &contexts) {
 #if defined TEMP_PLATFORM_WINDOWS
     windows::deleteContexts(contexts);
 #elif defined TEMP_PLATFORM_MAC

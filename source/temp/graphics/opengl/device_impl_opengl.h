@@ -21,8 +21,8 @@ class Device::Impl {
     friend class Device;
 private:
     Impl(Device &device);
- 
     ~Impl();
+	Impl &operator= (const Impl&) = delete;
 
     VertexShaderSPtr createVertexShaderFromSource(const String &source);
     VertexShaderSPtr createVertexShaderFromBinary(const String &binary);

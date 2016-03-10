@@ -12,7 +12,7 @@
         'include_dirs': [
             '../third_party/glew/include',
             '../third_party/eigen/Eigen',
-            '../third_party/spdlog/include/spdlog',
+            '../third_party/spdlog/include',
         ],
         'msvs_settings': {
             'VCCLCompilerTool': {

@@ -17,7 +17,7 @@ namespace graphics {
 struct NativeHandle {
     union {
         void *pointer_;
-        Size value_;
+        Int32 value_;
     };
 };
 
@@ -25,13 +25,13 @@ static const Size kImplSize = 8 * sizeof(void*);
 
 // Buffer class for fast pimpl idiom
 class FastPImpl {
-protected:
-    union ImplBuffer {
-        Int8 buffer_[kImplSize];
-        void *pointer_;
-    };
+public:
+	FastPImpl() {
+		memset(impl_buffer_, 0, sizeof(impl_buffer_));
+	}
 
-    ImplBuffer impl_buffer_;
+protected:
+    Int8 impl_buffer_[kImplSize];
 };
 
 } // namespace graphics

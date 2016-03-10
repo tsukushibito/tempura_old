@@ -1,0 +1,11 @@
+﻿2016/03/10 17:12:44 にビルドを開始しました。
+     1>ノード 2 上のプロジェクト "C:\Users\maenami\Documents\GitHub\tempura\build\TempuraTest.vcxproj" (Build ターゲット)。
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\amd64\CL.exe /c /I..\third_party\glew\include /I..\third_party\eigen\Eigen /I..\third_party\spdlog\include\spdlog /I..\source /I"C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include" /I"C:\Program Files (x86)\NVIDIA Corporation\PhysX SDK\v3.1.2_win\SDKs\PhysXCommon/src" /I"C:\Program Files (x86)\NVIDIA Corporation\PhysX SDK\v3.1.2_win\SDKs\PhysXAPI\geometry" /I"C:\Program Files (x86)\NVIDIA Corporation\PhysX SDK\v3.1.2_win\SDKs\PhysXAPI\extensions" /I"C:\Program Files (x86)\NVIDIA Corporation\PhysX SDK\v3.1.2_win\SDKs\PhysXAPI\common" /I"C:\Program Files (x86)\NVIDIA Corporation\PhysX SDK\v3.1.2_win\SDKs\PhysXAPI" /I"C:\Program Files (x86)\NVIDIA Corporation\PhysX SDK\v3.1.2_win\SDKs\PxFoundation" /I"C:\Program Files (x86)\NVIDIA Corporation\PhysX SDK\v3.1.2_win\SDKs\PxTask\include" /Zi /nologo /W4 /WX- /O2 /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\obj\TempuraTest\\" /Fd"Release\obj\TempuraTest\vc120.pdb" /Gd /TP /errorReport:prompt ..\test\main.cpp
+         main.cpp
+     1>C:\Users\maenami\Documents\GitHub\tempura\third_party\spdlog\include\spdlog\spdlog.h(11): fatal error C1083: include ファイルを開けません。'spdlog/tweakme.h':No such file or directory
+     1>プロジェクト "C:\Users\maenami\Documents\GitHub\tempura\build\TempuraTest.vcxproj" (Build ターゲット) のビルドが終了しました -- 失敗。
+
+ビルドに失敗しました。
+
+経過時間 00:00:00.60
