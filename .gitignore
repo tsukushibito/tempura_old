@@ -1,6 +1,6 @@
 build/DerivedData/
 build/Debug/
-buidl/Release/
+build/Release/
 *.xcodeproj
 *.sln
 *.vcxproj
@@ -8,3 +8,4 @@ buidl/Release/
 *.opensdf
 *.sdf
 *.suo
+
