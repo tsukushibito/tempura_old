@@ -61,14 +61,24 @@ namespace opengl {
 namespace windows {
 
 OpenglContexts createContexts(HWND window_handle, Size worker_thread_count) {
+	using temp::system::ConsoleLogger;
+
     // glew初期化用のダミーウィンドウとコンテキストを作成
     auto dummy_window_handle = createDummyWindow();
     auto dummy_device_context = GetDC(dummy_window_handle);
     auto dummy_opengl_context = createDummyOpenglContext(dummy_device_context);
-    glCallWithErrorCheck(wglMakeCurrent, dummy_device_context, dummy_opengl_context);
+    BOOL result = wglMakeCurrent(dummy_device_context, dummy_opengl_context);
 
     // glewの初期化
     GLenum error = glewInit();
+	if (error != GLEW_OK)
+	{
+		ConsoleLogger::error("glewInit failed!: {0}", glewGetErrorString(error));
+	}
+	else
+	{
+		ConsoleLogger::info("glewInit version: {0}", glewGetString(GLEW_VERSION));
+	}
 
     // 拡張機能によるコンテキストの作成
     const FLOAT fAtribList[] = { 0, 0 };
@@ -120,7 +130,7 @@ OpenglContexts createContexts(HWND window_handle, Size worker_thread_count) {
     // ピクセルフォーマット設定
     PIXELFORMATDESCRIPTOR pfd;
     DescribePixelFormat(hdc, pixelFormat, sizeof(PIXELFORMATDESCRIPTOR), &pfd);
-    BOOL result = SetPixelFormat(hdc, pixelFormat, &pfd);
+    result = SetPixelFormat(hdc, pixelFormat, &pfd);
     if (result == FALSE) {
         assert(false);
     }
@@ -158,12 +168,26 @@ OpenglContexts createContexts(HWND window_handle, Size worker_thread_count) {
 	}
 
     // カレントコンテキストを解除
-    glCallWithErrorCheck(wglMakeCurrent, dummy_device_context, (HGLRC)NULL);
+    result = wglMakeCurrent((HDC)NULL, (HGLRC)NULL);
+    if (result == FALSE) {
+        assert(false);
+    }
 
     // ダミーのコンテキストとウィンドウを削除
-    glCallWithErrorCheck(wglDeleteContext, dummy_opengl_context);
-    ReleaseDC(dummy_window_handle, dummy_device_context);
-    DestroyWindow(dummy_window_handle);
+    result = wglDeleteContext(dummy_opengl_context);
+    if (result == FALSE) {
+        assert(false);
+    }
+
+    result = ReleaseDC(dummy_window_handle, dummy_device_context);
+    if (result == FALSE) {
+        assert(false);
+    }
+
+    result = DestroyWindow(dummy_window_handle);
+    if (result == FALSE) {
+        assert(false);
+    }
 
     return output;
 }

@@ -28,6 +28,8 @@ public:
     void setTerminateFunction(const std::function<void(void)> &func) { terminate_function_ = func; }
 
     Int32 run() {
+        initialize_function_();
+
         main_thread_.reset(new std::thread(std::bind(&Impl::mainLoop, this)));
         MSG msg;
         while (GetMessage(&msg, NULL, 0, 0)) {
@@ -37,6 +39,8 @@ public:
 
         exit_flag_ = 1;
         main_thread_->join();
+
+        terminate_function_();
 
         return static_cast< Int32 >(msg.wParam);
     }
@@ -52,13 +56,9 @@ private:
     std::function<void(void)> terminate_function_;
 
     void mainLoop() {
-        initialize_function_();
-
         while (exit_flag_ == 0) {
             update_function_();
         }
-
-        terminate_function_();
     }
 };
 

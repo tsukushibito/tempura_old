@@ -9,18 +9,40 @@
 #include <cassert>
 #include "temp.h"
 
-class Test : public temp::resource::ResourceBase<Test> {
+class TestResource : public temp::resource::ResourceBase<TestResource> {
 	// friend class temp::resource::ResourceBase<Test>;
 public:
-	Test(const temp::system::Path &path) : ResourceBase(path) {}
+	TestResource(const temp::system::Path &path) : ResourceBase(path) {}
 private:
 	virtual void loginImpl(){}
 	virtual void logoutImpl(){}
 };
 
-temp::system::Window::SPtr g_window;
 
-void init()
+class Test {
+public:
+	Test();
+
+	void init();
+	void update();
+	void term();
+
+	void run();
+
+private:
+	temp::system::Window::SPtr window_;
+	temp::graphics::Device::SPtr device_;
+};
+
+Test::Test()
+{
+	using temp::system::Application;
+	Application::getInstance().setInitializeFunction(std::bind(&Test::init, this));
+	Application::getInstance().setUpdateFunction(std::bind(&Test::update, this));
+	Application::getInstance().setTerminateFunction(std::bind(&Test::term, this));
+}
+
+void Test::init()
 {
     using namespace temp;
     using namespace temp::system;
@@ -34,44 +56,44 @@ void init()
 	auto render_thread = ThreadPool::create("Render", 1);
 	auto worker_thread = ThreadPool::create("Worker", 1);
 
-	Test::initialize(load_thread);
-	auto res = Test::create("");
+	TestResource::initialize(load_thread);
+	auto res = TestResource::create("");
 
-    g_window = Window::create();
+    window_ = Window::create();
 
 	graphics::DeviceParameter devParam;
 	devParam.load_thread = load_thread;
 	devParam.render_thread = render_thread;
 	devParam.worker_thread = worker_thread;
-	devParam.window = g_window;
-	auto device = graphics::Device::create(devParam);
-	device->createVertexShaderFromSource(String());
+	devParam.window = window_;
+	device_ = graphics::Device::create(devParam);
+	// device->createVertexShaderFromSource(String());
 }
 
-void term()
+void Test::term()
 {
     using namespace temp;
     using namespace temp::system;
 
-	g_window = nullptr;
+	device_ = nullptr;
+	window_ = nullptr;
 
 	ConsoleLogger::terminate();
 }
 
-void update()
+void Test::update()
 {
+}
+
+void Test::run() {
+	using temp::system::Application;
+    Application::getInstance().run();
 }
 
 int main(int argc, char const* argv[])
 {
-    using namespace temp;
-    using namespace temp::system;
-    
-	Application::getInstance().setInitializeFunction(init);
-	Application::getInstance().setUpdateFunction(update);
-	Application::getInstance().setTerminateFunction(term);
-
-    Application::getInstance().run();
+	Test test;
+	test.run();
     
     return 0;
 }
