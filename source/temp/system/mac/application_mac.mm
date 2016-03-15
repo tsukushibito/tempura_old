@@ -49,10 +49,12 @@ public:
     void setTerminateFunction(const std::function< void(void)> &func) { terminate_function_ = func; }
 
     temp::Int32 run() {
+        initialize_function_();
         main_thread_.reset(new std::thread(std::bind(&Impl::mainLoop, this)));
         [app_ run];
         exit_flag_ = 1;
         main_thread_->join();
+        terminate_function_();
         return 0;
     }
 
@@ -74,7 +76,6 @@ private:
     std::function< void(void)> terminate_function_;
 
     void mainLoop() {
-        initialize_function_();
         while (!exit_flag_) {
             update_function_();
         }
