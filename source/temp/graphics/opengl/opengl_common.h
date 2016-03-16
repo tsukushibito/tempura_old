@@ -15,11 +15,26 @@
 #include <Windows.h>
 #endif
 
+#ifdef TEMP_USE_GLEW
 #include <GL/glew.h>
 #if defined TEMP_PLATFORM_LINUX
 #include <GL/glxew.h>
 #elif defined TEMP_PLATFORM_WINDOWS
 #include <GL/wglew.h>
+#endif
+#else
+	#include <gl/GL.h>
+	#include <gl_ext/glext.h>
+	#include <gl_ext/glcorearb.h>
+	#define TEMP_OPENGL_EXTENSION_LINK(func, name) func name;
+	#include "temp/graphics/opengl/temp_glext_link.inl"
+	#include "temp/graphics/opengl/temp_glcorearb_link.inl"
+	#ifdef TEMP_PLATFORM_LINUX
+	#elif defined TEMP_PLATFORM_WINDOWS
+		#include <gl_ext/wglext.h>
+		#include "temp/graphics/opengl/temp_wglext_link.inl"
+	#endif
+	#undef TEMP_OPENGL_EXTENSION_LINK
 #endif
 
 #include "temp/container.h"

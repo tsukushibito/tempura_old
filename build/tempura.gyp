@@ -10,6 +10,7 @@
         },
     'target_defaults': {
         'include_dirs': [
+            '../third_party/opengl',
             '../third_party/glew/include',
             '../third_party/eigen/Eigen',
             '../third_party/spdlog/include',
