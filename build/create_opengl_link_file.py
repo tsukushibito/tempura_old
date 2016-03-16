@@ -25,7 +25,6 @@ def create_opengl_link_file():
         link_file = open(temp_opengl_dir + link_file_name, 'w')
 
         # 関数名を抜き出してリンクファイルに書き込み
-        pattern = re.compile(r'^GLAPI\s+\w+\s+APIENTRY\s+(\w+)\s+\(')
         for line in open(opengl_dir + ext_file_name):
             match_object = pattern.match(line)
             if match_object is not None:

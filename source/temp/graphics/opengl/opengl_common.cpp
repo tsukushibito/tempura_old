@@ -1,6 +1,10 @@
 ﻿#include "temp/graphics/opengl/opengl_common.h"
 
 #if defined TEMP_PLATFORM_WINDOWS
+#define TEMP_OPENGL_EXTENSION_LINK(func, name) func name;
+#include "temp/graphics/opengl/temp_glext_link.inl"
+#include "temp/graphics/opengl/temp_wglext_link.inl"
+#undef TEMP_OPENGL_EXTENSION_LINK
 #include "temp/graphics/opengl/windows/opengl_windows.h"
 #elif defined TEMP_PLATFORM_MAC
 #include "temp/graphics/opengl/mac/opengl_mac.h"
@@ -12,9 +16,9 @@ namespace opengl {
 
 OpenglContexts createContexts(void *window_handle, Size worker_thread_count) {
 #if defined TEMP_PLATFORM_WINDOWS
-	return windows::createContexts(static_cast<HWND>(window_handle), worker_thread_count);
+    return windows::createContexts(static_cast<HWND>(window_handle), worker_thread_count);
 #elif defined TEMP_PLATFORM_MAC
-	return mac::createContexts(window_handle, worker_thread_count);
+    return mac::createContexts(window_handle, worker_thread_count);
 #endif
 }
     
@@ -28,13 +32,13 @@ void deleteContexts(const OpenglContexts &contexts) {
 
 void makeCurrent(void *window_handle, void *context) {
 #if defined TEMP_PLATFORM_WINDOWS
-	return windows::makeCurrent(static_cast<HWND>(window_handle), static_cast<HGLRC>(context));
+    return windows::makeCurrent(static_cast<HWND>(window_handle), static_cast<HGLRC>(context));
 #elif defined TEMP_PLATFORM_MAC
-	return mac::makeCurrent(window_handle, context);
+    return mac::makeCurrent(window_handle, context);
 #endif
 }
 
-void GLAPIENTRY
+void APIENTRY
 debugProc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *user_param) {
 
     using namespace std;

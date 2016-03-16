@@ -69,8 +69,10 @@ OpenglContexts createContexts(HWND window_handle, Size worker_thread_count) {
     auto dummy_opengl_context = createDummyOpenglContext(dummy_device_context);
     BOOL result = wglMakeCurrent(dummy_device_context, dummy_opengl_context);
 
+	GLenum error;
+#ifdef TEMP_USE_GLEW
     // glewの初期化
-    GLenum error = glewInit();
+    error = glewInit();
 	if (error != GLEW_OK)
 	{
 		ConsoleLogger::error("glewInit failed!: {0}", glewGetErrorString(error));
@@ -79,6 +81,7 @@ OpenglContexts createContexts(HWND window_handle, Size worker_thread_count) {
 	{
 		ConsoleLogger::info("glewInit version: {0}", glewGetString(GLEW_VERSION));
 	}
+#endif
 
     // 拡張機能によるコンテキストの作成
     const FLOAT fAtribList[] = { 0, 0 };
