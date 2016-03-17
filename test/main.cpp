@@ -33,11 +33,19 @@ private:
 	temp::system::Application::SPtr application_;
 	temp::system::Window::SPtr window_;
 	temp::graphics::Device::SPtr device_;
+	temp::system::ThreadPool::SPtr load_thread_;
+	temp::system::ThreadPool::SPtr render_thread_;
+	temp::system::ThreadPool::SPtr worker_threads_;
 };
 
-Test::Test()
-{
+Test::Test() {
 	using temp::system::Application;
+	using temp::system::ThreadPool;
+
+	load_thread_ = ThreadPool::create("Load", 1);
+	render_thread_ = ThreadPool::create("Render", 1);
+	worker_threads_ = ThreadPool::create("Worker", 3);
+
 	application_ = Application::create();
 	application_->setInitializeFunction(std::bind(&Test::init, this));
 	application_->setUpdateFunction(std::bind(&Test::update, this));
@@ -54,22 +62,32 @@ void Test::init()
 	setCurrentDirectory("../");
 	ConsoleLogger::trace("Current directory : {}", getCurrentDirectory().getAbsolute());
 
-	auto load_thread = ThreadPool::create("Load", 1);
-	auto render_thread = ThreadPool::create("Render", 1);
-	auto worker_thread = ThreadPool::create("Worker", 1);
 
-	TestResource::initialize(load_thread);
+	TestResource::initialize(load_thread_);
 	auto res = TestResource::create("");
 
     window_ = Window::create();
 
+	// レンダラ―クラスで処理すべき
 	graphics::DeviceParameter devParam;
-	devParam.load_thread = load_thread;
-	devParam.render_thread = render_thread;
-	devParam.worker_thread = worker_thread;
+	devParam.load_thread = load_thread_;
+	devParam.render_thread = render_thread_;
+	devParam.worker_thread = worker_threads_;
 	devParam.window = window_;
 	device_ = graphics::Device::create(devParam);
-	// device->createVertexShaderFromSource(String());
+
+	String clear_vs_source_path = "shader/glsl/clear_glsl.vert";
+	std::ifstream ifs(clear_vs_source_path);
+	if (ifs.fail()) {
+		ConsoleLogger::error("Not found {0}!", clear_vs_source_path);
+	}
+	String clear_vs_source((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
+	graphics::VertexShader::SPtr clear_vs;
+	auto createClearVs = [this, &clear_vs, &clear_vs_source](){
+		clear_vs = device_->createVertexShaderFromSource(clear_vs_source);
+	};
+	auto future = load_thread_->pushJob(createClearVs);
+	future.wait();
 }
 
 void Test::term()
@@ -79,6 +97,10 @@ void Test::term()
 
 	device_ = nullptr;
 	window_ = nullptr;
+
+	load_thread_ = nullptr;
+	render_thread_ = nullptr;
+	worker_threads_ = nullptr;
 
 	ConsoleLogger::terminate();
 }

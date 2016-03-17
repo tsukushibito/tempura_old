@@ -72,7 +72,7 @@ namespace windows {
 OpenglContexts createContexts(HWND window_handle, Size worker_thread_count) {
 	using temp::system::ConsoleLogger;
 
-    // glew初期化用のダミーウィンドウとコンテキストを作成
+    // OpeGL拡張機能初期化用のダミーウィンドウとコンテキストを作成
     auto dummy_window_handle = createDummyWindow();
     auto dummy_device_context = GetDC(dummy_window_handle);
     auto dummy_opengl_context = createDummyOpenglContext(dummy_device_context);
@@ -93,6 +93,25 @@ OpenglContexts createContexts(HWND window_handle, Size worker_thread_count) {
 #else
 	initializeOpenglExtension();
 #endif
+	// OpenGL情報取得
+	auto vendor = glGetString(GL_VENDOR);
+	if (vendor != nullptr) ConsoleLogger::info("[OpenGL] vendor : {0}", vendor);
+	// auto renderer = glGetString(GL_RENDER);
+	// if (renderer != nullptr) ConsoleLogger::info("[OpenGL] renderer : {0}", renderer);
+	auto version = glGetString(GL_VERSION);
+	if (version != nullptr) ConsoleLogger::info("[OpenGL] version : {0}", version);
+	// auto extensions = glGetString(GL_EXTENSIONS);
+	// if ( extensions != nullptr) ConsoleLogger::info("[OpenGL] extensions : {0}", extensions);
+	String version_string = reinterpret_cast<const char*>(version);
+	StringStream ss(version_string);
+	Vector<String> num_strs;
+	String temp;
+	while (std::getline(ss, temp, '.')) {
+		num_strs.push_back(temp);
+	}
+	int majorVersion = std::stoi(num_strs[0]);
+	int minorVersion = std::stoi(num_strs[1]);
+
 
     // 拡張機能によるコンテキストの作成
     const FLOAT fAtribList[] = { 0, 0 };
@@ -116,9 +135,9 @@ OpenglContexts createContexts(HWND window_handle, Size worker_thread_count) {
     // コンテキスト作成用
     int context_attrib_list[] = {
         WGL_CONTEXT_MAJOR_VERSION_ARB,
-        4, //
+        majorVersion, //
         WGL_CONTEXT_MINOR_VERSION_ARB,
-        5, //
+        minorVersion, //
 #if DEBUG
         WGL_CONTEXT_FLAGS_ARB,
         WGL_CONTEXT_DEBUG_BIT_ARB,
@@ -166,15 +185,6 @@ OpenglContexts createContexts(HWND window_handle, Size worker_thread_count) {
         }
         output.context_for_render_thread = wglCreateContextAttribsARB(hdc, NULL, context_attrib_list);
     }
-
-	auto vendor = glGetString(GL_VENDOR);
-	if (vendor != nullptr) ConsoleLogger::info("[OpenGL] vendor : {0}", vendor);
-	// auto renderer = glGetString(GL_RENDER);
-	// if (renderer != nullptr) ConsoleLogger::info("[OpenGL] renderer : {0}", renderer);
-	auto version = glGetString(GL_VERSION);
-	if (version != nullptr) ConsoleLogger::info("[OpenGL] version : {0}", version);
-	// auto extensions = glGetString(GL_EXTENSIONS);
-	// if ( extensions != nullptr) ConsoleLogger::info("[OpenGL] extensions : {0}", extensions);
 
     // メインスレッド用
     output.context_for_main_thread = wglCreateContextAttribsARB(hdc, NULL, context_attrib_list);
