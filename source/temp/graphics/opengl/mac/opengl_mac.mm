@@ -34,11 +34,13 @@ OpenglContexts createContexts(NsWindow window, Size worker_thread_count) {
     // カレントコンテキストに設定
     [context_for_render makeCurrentContext];
 
+#ifdef TEMP_USE_GLEW
     // GLEWの初期化
     glewExperimental = TRUE; // OSXの場合はこの設定をしないと正しく初期化できない
     // INVALID_ENUM のエラーがとなるが拡張機能の設定は正しくできているっぽいです。
     glewInit();
     glGetError();
+#endif
 
     // バージョン情報ログ
     const GLubyte *version;

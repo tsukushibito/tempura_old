@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * @file main.cpp
  * @brief test main
  * @author tsukushibito
@@ -10,46 +10,46 @@
 #include "temp.h"
 
 class TestResource : public temp::resource::ResourceBase<TestResource> {
-	// friend class temp::resource::ResourceBase<Test>;
+    // friend class temp::resource::ResourceBase<Test>;
 public:
-	TestResource(const temp::system::Path &path) : ResourceBase(path) {}
+    TestResource(const temp::system::Path &path) : ResourceBase(path) {}
 private:
-	virtual void loginImpl(){}
-	virtual void logoutImpl(){}
+    virtual void loginImpl(){}
+    virtual void logoutImpl(){}
 };
 
 
 class Test {
 public:
-	Test();
+    Test();
 
-	void init();
-	void update();
-	void term();
+    void init();
+    void update();
+    void term();
 
-	void run();
+    void run();
 
 private:
-	temp::system::Application::SPtr application_;
-	temp::system::Window::SPtr window_;
-	temp::graphics::Device::SPtr device_;
-	temp::system::ThreadPool::SPtr load_thread_;
-	temp::system::ThreadPool::SPtr render_thread_;
-	temp::system::ThreadPool::SPtr worker_threads_;
+    temp::system::Application::SPtr application_;
+    temp::system::Window::SPtr window_;
+    temp::graphics::Device::SPtr device_;
+    temp::system::ThreadPool::SPtr load_thread_;
+    temp::system::ThreadPool::SPtr render_thread_;
+    temp::system::ThreadPool::SPtr worker_threads_;
 };
 
 Test::Test() {
-	using temp::system::Application;
-	using temp::system::ThreadPool;
+    using temp::system::Application;
+    using temp::system::ThreadPool;
 
-	load_thread_ = ThreadPool::create("Load", 1);
-	render_thread_ = ThreadPool::create("Render", 1);
-	worker_threads_ = ThreadPool::create("Worker", 3);
+    load_thread_ = ThreadPool::create("Load", 1);
+    render_thread_ = ThreadPool::create("Render", 1);
+    worker_threads_ = ThreadPool::create("Worker", 3);
 
-	application_ = Application::create();
-	application_->setInitializeFunction(std::bind(&Test::init, this));
-	application_->setUpdateFunction(std::bind(&Test::update, this));
-	application_->setTerminateFunction(std::bind(&Test::term, this));
+    application_ = Application::create();
+    application_->setInitializeFunction(std::bind(&Test::init, this));
+    application_->setUpdateFunction(std::bind(&Test::update, this));
+    application_->setTerminateFunction(std::bind(&Test::term, this));
 }
 
 void Test::init()
@@ -57,37 +57,37 @@ void Test::init()
     using namespace temp;
     using namespace temp::system;
 
-	ConsoleLogger::initialize();
+    ConsoleLogger::initialize();
 
-	setCurrentDirectory("../");
-	ConsoleLogger::trace("Current directory : {}", getCurrentDirectory().getAbsolute());
+    setCurrentDirectory("../");
+    ConsoleLogger::trace("Current directory : {}", getCurrentDirectory().getAbsolute());
 
 
-	TestResource::initialize(load_thread_);
-	auto res = TestResource::create("");
+    TestResource::initialize(load_thread_);
+    auto res = TestResource::create("");
 
     window_ = Window::create();
 
-	// ƒŒƒ“ƒ_ƒ‰\ƒNƒ‰ƒX‚Åˆ—‚·‚×‚«
-	graphics::DeviceParameter devParam;
-	devParam.load_thread = load_thread_;
-	devParam.render_thread = render_thread_;
-	devParam.worker_thread = worker_threads_;
-	devParam.window = window_;
-	device_ = graphics::Device::create(devParam);
+    // ãƒ¬ãƒ³ãƒ€ãƒ©â€•ã‚¯ãƒ©ã‚¹ã§å‡¦ç†ã™ã¹ã
+    graphics::DeviceParameter devParam;
+    devParam.load_thread = load_thread_;
+    devParam.render_thread = render_thread_;
+    devParam.worker_thread = worker_threads_;
+    devParam.window = window_;
+    device_ = graphics::Device::create(devParam);
 
-	String clear_vs_source_path = "shader/glsl/clear_glsl.vert";
-	std::ifstream ifs(clear_vs_source_path);
-	if (ifs.fail()) {
-		ConsoleLogger::error("Not found {0}!", clear_vs_source_path);
-	}
-	String clear_vs_source((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
-	graphics::VertexShader::SPtr clear_vs;
-	auto createClearVs = [this, &clear_vs, &clear_vs_source](){
-		clear_vs = device_->createVertexShaderFromSource(clear_vs_source);
-	};
-	auto future = load_thread_->pushJob(createClearVs);
-	future.wait();
+    String clear_vs_source_path = "shader/glsl/clear_glsl.vert";
+    std::ifstream ifs(clear_vs_source_path);
+    if (ifs.fail()) {
+        ConsoleLogger::error("Not found {0}!", clear_vs_source_path);
+    }
+    String clear_vs_source((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
+    graphics::VertexShader::SPtr clear_vs;
+    auto createClearVs = [this, &clear_vs, &clear_vs_source](){
+        clear_vs = device_->createVertexShaderFromSource(clear_vs_source);
+    };
+    auto future = load_thread_->pushJob(createClearVs);
+    future.wait();
 }
 
 void Test::term()
@@ -95,14 +95,14 @@ void Test::term()
     using namespace temp;
     using namespace temp::system;
 
-	device_ = nullptr;
-	window_ = nullptr;
+    device_ = nullptr;
+    window_ = nullptr;
 
-	load_thread_ = nullptr;
-	render_thread_ = nullptr;
-	worker_threads_ = nullptr;
+    load_thread_ = nullptr;
+    render_thread_ = nullptr;
+    worker_threads_ = nullptr;
 
-	ConsoleLogger::terminate();
+    ConsoleLogger::terminate();
 }
 
 void Test::update()
@@ -110,14 +110,14 @@ void Test::update()
 }
 
 void Test::run() {
-	using temp::system::Application;
+    using temp::system::Application;
     application_->run();
 }
 
 int main(int argc, char const* argv[])
 {
-	Test test;
-	test.run();
+    Test test;
+    test.run();
     
     return 0;
 }

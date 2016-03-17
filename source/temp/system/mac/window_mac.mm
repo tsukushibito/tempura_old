@@ -17,7 +17,7 @@
 @implementation WindowDelegate
 - (void)windowWillClose:(NSNotification *)notification {
     // NSLog(@"windowWillClose");
-    temp::system::Application::getInstance().exit();
+    // temp::system::Application::getInstance().exit();
     [NSApp stop:(NSApp)];
 }
 @end

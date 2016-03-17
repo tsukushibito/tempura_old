@@ -41,6 +41,7 @@ void makeCurrent(void *window_handle, void *context) {
 void APIENTRY
 debugProc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *user_param) {
 
+#ifndef TEMP_PLATFORM_MAC
     using namespace std;
     ostringstream ss;
     ss << "---------------------opengl-callback-start------------" << endl;
@@ -90,6 +91,7 @@ debugProc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length
     ss << "---------------------opengl-callback-end--------------" << endl;
 
     temp::system::ConsoleLogger::trace(ss.str().c_str());
+#endif
 }
 
 

@@ -17,16 +17,13 @@
 
 #ifndef TEMP_PLATFORM_MAC
 #ifdef TEMP_USE_GLEW
-
 #include <GL/glew.h>
 #if defined TEMP_PLATFORM_LINUX
 #include <GL/glxew.h>
 #elif defined TEMP_PLATFORM_WINDOWS
 #include <GL/wglew.h>
-#endif  
-
+#endif
 #else   // #ifdef TEMP_USE_GLEW
-
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <gl_ext/glext.h>
@@ -41,8 +38,11 @@
 #include "temp/graphics/opengl/temp_wglext_link.inl"
 #endif
 #undef TEMP_OPENGL_EXTENSION_LINK
-
 #endif  // #ifdef TEMP_USE_GLEW
+#else
+#include <OpenGL/OpenGL.h>
+#include <OpenGL/gl3.h>
+#include <OpenGL/gl3ext.h>
 #endif  // #ifndef TEMP_PLATFORM_MAC
 
 #include "temp/container.h"
