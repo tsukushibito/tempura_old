@@ -30,6 +30,7 @@ public:
 	void run();
 
 private:
+	temp::system::Application::SPtr application_;
 	temp::system::Window::SPtr window_;
 	temp::graphics::Device::SPtr device_;
 };
@@ -37,9 +38,10 @@ private:
 Test::Test()
 {
 	using temp::system::Application;
-	Application::getInstance().setInitializeFunction(std::bind(&Test::init, this));
-	Application::getInstance().setUpdateFunction(std::bind(&Test::update, this));
-	Application::getInstance().setTerminateFunction(std::bind(&Test::term, this));
+	application_ = Application::create();
+	application_->setInitializeFunction(std::bind(&Test::init, this));
+	application_->setUpdateFunction(std::bind(&Test::update, this));
+	application_->setTerminateFunction(std::bind(&Test::term, this));
 }
 
 void Test::init()
@@ -87,7 +89,7 @@ void Test::update()
 
 void Test::run() {
 	using temp::system::Application;
-    Application::getInstance().run();
+    application_->run();
 }
 
 int main(int argc, char const* argv[])

@@ -13,10 +13,11 @@
 
 namespace temp {
 namespace system {
-class Application : public Singleton< Application > {
-	friend class Singleton< Application >;
+class Application : public SmartPointerObject< Application > {
 private:
     Application();
+
+public:
     ~Application();
 
 public:
@@ -29,6 +30,9 @@ public:
 private:
     class Impl;
     std::unique_ptr< Impl > impl_;
+
+public:
+    static SPtr create();
 };
 } // namespace system
 } // namespace temp

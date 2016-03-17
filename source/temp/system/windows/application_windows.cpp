@@ -82,6 +82,15 @@ void Application::setTerminateFunction(const std::function<void(void)> &func) {
 Int32 Application::run() { return impl_->run(); }
 
 void Application::exit() { return impl_->exit(); }
+
+Application::SPtr Application::create() {
+    struct Creator : public Application {
+    };
+
+    auto p = std::make_shared< Creator >();
+    return std::move(p);
+}
+
 }
 }
 #endif

@@ -23,11 +23,11 @@ namespace opengl {
 namespace windows {
 
 /**
- * @brief GLEWを使用してOpenGLコンテキストを作成
+ * @brief OpenGLコンテキストを作成
  *
  * @param window_handle Window handle
  *
- * @return OpenGLコンテキスト（描画用とロード用の二つ）
+ * @return OpenGLコンテキスト（各スレッド用に一つずつ）
  */
 OpenglContexts createContexts(HWND window_handle, Size worker_thread_count);
 

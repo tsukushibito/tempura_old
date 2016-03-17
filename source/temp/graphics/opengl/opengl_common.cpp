@@ -1,7 +1,7 @@
 ﻿#include "temp/graphics/opengl/opengl_common.h"
 
 #if defined TEMP_PLATFORM_WINDOWS
-#define TEMP_OPENGL_EXTENSION_LINK(func, name) func name;
+#define TEMP_OPENGL_EXTENSION_LINK(func, name) func name = nullptr;
 #include "temp/graphics/opengl/temp_glext_link.inl"
 #include "temp/graphics/opengl/temp_wglext_link.inl"
 #undef TEMP_OPENGL_EXTENSION_LINK

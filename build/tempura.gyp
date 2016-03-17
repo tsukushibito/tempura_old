@@ -102,7 +102,7 @@
                     ]}],
             ['OS=="win"', {
                 'libraries': [
-                    '../third_party/glew/lib/Release/x64/glew32.lib',
+                    #'../third_party/glew/lib/Release/x64/glew32.lib',
                     ]}],
         ],
     },
