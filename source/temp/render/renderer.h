@@ -21,9 +21,17 @@ using DeviceSPtr = std::shared_ptr<Device>;
 namespace temp {
 namespace render {
 
+class Camera;
+using CameraSPtr = std::shared_ptr<Camera>;
+class RenderObject;
+using RenderObjectSPtr = std::shared_ptr<RenderObject>
+
 class Renderer : public SmartPointerObject<Render> {
 private:
     Renderer(const DeviceSPtr &graphics_device);
+
+public:
+    static SPtr create(const DeviceSPtr &graphics_device);
 
 private:
     DeviceSPtr device_;
