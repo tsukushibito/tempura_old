@@ -142,9 +142,6 @@ void Test::run() {
 int main(/*int argc, char const* argv[]*/)
 {
     Test test;
-	auto obj = test.createTestObj();
-	obj->func();
-    test.run();
-    
+
     return 0;
 }

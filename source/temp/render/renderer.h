@@ -49,13 +49,15 @@ public:
 
 	CameraSPtr createCamera();
 
+	void render();
+
 private:
 	void removeCamera(const Camera *camera);
 
 private:
     graphics::DeviceSPtr device_;
 	std::mutex camera_list_mutex_;
-	Vector<CameraWPtr> camera_list_;
+	Vector<Camera*> camera_list_;
 };
     
 } // namespace render
