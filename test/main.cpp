@@ -114,7 +114,7 @@ void Test::run() {
     application_->run();
 }
 
-int main(int argc, char const* argv[])
+int main(/*int argc, char const* argv[]*/)
 {
     Test test;
     test.run();

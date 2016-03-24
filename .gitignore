@@ -10,3 +10,4 @@ build/Release/
 *.suo
 
 *.opendb
+build/TempuraTest.vcxproj.user
