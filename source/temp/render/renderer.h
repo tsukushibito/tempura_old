@@ -9,7 +9,9 @@
 #ifndef GUARD_0c103a63ba65427bbd196ab3610f2b5e
 #define GUARD_0c103a63ba65427bbd196ab3610f2b5e
 
+#include <mutex>
 #include "temp/type.h"
+#include "temp/container.h"
 
 namespace temp {
 namespace graphics {
@@ -23,18 +25,37 @@ namespace render {
 
 class Camera;
 using CameraSPtr = std::shared_ptr<Camera>;
-class RenderObject;
-using RenderObjectSPtr = std::shared_ptr<RenderObject>
+using CameraWPtr = std::weak_ptr<Camera>;
 
-class Renderer : public SmartPointerObject<Render> {
+
+// ‰¼----------------------------
+class Camera : public SmartPointerObject<Camera> {
+public:
+	explicit Camera(const std::function<void(const Camera*)> &on_destroy) : on_destroy_(on_destroy) {}
+	~Camera(){ 
+		on_destroy_(this);
+	}
 private:
-    Renderer(const DeviceSPtr &graphics_device);
+	std::function<void(const Camera*)> on_destroy_;
+};
+// ----------------------------
+
+class Renderer : public SmartPointerObject<Renderer> {
+private:
+    Renderer(const graphics::DeviceSPtr &graphics_device);
 
 public:
-    static SPtr create(const DeviceSPtr &graphics_device);
+    static SPtr create(const graphics::DeviceSPtr &graphics_device);
+
+	CameraSPtr createCamera();
 
 private:
-    DeviceSPtr device_;
+	void removeCamera(const Camera *camera);
+
+private:
+    graphics::DeviceSPtr device_;
+	std::mutex camera_list_mutex_;
+	Vector<CameraWPtr> camera_list_;
 };
     
 } // namespace render

@@ -23,3 +23,5 @@
 #include "temp/graphics/vertex_shader.h"
 
 #include "temp/resource/resource_base.h"
+
+#include "temp/render/renderer.h"

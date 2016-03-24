@@ -18,6 +18,18 @@ private:
     virtual void logoutImpl(){}
 };
 
+class TestObj
+{
+public:
+	explicit TestObj(const std::function<void(void)> &f){ f_ = f; }
+
+	void func() {
+		f_();
+	}
+	
+private:
+	std::function<void(void)> f_;
+};
 
 class Test {
 public:
@@ -36,6 +48,17 @@ private:
     temp::system::ThreadPool::SPtr load_thread_;
     temp::system::ThreadPool::SPtr render_thread_;
     temp::system::ThreadPool::SPtr worker_threads_;
+	temp::render::Renderer::SPtr renderer_;
+
+public:
+	TestObj *createTestObj(){ 
+		auto test_private = [this](){ testPrivate(); };
+		return new TestObj(test_private); 
+	};
+
+	void testPrivate() {
+		std::cout << "testPrivate called!" << std::endl;
+	}
 };
 
 Test::Test() {
@@ -68,7 +91,7 @@ void Test::init()
 
     window_ = Window::create();
 
-    // レンダラ―クラスで処理すべき
+    // レンダラクラスで処理すべき
     graphics::DeviceParameter devParam;
     devParam.load_thread = load_thread_;
     devParam.render_thread = render_thread_;
@@ -88,6 +111,9 @@ void Test::init()
     };
     auto future = load_thread_->pushJob(createClearVs);
     future.wait();
+
+	renderer_ = render::Renderer::create(device_);
+	auto camera = renderer_->createCamera();
 }
 
 void Test::term()
@@ -105,8 +131,7 @@ void Test::term()
     ConsoleLogger::terminate();
 }
 
-void Test::update()
-{
+void Test::update() {
 }
 
 void Test::run() {
@@ -117,6 +142,8 @@ void Test::run() {
 int main(/*int argc, char const* argv[]*/)
 {
     Test test;
+	auto obj = test.createTestObj();
+	obj->func();
     test.run();
     
     return 0;
