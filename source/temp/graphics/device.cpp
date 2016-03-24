@@ -14,7 +14,7 @@
 
 #include "temp/graphics/device.h"
 #if defined TEMP_GRAPHICS_D3D11
-#include "temp/graphics/d3d11/device_d3d11.h"
+#include "temp/graphics/d3d11/device_impl_d3d11.h"
 #elif defined TEMP_GRAPHICS_OPENGL
 #include "temp/graphics/opengl/device_impl_opengl.h"
 #endif

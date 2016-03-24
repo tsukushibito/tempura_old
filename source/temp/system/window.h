@@ -25,15 +25,20 @@ private:
 
 public:
     ~Window();
+    
+public:
+    static SPtr create(Size width = 1280, Size height = 720);
 
     WindowHandle getWindowHandle() const;
+	Size getWidth() const { return width_; }
+	Size getHeight() const { return height_; }
 
 private:
     class Impl;
     std::unique_ptr< Impl > impl_;
 
-public:
-    static SPtr create(Size width = 1280, Size height = 720);
+	Size width_;
+	Size height_;
 };
 }
 }

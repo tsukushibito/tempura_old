@@ -142,6 +142,7 @@ void Test::run() {
 int main(/*int argc, char const* argv[]*/)
 {
     Test test;
+	test.run();
 
     return 0;
 }

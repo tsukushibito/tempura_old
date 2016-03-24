@@ -5,6 +5,8 @@
  * @version 0.0.1
  * @date 2016-03-08
  */
+#include "temp/define.h"
+#ifdef TEMP_GRAPHICS_OPENGL
 #include "temp/type.h"
 #include "temp/graphics/vertex_shader.h"
 
@@ -27,3 +29,4 @@ VertexShader::Impl::~Impl() {
     
 } // namespace graphics
 } // namespace temp
+#endif

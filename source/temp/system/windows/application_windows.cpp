@@ -85,6 +85,7 @@ void Application::exit() { return impl_->exit(); }
 
 Application::SPtr Application::create() {
     struct Creator : public Application {
+		Creator() : Application() { }
     };
 
     auto p = std::make_shared< Creator >();

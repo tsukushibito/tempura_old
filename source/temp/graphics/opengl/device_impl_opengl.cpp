@@ -6,6 +6,8 @@
  * @date 2016-02-28
  */
 
+#include "temp/define.h"
+#ifdef TEMP_GRAPHICS_OPENGL
 #include "temp/system/thread_pool.h"
 #include "temp/system/window.h"
 
@@ -83,3 +85,4 @@ Device::PixelShaderSPtr Device::Impl::createPixelShaderFromBinary(const String &
 
 } // namespace graphics
 } // namespace temp
+#endif

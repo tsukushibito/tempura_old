@@ -70,7 +70,11 @@ private:
     HWND hWnd_;
 };
 
-Window::Window(Size width, Size height) : impl_(new Impl(width, height)) {}
+Window::Window(Size width, Size height) 
+	: impl_(new Impl(width, height)) 
+    , width_(width)
+    , height_(height) {
+}
 
 Window::~Window() {}
 

@@ -1,20 +1,19 @@
 /**
- * @file device_impl_opengl.h
- * @brief opengl graphics device
+ * @file device_impl_d3d11.h
+ * @brief d3d11 device
  * @author tsukushibito
  * @version 0.0.1
- * @date 2016-02-28
+ * @date 2016-03-24
  */
 #pragma once
-#ifndef GUARD_fe71dbd70e5c46bca52dfc7c608632dd
-#define GUARD_fe71dbd70e5c46bca52dfc7c608632dd
-
+#ifndef GUARD_b2437af2c6ef46ddbd33310a7ce0dc00
+#define GUARD_b2437af2c6ef46ddbd33310a7ce0dc00
 #include "temp/define.h"
-#ifdef TEMP_GRAPHICS_OPENGL
+#ifdef TEMP_GRAPHICS_D3D11
+#include <dxgi.h>
+#include <d3d11.h>
 #include "temp/type.h"
 #include "temp/graphics/device.h"
-
-#include "temp/graphics/opengl/opengl_common.h"
 
 namespace temp {
 namespace graphics {
@@ -24,7 +23,7 @@ class Device::Impl {
 private:
     Impl(Device &device);
     ~Impl();
-	Impl &operator= (const Impl&) = delete;
+    Impl &operator= (const Impl&) = delete;
 
     VertexShaderSPtr createVertexShaderFromSource(const String &source);
     VertexShaderSPtr createVertexShaderFromBinary(const String &binary);
@@ -34,10 +33,13 @@ private:
 
 private:
     Device &device_;
-    opengl::OpenglContexts contexts_;
+	ID3D11Device *d3d_device_;
+	ID3D11DeviceContext *d3d_context_;
+	IDXGISwapChain *dxgi_swap_chain_;
 };
     
 } // namespace graphics
 } // namespace temp
-#endif // TEMP_GRAPHICS_OPENGL
-#endif // GUARD_fe71dbd70e5c46bca52dfc7c608632dd
+
+#endif
+#endif // GUARD_b2437af2c6ef46ddbd33310a7ce0dc00

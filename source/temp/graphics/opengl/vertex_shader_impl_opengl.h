@@ -9,6 +9,8 @@
 #ifndef GUARD_e110a8cc9a5d4543a43d5cb4644e0bb3
 #define GUARD_e110a8cc9a5d4543a43d5cb4644e0bb3
 
+#include "temp/define.h"
+#ifdef TEMP_GRAPHICS_OPENGL
 #include "temp/type.h"
 #include "temp/graphics/vertex_shader.h"
 
@@ -31,4 +33,5 @@ private:
 } // namespace graphics
 } // namespace temp
 
+#endif
 #endif // GUARD_e110a8cc9a5d4543a43d5cb4644e0bb3
