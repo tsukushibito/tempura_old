@@ -28,6 +28,8 @@ Device::Impl::Impl(Device &device) : device_(device) {
 
     // 各スレッドでコンテキストをカレントに設定
     auto window_handle = window->getWindowHandle().pointer_;
+	// main thread
+	opengl::makeCurrent(window_handle, contexts_.context_for_main_thread);
     // render thread
     auto future = param.render_thread->pushJob(
         [this, &window_handle](){opengl::makeCurrent(window_handle, contexts_.context_for_render_thread); });
@@ -45,7 +47,7 @@ Device::Impl::Impl(Device &device) : device_(device) {
 }
 
 Device::Impl::~Impl() {
-    opengl::deleteContexts(contexts_);
+    // opengl::deleteContexts(contexts_);	// ウィンドウ削除後に呼び出されるとエラーとなるため、一旦明示的に破棄は行わない
 }
 
 Device::VertexShaderSPtr Device::Impl::createVertexShaderFromSource(const String &source) {

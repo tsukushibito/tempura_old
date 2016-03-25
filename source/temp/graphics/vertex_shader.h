@@ -22,7 +22,11 @@ class VertexShader : public SmartPointerObject<VertexShader> , public FastPImpl 
 private:
 	VertexShader(const NativeHandle &native_handle);
 
+public:
+	~VertexShader();
+
 	const NativeHandle &getNativeHandle() const { return native_handle_; }
+
 private:
     class Impl;
     Impl *impl_;

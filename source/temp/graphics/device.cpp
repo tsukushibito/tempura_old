@@ -40,6 +40,11 @@ Device::Device(const DeviceParameter &param)
 	impl_ = new(impl_buffer_) Impl(*this);
 }
 
+Device::~Device() {
+	// placement new でスタックに領域を確保しているので明示的にデストラクタを呼び出す
+	impl_->~Impl();	
+}
+
 Device::VertexShaderSPtr Device::createVertexShaderFromSource(const String &source) {
 	return impl_->createVertexShaderFromSource(source);
 }

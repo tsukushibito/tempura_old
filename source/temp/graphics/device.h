@@ -64,6 +64,9 @@ private:
     Device(const DeviceParameter &parameter);
 
 public:
+	~Device();
+
+public:
     VertexShaderSPtr createVertexShaderFromSource(const String &source);
     VertexShaderSPtr createVertexShaderFromBinary(const String &binary);
 

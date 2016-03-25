@@ -15,50 +15,52 @@
 
 #include "temp/graphics/vertex_shader.h"
 
+#define V(x) {auto hr = x; if(FAILED(hr)) { system::ConsoleLogger::error(#x " failed!({0})", hr); } }
+
 namespace temp {
 namespace graphics {
 
 Device::Impl::Impl(Device &device) : device_(device) {
     auto &&param = device_.parameter_;
     auto &&window = param.window;
-    auto &&worker = param.worker_thread;
     
+	// デバイスとコンテキストの作成
 	UINT flag = 0;
 	D3D_FEATURE_LEVEL level;
 #ifdef DEBUG
 	flag |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
-	auto hr = D3D11CreateDevice(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, flag, NULL, 0, D3D11_SDK_VERSION, &d3d_device_, &level, &d3d_context_);
-	if (FAILED(hr)) {
-		system::ConsoleLogger::error("D3D11CreateDevice failed!({0})", hr);
-	}
+	ID3D11Device *raw_device = nullptr;
+	ID3D11DeviceContext *raw_context = nullptr;
+	V(D3D11CreateDevice(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, flag, NULL, 0, D3D11_SDK_VERSION, &raw_device, &level, &raw_context));
+	d3d_device_.reset(raw_device);
+	d3d_context_.reset(raw_context);
     
-	IDXGIFactory *dxgi_factory = nullptr;
-	hr = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&dxgi_factory);
-	if (FAILED(hr)) {
-		system::ConsoleLogger::error("CreateDXGIFactory failed!({0})", hr);
-	}
 
-    // DXGI_MODE_DESC BufferDesc;
-    // DXGI_SAMPLE_DESC SampleDesc;
-    // DXGI_USAGE BufferUsage;
-    // UINT BufferCount;
-    // HWND OutputWindow;
-    // BOOL Windowed;
-    // DXGI_SWAP_EFFECT SwapEffect;
-    // UINT Flags;
+	// スワップチェインの作成
+	IDXGIFactory *raw_factory = nullptr;
+	V(CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&raw_factory));
+	d3d11::com_unique_ptr<IDXGIFactory> dxgi_factory(raw_factory);
 
-    // UINT Width;
-    // UINT Height;
-    // DXGI_RATIONAL RefreshRate;
-    // DXGI_FORMAT Format;
-    // DXGI_MODE_SCANLINE_ORDER ScanlineOrdering;
-    // DXGI_MODE_SCALING Scaling;
-	DXGI_SWAP_CHAIN_DESC swap_chain_desc = {
-		{ window->getWidth(), window->getHeight(), {0U, 0U}, DXGI_FORMAT},
-		{},
-	};
-	dxgi_factory->CreateSwapChain(d3d_device_, &swap_chain_desc, &dxgi_swap_chain_);
+	DXGI_SWAP_CHAIN_DESC swap_chain_desc;
+	swap_chain_desc.BufferDesc.Width = static_cast<UINT>(window->getWidth());
+	swap_chain_desc.BufferDesc.Height = static_cast<UINT>(window->getHeight());
+	swap_chain_desc.BufferDesc.RefreshRate.Numerator = 0U;
+	swap_chain_desc.BufferDesc.RefreshRate.Denominator = 0U;
+	swap_chain_desc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	swap_chain_desc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+	swap_chain_desc.BufferDesc.Scaling = DXGI_MODE_SCALING_CENTERED;
+	swap_chain_desc.SampleDesc.Count = 1;
+	swap_chain_desc.SampleDesc.Quality = 0;
+	swap_chain_desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_SHADER_INPUT;
+	swap_chain_desc.BufferCount = 2;
+	swap_chain_desc.OutputWindow = static_cast<HWND>(window->getWindowHandle().pointer_);
+	swap_chain_desc.Windowed = TRUE;
+	swap_chain_desc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+	swap_chain_desc.Flags = 0;
+	IDXGISwapChain *temp_swap_chain;
+	V(dxgi_factory->CreateSwapChain(d3d_device_.get(), &swap_chain_desc, &temp_swap_chain));
+	dxgi_swap_chain_.reset(temp_swap_chain);
 }
 
 Device::Impl::~Impl() {

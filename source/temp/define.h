@@ -24,7 +24,7 @@
 #define TEMP_PLATFORM_ANDROID
 #endif
 
-#define TEMP_USE_D3D11
+// #define TEMP_USE_D3D11
 #ifdef TEMP_USE_D3D11
 #define TEMP_GRAPHICS_D3D11
 #else

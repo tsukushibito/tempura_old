@@ -28,6 +28,10 @@ VertexShader::VertexShader(const NativeHandle &native_handle)
 	impl_ = new(impl_buffer_) Impl(*this);
 }
 
+VertexShader::~VertexShader() {
+	impl_->~Impl();
+}
+
 } // namespace graphics
 } // namespace temp
 

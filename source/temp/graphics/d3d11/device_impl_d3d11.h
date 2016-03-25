@@ -13,6 +13,7 @@
 #include <dxgi.h>
 #include <d3d11.h>
 #include "temp/type.h"
+#include "temp/graphics/d3d11/d3d11_common.h"
 #include "temp/graphics/device.h"
 
 namespace temp {
@@ -33,9 +34,9 @@ private:
 
 private:
     Device &device_;
-	ID3D11Device *d3d_device_;
-	ID3D11DeviceContext *d3d_context_;
-	IDXGISwapChain *dxgi_swap_chain_;
+	d3d11::com_unique_ptr<ID3D11Device> d3d_device_;
+	d3d11::com_unique_ptr<ID3D11DeviceContext> d3d_context_;
+	d3d11::com_unique_ptr<IDXGISwapChain> dxgi_swap_chain_;
 };
     
 } // namespace graphics

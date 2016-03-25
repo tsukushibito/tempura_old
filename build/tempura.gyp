@@ -103,7 +103,8 @@
             ['OS=="win"', {
                 'libraries': [
                     #'../third_party/glew/lib/Release/x64/glew32.lib',
-                    'd3d11.lib'
+                    'd3d11.lib',
+                    'dxgi.lib',
                     ]}],
         ],
     },
