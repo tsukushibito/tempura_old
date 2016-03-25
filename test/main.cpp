@@ -132,6 +132,8 @@ void Test::term()
 }
 
 void Test::update() {
+	renderer_->renderAllViews();
+	renderer_->swapBackBuffers();
 }
 
 void Test::run() {

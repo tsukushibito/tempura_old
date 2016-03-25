@@ -49,7 +49,9 @@ public:
 
 	CameraSPtr createCamera();
 
-	void render();
+	void renderAllViews();
+
+	void swapBackBuffers();
 
 private:
 	void removeCamera(const Camera *camera);

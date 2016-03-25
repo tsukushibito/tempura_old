@@ -73,6 +73,7 @@ public:
     PixelShaderSPtr createPixelShaderFromSource(const String &source);
     PixelShaderSPtr createPixelShaderFromBinary(const String &binary);
 
+	void present();	// ‰¼
 private:
     class Impl;
     Impl *impl_;

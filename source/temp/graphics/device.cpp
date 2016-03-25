@@ -60,6 +60,10 @@ Device::PixelShaderSPtr Device::createPixelShaderFromSource(const String &source
 Device::PixelShaderSPtr Device::createPixelShaderFromBinary(const String &binary) {
 	return impl_->createPixelShaderFromBinary(binary);
 }
+
+void Device::present() {
+	return impl_->present();
+}
     
 } // namespace graphics
 } // namespace temp

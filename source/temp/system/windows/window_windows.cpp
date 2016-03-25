@@ -43,14 +43,14 @@ public:
         RegisterClassEx(&wndclass); /* ウインドウクラスTest Windowを登録 */
 
 		// クライアント領域を指定サイズにするため調整
+		DWORD style = WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
 		RECT window_rect = { 0, 0, static_cast<LONG>(width), static_cast<LONG>(height), };
-		AdjustWindowRect(&window_rect, WS_OVERLAPPEDWINDOW, FALSE);
+		AdjustWindowRect(&window_rect, style, FALSE);
 		LONG window_width = window_rect.right - window_rect.left;
 		LONG window_height = window_rect.bottom - window_rect.top;
-
         hWnd_ = CreateWindow("TempuraWindow",                                       /* ウインドウクラス名 */
                              "てんぷら",                                            /* ウインドウのタイトル */
-                             WS_OVERLAPPEDWINDOW,                                   /* ウインドウスタイル */
+                             style,                                                 /* ウインドウスタイル */
                              CW_USEDEFAULT, CW_USEDEFAULT,                          /* ウインドウ表示位置 */
                              window_width, window_height,                           /* ウインドウの大きさ */
                              NULL,                                                  /* 親ウインドウのハンドル */

@@ -15,7 +15,7 @@
 
 #include "temp/graphics/vertex_shader.h"
 
-#define V(x) {auto hr = x; if(FAILED(hr)) { system::ConsoleLogger::error(#x " failed!({0})", hr); } }
+#define V(x) {auto hr = x; if(FAILED(hr)) { system::ConsoleLogger::error(#x " failed!({0:#x})", (unsigned long)hr); } }
 
 namespace temp {
 namespace graphics {
@@ -52,7 +52,7 @@ Device::Impl::Impl(Device &device) : device_(device) {
 	swap_chain_desc.BufferDesc.Scaling = DXGI_MODE_SCALING_CENTERED;
 	swap_chain_desc.SampleDesc.Count = 1;
 	swap_chain_desc.SampleDesc.Quality = 0;
-	swap_chain_desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_SHADER_INPUT;
+	swap_chain_desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT/* | DXGI_USAGE_SHADER_INPUT*/;
 	swap_chain_desc.BufferCount = 2;
 	swap_chain_desc.OutputWindow = static_cast<HWND>(window->getWindowHandle().pointer_);
 	swap_chain_desc.Windowed = TRUE;
@@ -61,6 +61,25 @@ Device::Impl::Impl(Device &device) : device_(device) {
 	IDXGISwapChain *temp_swap_chain;
 	V(dxgi_factory->CreateSwapChain(d3d_device_.get(), &swap_chain_desc, &temp_swap_chain));
 	dxgi_swap_chain_.reset(temp_swap_chain);
+
+	ID3D11Texture2D *temp_back_buffer = nullptr;
+	V(dxgi_swap_chain_->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&temp_back_buffer));
+	d3d11::com_unique_ptr<ID3D11Texture2D> back_buffer(temp_back_buffer);
+
+	ID3D11RenderTargetView *temp_render_target_view = nullptr;
+	V(d3d_device_->CreateRenderTargetView(back_buffer.get(), NULL, &temp_render_target_view));
+	d3d11::com_unique_ptr<ID3D11RenderTargetView> render_target_view(temp_render_target_view);
+
+	d3d_context_->OMSetRenderTargets(1, render_target_view.get_pp(), NULL);
+
+	D3D11_VIEWPORT viewport;
+	viewport.TopLeftX = 0;
+	viewport.TopLeftY = 0;
+	viewport.Width = static_cast<FLOAT>(window->getWidth());
+	viewport.Height = static_cast<FLOAT>(window->getHeight());
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 0.0f;
+	d3d_context_->RSSetViewports(1, &viewport);
 }
 
 Device::Impl::~Impl() {
@@ -80,6 +99,15 @@ Device::PixelShaderSPtr Device::Impl::createPixelShaderFromSource(const String &
 
 Device::PixelShaderSPtr Device::Impl::createPixelShaderFromBinary(const String &binary) {
     return nullptr;
+}
+
+void Device::Impl::present() {
+	// 動作確認用
+	ID3D11RenderTargetView *render_target = nullptr;
+	d3d_context_->OMGetRenderTargets(1, &render_target, NULL);
+	static FLOAT clear_color[] = { 0.0f, 0.5f, 0.5f, 1.0f };
+	d3d_context_->ClearRenderTargetView(render_target, clear_color);
+	dxgi_swap_chain_->Present(0, 0);
 }
 
 } // namespace graphics

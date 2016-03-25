@@ -1,5 +1,6 @@
 ﻿#include <functional>
 #include "temp/temp_assert.h"
+#include "temp/graphics/device.h"
 #include "temp/render/renderer.h"
 
 namespace temp {
@@ -32,7 +33,11 @@ CameraSPtr Renderer::createCamera() {
 	return ptr;
 }
 
-void Renderer::render() {
+void Renderer::renderAllViews() {
+}
+
+void Renderer::swapBackBuffers() {
+	device_->present();
 }
 
 void Renderer::removeCamera(const Camera *camera) {

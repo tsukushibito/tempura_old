@@ -32,6 +32,7 @@ private:
     PixelShaderSPtr createPixelShaderFromSource(const String &source);
     PixelShaderSPtr createPixelShaderFromBinary(const String &binary);
 
+	void present();	// ‰¼
 private:
     Device &device_;
 	d3d11::com_unique_ptr<ID3D11Device> d3d_device_;
