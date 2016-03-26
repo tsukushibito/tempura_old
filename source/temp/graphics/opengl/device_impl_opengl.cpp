@@ -50,6 +50,23 @@ Device::Impl::~Impl() {
     // opengl::deleteContexts(contexts_);	// ウィンドウ削除後に呼び出されるとエラーとなるため、一旦明示的に破棄は行わない
 }
 
+Device::ContextSPtr Device::Impl::createContext() {
+	return nullptr;
+}
+
+Device::VertexBufferSPtr Device::Impl::createVertexBuffer(Size buffer_size) {
+    return nullptr;
+}
+
+Device::IndexBufferSPtr Device::Impl::createIndexBuffer(Size buffer_size) {
+    return nullptr;
+}
+
+Device::ConstantBufferSPtr Device::Impl::createConstantBuffer(Size buffer_size) {
+    return nullptr;
+}
+ 
+
 Device::VertexShaderSPtr Device::Impl::createVertexShaderFromSource(const String &source) {
     using namespace opengl;
     GLuint vertex_shader = glCallWithErrorCheck(glCreateShader, GL_VERTEX_SHADER);
@@ -83,6 +100,19 @@ Device::PixelShaderSPtr Device::Impl::createPixelShaderFromSource(const String &
 
 Device::PixelShaderSPtr Device::Impl::createPixelShaderFromBinary(const String &binary) {
     return nullptr;
+}
+
+Device::ShaderProgramSPtr Device::Impl::createShaderProgram(const VertexShaderSPtr &vertex_shader, const PixelShaderSPtr &pixel_shader) {
+	return nullptr;
+}
+
+void Device::Impl::executeCommands(const Device::ContextSPtr &context) {
+}
+
+void Device::Impl::present() {
+	auto &&param = device_.parameter_;
+	auto &&window = param.window;
+	opengl::swapBuffers(window->getWindowHandle().pointer_, contexts_.context_for_render_thread);
 }
 
 } // namespace graphics

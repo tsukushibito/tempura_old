@@ -38,6 +38,14 @@ void makeCurrent(void *window_handle, void *context) {
 #endif
 }
 
+void swapBuffers(void *window_handle, void *context) {
+#if defined TEMP_PLATFORM_WINDOWS
+	return windows::swapBuffers(static_cast<HWND>(window_handle), static_cast<HGLRC>(context));
+#elif defined TEMP_PLATFORM_MAC
+    return mac::swapBuffers(context);
+#endif
+}
+
 void APIENTRY
 debugProc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *user_param) {
 

@@ -132,8 +132,8 @@ void Test::term()
 }
 
 void Test::update() {
-	renderer_->renderAllViews();
-	renderer_->swapBackBuffers();
+	auto future = render_thread_->pushJob([this]() { renderer_->renderAllViews(); renderer_->swapBackBuffers(); });
+	future.wait();
 }
 
 void Test::run() {

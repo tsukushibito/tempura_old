@@ -65,6 +65,8 @@ void deleteContexts(const OpenglContexts &contexts);
 
 void makeCurrent(void *window_handle, void *context);
 
+void swapBuffers(void *window_handle, void *context);
+
 /**
  * @brief OpenGL デバッグプロシージャ
  *

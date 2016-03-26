@@ -33,8 +33,9 @@ OpenglContexts createContexts(HWND window_handle, Size worker_thread_count);
 
 void deleteContexts(const OpenglContexts &contexts);
 
-
 void makeCurrent(HWND window_handle, HGLRC context);
+
+void swapBuffers(HWND window_handle, HGLRC context);
 
 } // namespace windows
 } // namespace opengl

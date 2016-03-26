@@ -238,6 +238,13 @@ void deleteContexts(const OpenglContexts &contexts) {
 void makeCurrent(HWND window_handle, HGLRC context) {
 	HDC hdc = GetDC(window_handle);
 	wglMakeCurrent(hdc, context);
+	ReleaseDC(window_handle, hdc);
+}
+
+void swapBuffers(HWND window_handle, HGLRC context) {
+	HDC hdc = GetDC(window_handle);
+	wglSwapLayerBuffers(hdc, WGL_SWAP_MAIN_PLANE);
+	ReleaseDC(window_handle, hdc);
 }
 
 } // namespace windows

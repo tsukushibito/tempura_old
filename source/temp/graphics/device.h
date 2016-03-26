@@ -25,6 +25,7 @@ class Window;
 namespace temp {
 namespace graphics {
 
+class Context;
 class BlendState;
 class DepthState;
 class RasterizeState;
@@ -32,10 +33,10 @@ class SamplerState;
 class VertexShader;
 class PixelShader;
 class ConstantBuffer;
+class ShaderProgram;
 class VertexBuffer;
 class IndexBuffer;
 class Texture;
-class Context;
 
 struct DeviceParameter {
 	std::shared_ptr<system::Window> window;
@@ -46,6 +47,7 @@ struct DeviceParameter {
 
 class Device : public SmartPointerObject<Device> , public FastPImpl {
 public:
+    using ContextSPtr = std::shared_ptr<Context>;
     using BlendStateSPtr = std::shared_ptr<BlendState>;
     using DepthStateSPtr = std::shared_ptr<DepthState>;
     using RasterizeStateSPtr = std::shared_ptr<RasterizeState>;
@@ -53,10 +55,10 @@ public:
     using VertexShaderSPtr = std::shared_ptr<VertexShader>;
     using PixelShaderSPtr = std::shared_ptr<PixelShader>;
     using ConstantBufferSPtr = std::shared_ptr<ConstantBuffer>;
+	using ShaderProgramSPtr = std::shared_ptr<ShaderProgram>;
     using VertexBufferSPtr = std::shared_ptr<VertexBuffer>;
     using IndexBufferSPtr = std::shared_ptr<IndexBuffer>;
     using TextureSPtr = std::shared_ptr<Texture>;
-    using ContextSPtr = std::shared_ptr<Context>;
 
     static SPtr create(const DeviceParameter &parameter);
 
@@ -67,12 +69,23 @@ public:
 	~Device();
 
 public:
+	ContextSPtr createContext();
+
+	VertexBufferSPtr createVertexBuffer(Size buffer_size);
+
+	IndexBufferSPtr createIndexBuffer(Size buffer_size);
+
+	ConstantBufferSPtr createConstantBuffer(Size buffer_size);
+ 
     VertexShaderSPtr createVertexShaderFromSource(const String &source);
     VertexShaderSPtr createVertexShaderFromBinary(const String &binary);
 
     PixelShaderSPtr createPixelShaderFromSource(const String &source);
     PixelShaderSPtr createPixelShaderFromBinary(const String &binary);
 
+	ShaderProgramSPtr createShaderProgram(const VertexShaderSPtr &vertex_shader, const PixelShaderSPtr &pixel_shader);
+
+	void executeCommands(const ContextSPtr &context);
 	void present();	// ‰¼
 private:
     class Impl;

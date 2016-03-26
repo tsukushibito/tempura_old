@@ -52,7 +52,7 @@ Device::Impl::Impl(Device &device) : device_(device) {
 	swap_chain_desc.BufferDesc.Scaling = DXGI_MODE_SCALING_CENTERED;
 	swap_chain_desc.SampleDesc.Count = 1;
 	swap_chain_desc.SampleDesc.Quality = 0;
-	swap_chain_desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT/* | DXGI_USAGE_SHADER_INPUT*/;
+	swap_chain_desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_SHADER_INPUT;
 	swap_chain_desc.BufferCount = 2;
 	swap_chain_desc.OutputWindow = static_cast<HWND>(window->getWindowHandle().pointer_);
 	swap_chain_desc.Windowed = TRUE;
@@ -107,6 +107,7 @@ void Device::Impl::present() {
 	d3d_context_->OMGetRenderTargets(1, &render_target, NULL);
 	static FLOAT clear_color[] = { 0.0f, 0.5f, 0.5f, 1.0f };
 	d3d_context_->ClearRenderTargetView(render_target, clear_color);
+	render_target->Release();
 	dxgi_swap_chain_->Present(0, 0);
 }
 
