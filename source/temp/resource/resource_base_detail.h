@@ -55,11 +55,11 @@ typename ResourceBase< T >::SPtr ResourceBase< T >::create(const system::Path &p
 }
 
 template < typename T >
-void ResourceBase< T >::initialize(const system::ThreadPool::SPtr &load_thread/*,
-                                   const graphics::GraphicsDevice::SPtr &spGraphicsDevice*/) {
+void ResourceBase< T >::initialize(const system::ThreadPool::SPtr &load_thread,
+        const graphics::Device::SPtr &graphics_device) {
     s_resource_table.reset(new ResourceTable);
     s_load_thread = load_thread;
-    // s_graphics_device = spGraphicsDevice;
+    s_graphics_device = graphics_device;
 
     // initializeSpecificPlatform();
 }
@@ -68,7 +68,7 @@ template < typename T >
 void ResourceBase< T >::terminate() {
     // terminateSpecificPlatform();
 
-    // s_graphics_device = nullptr;
+    s_graphics_device = nullptr;
     s_load_thread = nullptr;
     TEMP_ASSERT(s_resource_table->empty() && "Exists not released resource.");
     s_resource_table.release();
@@ -124,10 +124,10 @@ String &ResourceBase< T >::getBuffer() {
     return buffer_;
 }
 
-// template < typename T >
-// graphics::GraphicsDevice::SPtr ResourceBase< T >::getGraphicsDevcie() {
-//     return s_graphics_device;
-// }
+template < typename T >
+graphics::Device::SPtr ResourceBase< T >::getGraphicsDevcie() {
+    return s_graphics_device;
+}
 
 template < typename T >
 system::ThreadPool::SPtr ResourceBase< T >::getLoadThread() {
@@ -174,8 +174,8 @@ void ResourceBase< T >::logout() {
 template < typename T >
 system::ThreadPool::SPtr ResourceBase< T >::s_load_thread = nullptr;
 
-// template < typename T >
-// graphics::GraphicsDevice::SPtr ResourceBase< T >::s_graphics_device = nullptr;
+template < typename T >
+graphics::Device::SPtr ResourceBase< T >::s_graphics_device = nullptr;
 
 template < typename T >
 typename ResourceBase< T >::ResourceTableUPtr ResourceBase< T >::s_resource_table = nullptr;

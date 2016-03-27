@@ -86,19 +86,18 @@ void Test::init()
     ConsoleLogger::trace("Current directory : {}", getCurrentDirectory().getAbsolute());
 
 
-    TestResource::initialize(load_thread_);
-    auto res = TestResource::create("");
-
     window_ = Window::create();
 
-    // レンダラクラスで処理すべき
     graphics::DeviceParameter devParam;
     devParam.load_thread = load_thread_;
     devParam.render_thread = render_thread_;
     devParam.worker_thread = worker_threads_;
     devParam.window = window_;
     device_ = graphics::Device::create(devParam);
-
+    
+    TestResource::initialize(load_thread_, device_);
+    auto res = TestResource::create("");
+    
     String clear_vs_source_path = "shader/glsl/clear_glsl.vert";
     std::ifstream ifs(clear_vs_source_path);
     if (ifs.fail()) {

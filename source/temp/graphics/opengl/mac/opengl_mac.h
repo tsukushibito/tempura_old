@@ -27,6 +27,8 @@ OpenglContexts createContexts(NsWindow window, Size worker_thread_count);
 void deleteContexts(const OpenglContexts &contexts);
 
 void makeCurrent(NsWindow window, NsOpenglContext context);
+    
+void swapBuffers(NsWindow window, NsOpenglContext context);
 
 } // namespace mac
 } // namespace opengl

@@ -42,7 +42,7 @@ void swapBuffers(void *window_handle, void *context) {
 #if defined TEMP_PLATFORM_WINDOWS
 	return windows::swapBuffers(static_cast<HWND>(window_handle), static_cast<HGLRC>(context));
 #elif defined TEMP_PLATFORM_MAC
-    return mac::swapBuffers(context);
+    return mac::swapBuffers(window_handle, context);
 #endif
 }
 

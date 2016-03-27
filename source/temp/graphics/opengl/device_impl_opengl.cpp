@@ -110,6 +110,8 @@ void Device::Impl::executeCommands(const Device::ContextSPtr &context) {
 }
 
 void Device::Impl::present() {
+    glClearColor(0.0f, 0.5f, 0.5f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
 	auto &&param = device_.parameter_;
 	auto &&window = param.window;
 	opengl::swapBuffers(window->getWindowHandle().pointer_, contexts_.context_for_render_thread);

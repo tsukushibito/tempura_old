@@ -10,44 +10,44 @@ Renderer::Renderer(const graphics::DeviceSPtr &graphics_device) : device_(graphi
 }
 
 Renderer::SPtr Renderer::create(const graphics::DeviceSPtr &graphics_device) {
-	struct Creator : public Renderer {
-		Creator(const graphics::DeviceSPtr &graphics_device) 
-			: Renderer(graphics_device) {
-		}
-	};
+    struct Creator : public Renderer {
+        Creator(const graphics::DeviceSPtr &graphics_device) 
+            : Renderer(graphics_device) {
+        }
+    };
 
-	auto ptr = std::make_shared<Creator>(graphics_device);
-	return std::move(ptr);
+    auto ptr = std::make_shared<Creator>(graphics_device);
+    return std::move(ptr);
 }
 
 CameraSPtr Renderer::createCamera() {
-	// リストから削除するファンクタをコンストラクタに渡してカメラを作成
-	auto ptr = std::make_shared<Camera>(std::bind(&Renderer::removeCamera, this, std::placeholders::_1));
+    // リストから削除するファンクタをコンストラクタに渡してカメラを作成
+    auto ptr = std::make_shared<Camera>(std::bind(&Renderer::removeCamera, this, std::placeholders::_1));
 
-	{
-		// リストに追加
-		std::lock_guard<std::mutex> lock(camera_list_mutex_);
-		camera_list_.push_back(ptr.get());
-	}
+    {
+        // リストに追加
+        std::lock_guard<std::mutex> lock(camera_list_mutex_);
+        camera_list_.push_back(ptr.get());
+    }
 
-	return ptr;
+    return ptr;
 }
 
 void Renderer::renderAllViews() {
 }
 
 void Renderer::swapBackBuffers() {
-	device_->present();
+    device_->present();
 }
 
 void Renderer::removeCamera(const Camera *camera) {
-	std::lock_guard<std::mutex> lock(camera_list_mutex_);
+    std::lock_guard<std::mutex> lock(camera_list_mutex_);
 
-	// リストから削除
-	auto new_end = std::remove_if(camera_list_.begin(), camera_list_.end(), 
-		[&camera](Camera *ptr){ return ptr == camera; });
-	TEMP_ASSERT(new_end != camera_list_.end());	// 必ず削除されるべきカメラがあるはず
-	camera_list_.erase(new_end, camera_list_.end());	// 削除処理
+    // リストから削除
+    auto new_end = std::remove_if(camera_list_.begin(), camera_list_.end(), 
+        [&camera](Camera *ptr){ return ptr == camera; });
+    TEMP_ASSERT(new_end != camera_list_.end()); // 必ず削除されるべきカメラがあるはず
+    camera_list_.erase(new_end, camera_list_.end());    // 削除処理
 }
 
 }

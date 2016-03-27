@@ -62,7 +62,7 @@ OpenglContexts createContexts(NsWindow window, Size worker_thread_count) {
     // メインスレッド用
     NSOpenGLContext *context_for_main =
     [[NSOpenGLContext alloc] initWithFormat:pixelFormat shareContext:context_for_render];
-    contexts.context_for_load_thread = context_for_main;
+    contexts.context_for_main_thread = context_for_main;
     
     // ロードスレッド用
     NSOpenGLContext *context_for_load =
@@ -75,6 +75,8 @@ OpenglContexts createContexts(NsWindow window, Size worker_thread_count) {
             [[NSOpenGLContext alloc] initWithFormat:pixelFormat shareContext:context_for_render];
         contexts.contexts_for_worker_thread.push_back(context);
     }
+    
+    [NSOpenGLContext clearCurrentContext];
     
     return contexts;
 }
@@ -90,6 +92,11 @@ void makeCurrent(NsWindow window, NsOpenglContext context) {
         NSOpenGLContext *ns_context = (__bridge NSOpenGLContext*)context;
         [ns_context makeCurrentContext];
     }
+}
+    
+void swapBuffers(NsWindow window, NsOpenglContext context) {
+    NSOpenGLContext *ns_context = (__bridge NSOpenGLContext*)context;
+    [ns_context flushBuffer];
 }
 
 }

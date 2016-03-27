@@ -86,7 +86,7 @@ public:
 	ShaderProgramSPtr createShaderProgram(const VertexShaderSPtr &vertex_shader, const PixelShaderSPtr &pixel_shader);
 
 	void executeCommands(const ContextSPtr &context);
-	void present();	// ‰¼
+	void present();
 private:
     class Impl;
     Impl *impl_;
