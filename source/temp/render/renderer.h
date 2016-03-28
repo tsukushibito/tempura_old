@@ -13,6 +13,7 @@
 #include "temp/type.h"
 #include "temp/container.h"
 #include "temp/resource/vertex_shader_resource.h"
+#include "temp/resource/pixel_shader_resource.h"
 
 namespace temp {
 namespace graphics {
@@ -62,7 +63,8 @@ private:
     std::mutex camera_list_mutex_;
     Vector<Camera*> camera_list_;
 
-	resource::VertexShaderResource::SPtr clear_vs_res_;
+    resource::VertexShaderResource::SPtr clear_vs_res_;
+    resource::PixelShaderResource::SPtr clear_ps_res_;
 };
     
 } // namespace render

@@ -30,7 +30,7 @@ ResourceBase< T >::~ResourceBase() {
     // 管理テーブルから削除
     s_resource_table->erase(hash_);
 
-	temp::system::ConsoleLogger::trace("[resource] Deleted : path = {0} : hash = {1}", path_.getRelative().c_str(), hash_);
+    temp::system::ConsoleLogger::trace("[resource] Deleted : path = {0} : hash = {1}", path_.getRelative().c_str(), hash_);
 }
 
 template < typename T >
@@ -55,7 +55,7 @@ typename ResourceBase< T >::SPtr ResourceBase< T >::create(const system::Path &p
     };
     auto p = std::make_shared< Creator >(path);
     (*s_resource_table)[hash] = p;
-	temp::system::ConsoleLogger::trace("[resource] Created : path = {0} : hash = {1}", path.getRelative().c_str(), hash);
+    temp::system::ConsoleLogger::trace("[resource] Created : path = {0} : hash = {1}", path.getRelative().c_str(), hash);
     return std::move(p);
 }
 
@@ -116,7 +116,7 @@ template < typename T >
 void ResourceBase< T >::unload() {
     std::unique_lock< std::mutex > lock(mutex_);
     if (state_ == State::NotLoaded || state_ == State::Unloading) return;
-	temp::system::ConsoleLogger::trace("[resource] unloading : path = {0} : hash = {1}", path_.getRelative().c_str(), hash_);
+    temp::system::ConsoleLogger::trace("[resource] unloading : path = {0} : hash = {1}", path_.getRelative().c_str(), hash_);
     state_ = State::Unloading;
 
     String().swap(buffer_); // メモリ解放
@@ -142,30 +142,30 @@ system::ThreadPool::SPtr ResourceBase< T >::getLoadThread() {
 template < typename T >
 void ResourceBase< T >::loadImpl(bool isAsync) {
     using namespace std;
-	temp::system::ConsoleLogger::trace("[resource] loading({2}) : path = {0} : hash = {1}", path_.getRelative().c_str(), hash_, isAsync ? "async" : "sync");
-	// 同期、非同期で排他処理の有無を分ける必要があるので、処理を一旦ラムダに持たせる
-	auto load_ = [this](){
+    temp::system::ConsoleLogger::trace("[resource] loading({2}) : path = {0} : hash = {1}", path_.getRelative().c_str(), hash_, isAsync ? "async" : "sync");
+    // 同期、非同期で排他処理の有無を分ける必要があるので、処理を一旦ラムダに持たせる
+    auto load_ = [this](){
 
-		ifstream ifs(path_.getAbsolute().c_str());
+        ifstream ifs(path_.getAbsolute().c_str());
 
-		istreambuf_iterator< char > begin(ifs);
-		istreambuf_iterator< char > end;
-		buffer_.assign(begin, end);
+        istreambuf_iterator< char > begin(ifs);
+        istreambuf_iterator< char > end;
+        buffer_.assign(begin, end);
 
-		ifs.close();
+        ifs.close();
 
-		login();
+        login();
 
-		state_ = State::Loaded;
-	};
+        state_ = State::Loaded;
+    };
 
-	if (isAsync) {
-		lock_guard< mutex > lock(mutex_);
-		load_();
-	}
-	else {
-		load_();
-	}
+    if (isAsync) {
+        lock_guard< mutex > lock(mutex_);
+        load_();
+    }
+    else {
+        load_();
+    }
 }
 
 template < typename T >

@@ -21,7 +21,7 @@ private:
     VertexShaderResource(const system::Path &path);
 
 public:
-	graphics::VertexShader::SPtr get() const { return vertex_shader_; }
+    graphics::VertexShader::SPtr get() const { return vertex_shader_; }
 
 private:
     void loginImpl();

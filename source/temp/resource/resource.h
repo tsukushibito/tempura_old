@@ -10,6 +10,7 @@
 #define GUARD_36db4a3c442d4852b700c9f980eef17b
 
 #include "temp/resource/vertex_shader_resource.h"
+#include "temp/resource/pixel_shader_resource.h"
 
 namespace temp {
 namespace resource {

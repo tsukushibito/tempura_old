@@ -12,11 +12,11 @@ namespace temp {
 namespace resource {
 
 VertexShaderResource::VertexShaderResource(const system::Path &path) 
-	: ResourceBase<VertexShaderResource>(path) {
+    : ResourceBase<VertexShaderResource>(path) {
 }
 
 void VertexShaderResource::loginImpl() {
-	vertex_shader_ = s_graphics_device->createVertexShaderFromSource(buffer_);
+    vertex_shader_ = s_graphics_device->createVertexShaderFromSource(buffer_);
 }
 
 }

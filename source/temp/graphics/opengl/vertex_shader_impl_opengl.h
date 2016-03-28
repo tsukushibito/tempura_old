@@ -25,9 +25,9 @@ public:
     Impl(VertexShader &vertex_shader);
     ~Impl();
 
-	Impl &operator=(const Impl&) = delete;
+    Impl &operator=(const Impl&) = delete;
 private:
-	VertexShader &vertex_shader_;
+    VertexShader &vertex_shader_;
 };
     
 } // namespace graphics

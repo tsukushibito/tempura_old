@@ -39,11 +39,11 @@ class IndexBuffer;
 class Texture;
 
 struct DeviceParameter {
-	std::shared_ptr<system::Window> window;
+    std::shared_ptr<system::Window> window;
     std::shared_ptr<system::ThreadPool> main_thread;
     std::shared_ptr<system::ThreadPool> render_thread;
     std::shared_ptr<system::ThreadPool> load_thread;
-	std::shared_ptr<system::ThreadPool> worker_thread;
+    std::shared_ptr<system::ThreadPool> worker_thread;
 };
 
 class Device : public SmartPointerObject<Device> , public FastPImpl {
@@ -56,7 +56,7 @@ public:
     using VertexShaderSPtr = std::shared_ptr<VertexShader>;
     using PixelShaderSPtr = std::shared_ptr<PixelShader>;
     using ConstantBufferSPtr = std::shared_ptr<ConstantBuffer>;
-	using ShaderProgramSPtr = std::shared_ptr<ShaderProgram>;
+    using ShaderProgramSPtr = std::shared_ptr<ShaderProgram>;
     using VertexBufferSPtr = std::shared_ptr<VertexBuffer>;
     using IndexBufferSPtr = std::shared_ptr<IndexBuffer>;
     using TextureSPtr = std::shared_ptr<Texture>;
@@ -67,16 +67,16 @@ private:
     Device(const DeviceParameter &parameter);
 
 public:
-	~Device();
+    ~Device();
 
 public:
-	ContextSPtr createContext();
+    ContextSPtr createContext();
 
-	VertexBufferSPtr createVertexBuffer(Size buffer_size);
+    VertexBufferSPtr createVertexBuffer(Size buffer_size);
 
-	IndexBufferSPtr createIndexBuffer(Size buffer_size);
+    IndexBufferSPtr createIndexBuffer(Size buffer_size);
 
-	ConstantBufferSPtr createConstantBuffer(Size buffer_size);
+    ConstantBufferSPtr createConstantBuffer(Size buffer_size);
  
     VertexShaderSPtr createVertexShaderFromSource(const String &source);
     VertexShaderSPtr createVertexShaderFromBinary(const String &binary);
@@ -84,10 +84,10 @@ public:
     PixelShaderSPtr createPixelShaderFromSource(const String &source);
     PixelShaderSPtr createPixelShaderFromBinary(const String &binary);
 
-	ShaderProgramSPtr createShaderProgram(const VertexShaderSPtr &vertex_shader, const PixelShaderSPtr &pixel_shader);
+    ShaderProgramSPtr createShaderProgram(const VertexShaderSPtr &vertex_shader, const PixelShaderSPtr &pixel_shader);
 
-	void executeCommands(const ContextSPtr &context);
-	void present();
+    void executeCommands(const ContextSPtr &context);
+    void present();
 private:
     class Impl;
     Impl *impl_;

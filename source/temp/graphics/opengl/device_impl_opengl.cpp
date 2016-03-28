@@ -16,6 +16,7 @@
 #include "temp/graphics/opengl/device_impl_opengl.h"
 
 #include "temp/graphics/vertex_shader.h"
+#include "temp/graphics/pixel_shader.h"
 
 namespace temp {
 namespace graphics {
@@ -28,11 +29,11 @@ Device::Impl::Impl(Device &device) : device_(device) {
 
     // 各スレッドでコンテキストをカレントに設定
     auto window_handle = window->getWindowHandle().pointer_;
-	// app thread
-	opengl::makeCurrent(window_handle, contexts_.context_for_application_thread);
-	// main thread
-	auto future = param.main_thread->pushJob(
-		[this, &window_handle](){opengl::makeCurrent(window_handle, contexts_.context_for_main_thread); });
+    // app thread
+    opengl::makeCurrent(window_handle, contexts_.context_for_application_thread);
+    // main thread
+    auto future = param.main_thread->pushJob(
+        [this, &window_handle](){opengl::makeCurrent(window_handle, contexts_.context_for_main_thread); });
     future.wait();
     // render thread
     future = param.render_thread->pushJob(
@@ -51,11 +52,11 @@ Device::Impl::Impl(Device &device) : device_(device) {
 }
 
 Device::Impl::~Impl() {
-    // opengl::deleteContexts(contexts_);	// ウィンドウ削除後に呼び出されるとエラーとなるため、一旦明示的に破棄は行わない
+    // opengl::deleteContexts(contexts_);   // ウィンドウ削除後に呼び出されるとエラーとなるため、一旦明示的に破棄は行わない
 }
 
 Device::ContextSPtr Device::Impl::createContext() {
-	return nullptr;
+    return nullptr;
 }
 
 Device::VertexBufferSPtr Device::Impl::createVertexBuffer(Size buffer_size) {
@@ -99,7 +100,26 @@ Device::VertexShaderSPtr Device::Impl::createVertexShaderFromBinary(const String
 }
 
 Device::PixelShaderSPtr Device::Impl::createPixelShaderFromSource(const String &source) {
-    return nullptr;
+    using namespace opengl;
+    GLuint pixel_shader = glCallWithErrorCheck(glCreateShader, GL_FRAGMENT_SHADER);
+    const GLchar *src_string = source.c_str();
+    const GLint length = static_cast<GLint>(source.size());
+    glCallWithErrorCheck(glShaderSource, pixel_shader, (GLsizei)1, &src_string, &length);
+    glCallWithErrorCheck(glCompileShader, pixel_shader);
+
+    GLsizei size, len;
+    glGetShaderiv(pixel_shader, GL_INFO_LOG_LENGTH, &size);
+    if (size > 1) {
+        Vector<char> log(size);
+        glGetShaderInfoLog(pixel_shader, size, &len, &log[0]);
+        system::ConsoleLogger::trace("[OpenGL shader info log] \n{0}", &log[0]);
+    }
+
+    NativeHandle native_handle;
+    native_handle.value_ = pixel_shader;
+    
+    auto p = PixelShader::SPtr(new PixelShader(native_handle));
+    return std::move(p);
 }
 
 Device::PixelShaderSPtr Device::Impl::createPixelShaderFromBinary(const String &binary) {
@@ -107,7 +127,7 @@ Device::PixelShaderSPtr Device::Impl::createPixelShaderFromBinary(const String &
 }
 
 Device::ShaderProgramSPtr Device::Impl::createShaderProgram(const VertexShaderSPtr &vertex_shader, const PixelShaderSPtr &pixel_shader) {
-	return nullptr;
+    return nullptr;
 }
 
 void Device::Impl::executeCommands(const Device::ContextSPtr &context) {
@@ -116,9 +136,9 @@ void Device::Impl::executeCommands(const Device::ContextSPtr &context) {
 void Device::Impl::present() {
     glClearColor(0.0f, 0.5f, 0.5f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-	auto &&param = device_.parameter_;
-	auto &&window = param.window;
-	opengl::swapBuffers(window->getWindowHandle().pointer_, contexts_.context_for_render_thread);
+    auto &&param = device_.parameter_;
+    auto &&window = param.window;
+    opengl::swapBuffers(window->getWindowHandle().pointer_, contexts_.context_for_render_thread);
 }
 
 } // namespace graphics

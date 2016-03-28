@@ -66,14 +66,9 @@ void Test::init()
     devParam.window = window_;
     device_ = graphics::Device::create(devParam);
 
-	VertexShaderResource::initialize(load_thread_, device_);
-	auto vertex_shader = resource::VertexShaderResource::create("shader/glsl/clear_glsl.vert");
-	{
-		auto future = vertex_shader->asyncLoad();
-		future.wait();
-	}
-	// vertex_shader->load();
-	vertex_shader = nullptr;
+    
+    VertexShaderResource::initialize(load_thread_, device_);
+    PixelShaderResource::initialize(load_thread_, device_);
 
 	renderer_ = render::Renderer::create(device_);
 	auto camera = renderer_->createCamera();
