@@ -186,6 +186,10 @@ OpenglContexts createContexts(HWND window_handle, Size worker_thread_count) {
         output.context_for_render_thread = wglCreateContextAttribsARB(hdc, NULL, context_attrib_list);
     }
 
+    // applicationスレッド用
+    output.context_for_application_thread = wglCreateContextAttribsARB(hdc, NULL, context_attrib_list);
+    wglShareLists((HGLRC)output.context_for_render_thread, (HGLRC)output.context_for_application_thread);
+
     // メインスレッド用
     output.context_for_main_thread = wglCreateContextAttribsARB(hdc, NULL, context_attrib_list);
     wglShareLists((HGLRC)output.context_for_render_thread, (HGLRC)output.context_for_main_thread);
@@ -242,6 +246,7 @@ void makeCurrent(HWND window_handle, HGLRC context) {
 }
 
 void swapBuffers(HWND window_handle, HGLRC context) {
+	(void*)context;
 	HDC hdc = GetDC(window_handle);
 	wglSwapLayerBuffers(hdc, WGL_SWAP_MAIN_PLANE);
 	ReleaseDC(window_handle, hdc);

@@ -9,28 +9,6 @@
 #include <cassert>
 #include "temp.h"
 
-class TestResource : public temp::resource::ResourceBase<TestResource> {
-    // friend class temp::resource::ResourceBase<Test>;
-public:
-    TestResource(const temp::system::Path &path) : ResourceBase(path) {}
-private:
-    virtual void loginImpl(){}
-    virtual void logoutImpl(){}
-};
-
-class TestObj
-{
-public:
-	explicit TestObj(const std::function<void(void)> &f){ f_ = f; }
-
-	void func() {
-		f_();
-	}
-	
-private:
-	std::function<void(void)> f_;
-};
-
 class Test {
 public:
     Test();
@@ -44,21 +22,11 @@ public:
 private:
     temp::system::Application::SPtr application_;
     temp::system::Window::SPtr window_;
-    temp::graphics::Device::SPtr device_;
     temp::system::ThreadPool::SPtr load_thread_;
     temp::system::ThreadPool::SPtr render_thread_;
     temp::system::ThreadPool::SPtr worker_threads_;
+    temp::graphics::Device::SPtr device_;
 	temp::render::Renderer::SPtr renderer_;
-
-public:
-	TestObj *createTestObj(){ 
-		auto test_private = [this](){ testPrivate(); };
-		return new TestObj(test_private); 
-	};
-
-	void testPrivate() {
-		std::cout << "testPrivate called!" << std::endl;
-	}
 };
 
 Test::Test() {
@@ -85,31 +53,24 @@ void Test::init()
     setCurrentDirectory("../");
     ConsoleLogger::trace("Current directory : {}", getCurrentDirectory().getAbsolute());
 
-
     window_ = Window::create();
 
     graphics::DeviceParameter devParam;
+	devParam.main_thread = application_->getMainThread();
     devParam.load_thread = load_thread_;
     devParam.render_thread = render_thread_;
     devParam.worker_thread = worker_threads_;
     devParam.window = window_;
     device_ = graphics::Device::create(devParam);
-    
-    TestResource::initialize(load_thread_, device_);
-    auto res = TestResource::create("");
-    
-    String clear_vs_source_path = "shader/glsl/clear_glsl.vert";
-    std::ifstream ifs(clear_vs_source_path);
-    if (ifs.fail()) {
-        ConsoleLogger::error("Not found {0}!", clear_vs_source_path);
-    }
-    String clear_vs_source((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
-    graphics::VertexShader::SPtr clear_vs;
-    auto createClearVs = [this, &clear_vs, &clear_vs_source](){
-        clear_vs = device_->createVertexShaderFromSource(clear_vs_source);
-    };
-    auto future = load_thread_->pushJob(createClearVs);
-    future.wait();
+
+	resource::VertexShader::initialize(load_thread_, device_);
+	resource::VertexShader::SPtr vertex_shader = resource::VertexShader::create("shader/glsl/clear_glsl.vert");
+	// {
+	// 	auto future = vertex_shader->asyncLoad();
+	// 	future.wait();
+	// }
+	vertex_shader->load();
+	vertex_shader = nullptr;
 
 	renderer_ = render::Renderer::create(device_);
 	auto camera = renderer_->createCamera();

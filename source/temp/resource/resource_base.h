@@ -65,7 +65,7 @@ public:
 
     void load();
 
-    void asyncLoad();
+    std::future<void> asyncLoad();
 
     void unload();
 
@@ -80,15 +80,7 @@ private:
 
     void login(); // ロード用スレッドで実行される
 
-    void logout(); // どのスレッドで実行されるか不定
-
 protected:
-    virtual void loginImpl() = 0;
-    virtual void logoutImpl() = 0;
-
-    // depend on platform
-    // static void initializeSpecificPlatform();
-    // static void terminateSpecificPlatform();
 
     static system::ThreadPool::SPtr s_load_thread;
     static graphics::Device::SPtr s_graphics_device;
@@ -107,13 +99,5 @@ protected:
 }
 
 #include "resource_base_detail.h"
-#ifdef TEMP_GRAPHICS_OPENGL
-#ifdef TEMP_PLATFORM_WINDOWS
-// #include "OpenGL/Windows/ResourceBaseDetailOpenGLWindows.h"
-#elif defined TEMP_PLATFORM_MAC
-// #include "OpenGL/Mac/ResourceBaseDetailOpenGLMac.h"
-#endif
-#else
-#endif
 
 #endif // GUARD_7b165123cb9d40ba8f9fbe15833384b3

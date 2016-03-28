@@ -8,6 +8,7 @@
 #include <condition_variable>
 
 #include "temp/system/application.h"
+#include "temp/system/thread_pool.h"
 
 namespace temp {
 namespace system {
@@ -19,6 +20,7 @@ public:
         update_function_ = [](){};
         terminate_function_ = [](){};
         exit_flag_ = 0;
+		main_thread_ = ThreadPool::create("Main", 1);
     }
 
     void setInitializeFunction(const std::function<void(void)> &func) { initialize_function_ = func; }
@@ -28,28 +30,33 @@ public:
     void setTerminateFunction(const std::function<void(void)> &func) { terminate_function_ = func; }
 
     Int32 run() {
-        initialize_function_();
+		initialize_function_();
 
-        main_thread_.reset(new std::thread(std::bind(&Impl::mainLoop, this)));
-        MSG msg;
-        while (GetMessage(&msg, NULL, 0, 0)) {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        }
+		MSG msg;
+		{
+			auto future = main_thread_->pushJob(std::bind(&Impl::mainLoop, this));
+			// main_thread_.reset(new std::thread(std::bind(&Impl::mainLoop, this)));
+			while (GetMessage(&msg, NULL, 0, 0)) {
+				TranslateMessage(&msg);
+				DispatchMessage(&msg);
+			}
+			exit_flag_ = 1;
+			future.wait();
+		}
 
-        exit_flag_ = 1;
-        main_thread_->join();
-
-        terminate_function_();
+		terminate_function_();
 
         return static_cast< Int32 >(msg.wParam);
     }
 
     void exit() { exit_flag_ = true; }
 
+	ThreadPoolSPtr getMainThread() const { return main_thread_; }
+
 private:
     using ThreadUPtr = std::unique_ptr< std::thread >;
-    ThreadUPtr main_thread_;
+    // ThreadUPtr main_thread_;
+    ThreadPool::SPtr main_thread_;
     std::atomic_char exit_flag_;
     std::function<void(void)> initialize_function_;
     std::function<void(void)> update_function_;
@@ -82,6 +89,8 @@ void Application::setTerminateFunction(const std::function<void(void)> &func) {
 Int32 Application::run() { return impl_->run(); }
 
 void Application::exit() { return impl_->exit(); }
+
+ThreadPool::SPtr Application::getMainThread() const { return impl_->getMainThread(); }
 
 Application::SPtr Application::create() {
     struct Creator : public Application {

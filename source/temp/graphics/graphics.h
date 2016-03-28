@@ -9,6 +9,9 @@
 #ifndef GUARD_3bef4891b6cd4afabcb615ae4dd8e9cf
 #define GUARD_3bef4891b6cd4afabcb615ae4dd8e9cf
 
+#include "temp/graphics/device.h"
+#include "temp/graphics/vertex_shader.h"
+
 namespace temp {
 namespace graphics {
     

@@ -28,10 +28,14 @@ Device::Impl::Impl(Device &device) : device_(device) {
 
     // 各スレッドでコンテキストをカレントに設定
     auto window_handle = window->getWindowHandle().pointer_;
+	// app thread
+	opengl::makeCurrent(window_handle, contexts_.context_for_application_thread);
 	// main thread
-	opengl::makeCurrent(window_handle, contexts_.context_for_main_thread);
+	auto future = param.main_thread->pushJob(
+		[this, &window_handle](){opengl::makeCurrent(window_handle, contexts_.context_for_main_thread); });
+    future.wait();
     // render thread
-    auto future = param.render_thread->pushJob(
+    future = param.render_thread->pushJob(
         [this, &window_handle](){opengl::makeCurrent(window_handle, contexts_.context_for_render_thread); });
     future.wait();
     // load thread

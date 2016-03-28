@@ -13,8 +13,13 @@
 
 namespace temp {
 namespace system {
+
+class ThreadPool;
+
 class Application : public SmartPointerObject< Application > {
 private:
+	using ThreadPoolSPtr = std::shared_ptr<ThreadPool>;
+
     Application();
 
 public:
@@ -27,6 +32,8 @@ public:
 
     Int32 run();
     void exit();
+
+	ThreadPoolSPtr getMainThread() const;
 private:
     class Impl;
     std::unique_ptr< Impl > impl_;

@@ -18,12 +18,14 @@ namespace graphics {
 
 VertexShader::Impl::Impl(VertexShader &vertex_shader) 
 	: vertex_shader_(vertex_shader) {
+	temp::system::ConsoleLogger::trace("OpenGL Vertex Shader has created! id = {0}", vertex_shader_.getNativeHandle().value_);
 }
 
 VertexShader::Impl::~Impl() {
 	using namespace opengl;
 	GLuint vertex_shader = vertex_shader_.getNativeHandle().value_;
 	glCallWithErrorCheck(glDeleteShader, vertex_shader);
+	temp::system::ConsoleLogger::trace("OpenGL Vertex Shader has deleted! id = {0}", vertex_shader);
 }
 
     

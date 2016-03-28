@@ -40,6 +40,7 @@ class Texture;
 
 struct DeviceParameter {
 	std::shared_ptr<system::Window> window;
+    std::shared_ptr<system::ThreadPool> main_thread;
     std::shared_ptr<system::ThreadPool> render_thread;
     std::shared_ptr<system::ThreadPool> load_thread;
 	std::shared_ptr<system::ThreadPool> worker_thread;

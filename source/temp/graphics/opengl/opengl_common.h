@@ -54,7 +54,8 @@ namespace graphics {
 namespace opengl {
 
 struct OpenglContexts {
-    void *context_for_main_thread;
+	void *context_for_application_thread;	// アプリ実行スレッド用
+    void *context_for_main_thread;			// ゲームメインスレッド用
     void *context_for_render_thread;
     void *context_for_load_thread;
     Vector<void*> contexts_for_worker_thread;
