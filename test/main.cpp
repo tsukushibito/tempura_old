@@ -47,6 +47,9 @@ void Test::init()
 {
     using namespace temp;
     using namespace temp::system;
+	using namespace temp::graphics;
+	using namespace temp::resource;
+	using namespace temp::render;
 
     ConsoleLogger::initialize();
 
@@ -63,13 +66,13 @@ void Test::init()
     devParam.window = window_;
     device_ = graphics::Device::create(devParam);
 
-	resource::VertexShader::initialize(load_thread_, device_);
-	resource::VertexShader::SPtr vertex_shader = resource::VertexShader::create("shader/glsl/clear_glsl.vert");
-	// {
-	// 	auto future = vertex_shader->asyncLoad();
-	// 	future.wait();
-	// }
-	vertex_shader->load();
+	VertexShaderResource::initialize(load_thread_, device_);
+	auto vertex_shader = resource::VertexShaderResource::create("shader/glsl/clear_glsl.vert");
+	{
+		auto future = vertex_shader->asyncLoad();
+		future.wait();
+	}
+	// vertex_shader->load();
 	vertex_shader = nullptr;
 
 	renderer_ = render::Renderer::create(device_);
@@ -80,6 +83,8 @@ void Test::term()
 {
     using namespace temp;
     using namespace temp::system;
+
+	renderer_ = nullptr;
 
     device_ = nullptr;
     window_ = nullptr;

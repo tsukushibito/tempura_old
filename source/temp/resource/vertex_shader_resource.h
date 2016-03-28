@@ -15,17 +15,16 @@
 namespace temp {
 namespace resource {
 
-class VertexShader : public ResourceBase<VertexShader> {
-    friend class ResourceBase<VertexShader>;
+class VertexShaderResource : public ResourceBase<VertexShaderResource> {
+    friend class ResourceBase<VertexShaderResource>;
 private:
-    VertexShader(const system::Path &path);
+    VertexShaderResource(const system::Path &path);
 
 public:
 	graphics::VertexShader::SPtr get() const { return vertex_shader_; }
 
 private:
     void loginImpl();
-    void logoutImpl();
 
     graphics::VertexShader::SPtr vertex_shader_;
 };
