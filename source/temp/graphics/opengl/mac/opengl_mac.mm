@@ -59,6 +59,11 @@ OpenglContexts createContexts(NsWindow window, Size worker_thread_count) {
     contexts.context_for_render_thread = context_for_render;
 
     // 他スレッド用のコンテキストを作成
+    // アプリ実行スレッド用
+    NSOpenGLContext *context_for_app =
+    [[NSOpenGLContext alloc] initWithFormat:pixelFormat shareContext:context_for_render];
+    contexts.context_for_application_thread = context_for_app;
+    
     // メインスレッド用
     NSOpenGLContext *context_for_main =
     [[NSOpenGLContext alloc] initWithFormat:pixelFormat shareContext:context_for_render];

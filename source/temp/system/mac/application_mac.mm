@@ -8,6 +8,7 @@
 #import <Cocoa/Cocoa.h>
 #include <thread>
 #include "temp/system/application.h"
+#include "temp/system/thread_pool.h"
 
 @interface ApplicationDelegate : NSObject < NSApplicationDelegate > {
 }
@@ -37,6 +38,7 @@ public:
         [app_ setDelegate:delegate_];
         [app_ setActivationPolicy:NSApplicationActivationPolicyRegular];
 
+        main_thread_ = ThreadPool::create("Main", 1);
         exit_flag_ = 0;
     }
 
@@ -50,10 +52,12 @@ public:
 
     temp::Int32 run() {
         initialize_function_();
-        main_thread_.reset(new std::thread(std::bind(&Impl::mainLoop, this)));
+        // main_thread_.reset(new std::thread(std::bind(&Impl::mainLoop, this)));
+        auto future = main_thread_->pushJob([this](){mainLoop(); });
         [app_ run];
         exit_flag_ = 1;
-        main_thread_->join();
+        // main_thread_->join();
+        future.wait();
         terminate_function_();
         return 0;
     }
@@ -62,14 +66,17 @@ public:
         exit_flag_ = 1;
         [app_ stop:app_];
     }
+    
+    ThreadPoolSPtr getMainThread() const { return main_thread_; }
 
 private:
     NSApplication *app_;
     NSTimer *timer_;
     ApplicationDelegate *delegate_;
 
-    using ThreadUPtr = std::unique_ptr< std::thread >;
-    ThreadUPtr main_thread_;
+    //using ThreadUPtr = std::unique_ptr< std::thread >;
+    //ThreadUPtr main_thread_;
+    temp::system::ThreadPool::SPtr main_thread_;
     std::atomic_char exit_flag_;
     std::function< void(void)> initialize_function_;
     std::function< void(void)> update_function_;
@@ -95,6 +102,8 @@ void Application::setTerminateFunction(const std::function< void(void)> &func) {
 Int32 Application::run() { return impl_->run(); }
 
 void Application::exit() { return impl_->exit(); }
+    
+ThreadPool::SPtr Application::getMainThread() const { return impl_->getMainThread(); }
     
 Application::SPtr Application::create() {
     struct Creator : public Application {
