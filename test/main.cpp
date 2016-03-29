@@ -56,16 +56,15 @@ void Test::init()
     setCurrentDirectory("../");
     ConsoleLogger::trace("Current directory : {}", getCurrentDirectory().getAbsolute());
 
-    window_ = Window::create();
+	window_ = Window::create();
 
-    graphics::DeviceParameter devParam;
+	graphics::DeviceParameter devParam;
 	devParam.main_thread = application_->getMainThread();
-    devParam.load_thread = load_thread_;
-    devParam.render_thread = render_thread_;
-    devParam.worker_thread = worker_threads_;
-    devParam.window = window_;
-    device_ = graphics::Device::create(devParam);
-
+	devParam.load_thread = load_thread_;
+	devParam.render_thread = render_thread_;
+	devParam.worker_thread = worker_threads_;
+	devParam.window = window_;
+	device_ = graphics::Device::create(devParam);
     
     VertexShaderResource::initialize(load_thread_, device_);
     PixelShaderResource::initialize(load_thread_, device_);
@@ -78,11 +77,17 @@ void Test::term()
 {
     using namespace temp;
     using namespace temp::system;
+	using namespace temp::resource;
 
 	renderer_ = nullptr;
 
+    PixelShaderResource::terminate();
+    VertexShaderResource::terminate();
+
     device_ = nullptr;
     window_ = nullptr;
+
+	application_ = nullptr;
 
     load_thread_ = nullptr;
     render_thread_ = nullptr;

@@ -29,7 +29,7 @@ Device::SPtr Device::create(const DeviceParameter &param) {
         {};
     };
 
-    auto ptr = std::make_shared<Creator>(param);
+    auto ptr = std::make_shared<Creator>(std::move(param));
     return std::move(ptr);
 }
 
@@ -43,6 +43,7 @@ Device::Device(const DeviceParameter &param)
 Device::~Device() {
     // placement new でスタックに領域を確保しているので明示的にデストラクタを呼び出す
     impl_->~Impl(); 
+	parameter_.main_thread = nullptr;
 }
 
 Device::VertexShaderSPtr Device::createVertexShaderFromSource(const String &source) {
@@ -59,6 +60,10 @@ Device::PixelShaderSPtr Device::createPixelShaderFromSource(const String &source
 
 Device::PixelShaderSPtr Device::createPixelShaderFromBinary(const String &binary) {
     return impl_->createPixelShaderFromBinary(binary);
+}
+
+Device::ShaderProgramSPtr Device::createShaderProgram(const VertexShaderSPtr &vertex_shader, const PixelShaderSPtr &pixel_shader) {
+	return impl_->createShaderProgram(vertex_shader, pixel_shader);
 }
 
 void Device::present() {

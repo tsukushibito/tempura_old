@@ -21,9 +21,9 @@ namespace temp {
 namespace resource {
 
 template < typename T >
-class ResourceBase : public SmartPointerObject< ResourceBase< T > > {
+class ResourceBase : public SmartPointerObject< T > {
 public:
-    using SmartPtrType = SmartPointerObject< ResourceBase< T > >;
+    using SmartPtrType = SmartPointerObject< T >;
     using UPtr = typename SmartPtrType::UPtr;
     using SPtr = typename SmartPtrType::SPtr;
     using WPtr = typename SmartPtrType::WPtr;

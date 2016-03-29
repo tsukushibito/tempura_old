@@ -89,6 +89,8 @@ void checkError();
 
 void printShaderCompileInfoLog(GLuint shader);
 
+void printProgramInfoLog(GLuint program);
+
 template < typename ReturnType, typename F, typename... Args >
 struct glCallWithErrorCheck_Impl {
     static ReturnType call(F &&function, Args &&... args) {

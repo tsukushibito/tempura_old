@@ -160,6 +160,17 @@ void printShaderCompileInfoLog(GLuint shader) {
     }
 }
 
+void printProgramInfoLog(GLuint program) {
+	GLsizei length;
+
+	glCallWithErrorCheck(glGetProgramiv, program, GL_INFO_LOG_LENGTH, &length);
+	if (length <= 1) return;
+
+	String infoLog("", length);
+	glCallWithErrorCheck(glGetProgramInfoLog, program, length, &length, (GLchar *)&infoLog[0]);
+	system::ConsoleLogger::info("ProgramInfoLog:\n{0}\n\n", infoLog.c_str());
+}
+
 } // namespace opengl
 } // namespace graphics
 } // namespace temp
