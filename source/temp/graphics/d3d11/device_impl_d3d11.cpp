@@ -80,6 +80,8 @@ Device::Impl::Impl(Device &device) : device_(device) {
 	viewport.MinDepth = 0.0f;
 	viewport.MaxDepth = 0.0f;
 	d3d_context_->RSSetViewports(1, &viewport);
+
+	device_.native_handle_.pointer_ = d3d_device_.get();
 }
 
 Device::Impl::~Impl() {

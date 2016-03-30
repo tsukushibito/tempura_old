@@ -22,7 +22,7 @@ namespace graphics {
 class VertexShader::Impl {
     friend class VertexShader;
 public:
-    Impl(VertexShader &vertex_shader);
+    Impl(VertexShader &vertex_shader, const String &source, bool is_binary);
     ~Impl();
 
     Impl &operator=(const Impl&) = delete;

@@ -20,11 +20,11 @@
 namespace temp {
 namespace graphics {
 
-PixelShader::PixelShader(const NativeHandle &native_handle) 
-    : native_handle_(native_handle)
+PixelShader::PixelShader(NativeHandle device, const String &source, Bool is_binary) 
 {
     static_assert(sizeof(Impl) <= sizeof(impl_buffer_), "size of impl_buffer_ is small.");
-    impl_ = new(impl_buffer_) Impl(*this);
+    impl_ = new(impl_buffer_) Impl(*this, source, is_binary);
+	(void*)&device;	// –¢Žg—pˆø”
 }
 
 PixelShader::~PixelShader() {

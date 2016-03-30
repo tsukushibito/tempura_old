@@ -1,20 +1,18 @@
 /**
- * @file pixel_shader_impl_opengl.h
- * @brief OpenGL pixel shader
+ * @file pixel_shader_impl_d3d11.h
+ * @brief d3d11 pixel shader
  * @author tsukushibito
  * @version 0.0.1
- * @date 2016-03-29
+ * @date 2016-03-24
  */
 #pragma once
-#ifndef GUARD_20c2ec6370ae44c09a4ef3ec8fb6b83c
-#define GUARD_20c2ec6370ae44c09a4ef3ec8fb6b83c
-
+#ifndef GUARD_7f8eec37253f4fc1a70e4b6155ee98e5
+#define GUARD_7f8eec37253f4fc1a70e4b6155ee98e5
 #include "temp/define.h"
-#ifdef TEMP_GRAPHICS_OPENGL
+#ifdef TEMP_GRAPHICS_D3D11
 #include "temp/type.h"
+#include "temp/container.h"
 #include "temp/graphics/pixel_shader.h"
-
-#include "temp/graphics/opengl/opengl_common.h"
 
 namespace temp {
 namespace graphics {
@@ -33,6 +31,5 @@ private:
 } // namespace graphics
 } // namespace temp
 
-#endif
-
-#endif // GUARD_20c2ec6370ae44c09a4ef3ec8fb6b83c
+#endif TEMP_PLATFORM_WINDOWS
+#endif // GUARD_7f8eec37253f4fc1a70e4b6155ee98e5

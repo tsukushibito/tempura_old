@@ -86,11 +86,14 @@ public:
 
     void executeCommands(const ContextSPtr &context);
     void present();
+
+	const NativeHandle &getNativeHandle() const { return native_handle_; }
 private:
     class Impl;
     Impl *impl_;
 
     DeviceParameter parameter_;
+	NativeHandle native_handle_;
 };
     
 } // namespace graphics

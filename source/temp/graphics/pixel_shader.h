@@ -11,6 +11,7 @@
 
 #include "temp/define.h"
 #include "temp/type.h"
+#include "temp/container.h"
 
 #include "temp/graphics/graphics_common.h"
 
@@ -20,7 +21,7 @@ namespace graphics {
 class PixelShader : public SmartPointerObject<PixelShader> , public FastPImpl {
     friend class Device;
 private:
-    PixelShader(const NativeHandle &native_handle);
+    PixelShader(NativeHandle device, const String &source, Bool is_binary);
 
 public:
     ~PixelShader();

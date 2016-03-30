@@ -10,16 +10,16 @@
 #include "temp/type.h"
 #include "temp/graphics/vertex_shader.h"
 
-#include "temp/graphics/d3d11/vertex_shader_impl_d3d11.h"
+#include "temp/graphics/d3d11/pixel_shader_impl_d3d11.h"
 
 namespace temp {
 namespace graphics {
 
-VertexShader::Impl::Impl(VertexShader &vertex_shader, const String &source, Bool is_binary) 
-    : vertex_shader_(vertex_shader) {
+PixelShader::Impl::Impl(PixelShader &pixel_shader, const String &source, Bool is_binary) 
+    : pixel_shader_(pixel_shader) {
 }
 
-VertexShader::Impl::~Impl() {
+PixelShader::Impl::~Impl() {
 }
 
     

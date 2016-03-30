@@ -49,6 +49,8 @@ Device::Impl::Impl(Device &device) : device_(device) {
             [this, &window_handle, i](){opengl::makeCurrent(window_handle, contexts_.contexts_for_worker_thread[i]); });
         future.wait();
     }
+	
+	device.native_handle_.pointer_ = nullptr;	// OpenGL版は各スレッドでカレントに設定してあるので、OpenGLAPIで取得させることにする
 }
 
 Device::Impl::~Impl() {
@@ -73,26 +75,8 @@ Device::ConstantBufferSPtr Device::Impl::createConstantBuffer(Size buffer_size) 
  
 
 Device::VertexShaderSPtr Device::Impl::createVertexShaderFromSource(const String &source) {
-    using namespace opengl;
-    GLuint vertex_shader = glCallWithErrorCheck(glCreateShader, GL_VERTEX_SHADER);
-    const GLchar *src_string = source.c_str();
-    const GLint length = static_cast<GLint>(source.size());
-    glCallWithErrorCheck(glShaderSource, vertex_shader, (GLsizei)1, &src_string, &length);
-    glCallWithErrorCheck(glCompileShader, vertex_shader);
-
-    GLsizei size, len;
-    glGetShaderiv(vertex_shader, GL_INFO_LOG_LENGTH, &size);
-    if (size > 1) {
-        Vector<char> log(size);
-        glGetShaderInfoLog(vertex_shader, size, &len, &log[0]);
-        system::ConsoleLogger::trace("[OpenGL shader info log] \n{0}", &log[0]);
-    }
-
-    NativeHandle native_handle;
-    native_handle.value_ = vertex_shader;
-    
-    auto p = VertexShader::SPtr(new VertexShader(native_handle));
-    return std::move(p);
+	// auto p = std::make_shared<VertexShader>(device_.native_handle_, source, false);
+    return VertexShader::create(device_.native_handle_, source, false);
 }
 
 Device::VertexShaderSPtr Device::Impl::createVertexShaderFromBinary(const String &binary) {
@@ -100,25 +84,7 @@ Device::VertexShaderSPtr Device::Impl::createVertexShaderFromBinary(const String
 }
 
 Device::PixelShaderSPtr Device::Impl::createPixelShaderFromSource(const String &source) {
-    using namespace opengl;
-    GLuint pixel_shader = glCallWithErrorCheck(glCreateShader, GL_FRAGMENT_SHADER);
-    const GLchar *src_string = source.c_str();
-    const GLint length = static_cast<GLint>(source.size());
-    glCallWithErrorCheck(glShaderSource, pixel_shader, (GLsizei)1, &src_string, &length);
-    glCallWithErrorCheck(glCompileShader, pixel_shader);
-
-    GLsizei size, len;
-    glGetShaderiv(pixel_shader, GL_INFO_LOG_LENGTH, &size);
-    if (size > 1) {
-        Vector<char> log(size);
-        glGetShaderInfoLog(pixel_shader, size, &len, &log[0]);
-        system::ConsoleLogger::trace("[OpenGL shader info log] \n{0}", &log[0]);
-    }
-
-    NativeHandle native_handle;
-    native_handle.value_ = pixel_shader;
-    
-    auto p = PixelShader::SPtr(new PixelShader(native_handle));
+    auto p = PixelShader::SPtr(new PixelShader(device_.native_handle_, source, false));
     return std::move(p);
 }
 

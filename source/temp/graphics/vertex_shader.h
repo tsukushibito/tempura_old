@@ -11,6 +11,7 @@
 
 #include "temp/define.h"
 #include "temp/type.h"
+#include "temp/container.h"
 
 #include "temp/graphics/graphics_common.h"
 
@@ -20,7 +21,9 @@ namespace graphics {
 class VertexShader : public SmartPointerObject<VertexShader> , public FastPImpl {
     friend class Device;
 private:
-    VertexShader(const NativeHandle &native_handle);
+	static SPtr create(NativeHandle device, const String &source, Bool is_binary);
+
+    VertexShader(NativeHandle device, const String &source, Bool is_binary);
 
 public:
     ~VertexShader();

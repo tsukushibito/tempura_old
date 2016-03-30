@@ -29,7 +29,7 @@ Device::SPtr Device::create(const DeviceParameter &param) {
         {};
     };
 
-    auto ptr = std::make_shared<Creator>(std::move(param));
+    auto ptr = std::make_shared<Creator>(param);
     return std::move(ptr);
 }
 

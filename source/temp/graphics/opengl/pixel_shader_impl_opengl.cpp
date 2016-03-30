@@ -15,9 +15,40 @@
 
 namespace temp {
 namespace graphics {
+namespace {
+	GLuint createOpenglPixelShaderFromSource(const String &source) {
+		using namespace opengl;
+		GLuint pixel_shader = glCallWithErrorCheck(glCreateShader, GL_FRAGMENT_SHADER);
+		const GLchar *src_string = source.c_str();
+		const GLint length = static_cast<GLint>(source.size());
+		glCallWithErrorCheck(glShaderSource, pixel_shader, (GLsizei)1, &src_string, &length);
+		glCallWithErrorCheck(glCompileShader, pixel_shader);
 
-PixelShader::Impl::Impl(PixelShader &pixel_shader)
+		GLsizei size, len;
+		glGetShaderiv(pixel_shader, GL_INFO_LOG_LENGTH, &size);
+		if (size > 1) {
+			Vector<char> log(size);
+			glGetShaderInfoLog(pixel_shader, size, &len, &log[0]);
+			system::ConsoleLogger::trace("[OpenGL shader info log] \n{0}", &log[0]);
+		}
+
+		return pixel_shader;
+	}
+
+	GLuint createOpenglPixelShaderFromBinary(const String &source) {
+		return 0;
+	}
+}
+    
+
+PixelShader::Impl::Impl(PixelShader &pixel_shader, const String &source, Bool is_binary)
     : pixel_shader_(pixel_shader) {
+	if (is_binary) {
+		pixel_shader_.native_handle_.value_ = createOpenglPixelShaderFromBinary(source);
+	}
+	else {
+		pixel_shader_.native_handle_.value_ = createOpenglPixelShaderFromSource(source);
+	}
     temp::system::ConsoleLogger::trace("OpenGL Fragment Shader has created! id = {0}", pixel_shader_.getNativeHandle().value_);
 }
 
