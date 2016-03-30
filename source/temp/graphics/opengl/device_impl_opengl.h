@@ -24,15 +24,15 @@ class Device::Impl {
 private:
     Impl(Device &device);
     ~Impl();
-	Impl &operator= (const Impl&) = delete;
+    Impl &operator= (const Impl&) = delete;
 
-	ContextSPtr createContext();
+    ContextSPtr createContext();
 
-	VertexBufferSPtr createVertexBuffer(Size buffer_size);
+    VertexBufferSPtr createVertexBuffer(Size buffer_size);
 
-	IndexBufferSPtr createIndexBuffer(Size buffer_size);
+    IndexBufferSPtr createIndexBuffer(Size buffer_size);
 
-	ConstantBufferSPtr createConstantBuffer(Size buffer_size);
+    ConstantBufferSPtr createConstantBuffer(Size buffer_size);
  
     VertexShaderSPtr createVertexShaderFromSource(const String &source);
     VertexShaderSPtr createVertexShaderFromBinary(const String &binary);
@@ -40,10 +40,8 @@ private:
     PixelShaderSPtr createPixelShaderFromSource(const String &source);
     PixelShaderSPtr createPixelShaderFromBinary(const String &binary);
 
-	ShaderProgramSPtr createShaderProgram(const VertexShaderSPtr &vertex_shader, const PixelShaderSPtr &pixel_shader);
-
-	void executeCommands(const ContextSPtr &context);
-	void present();	// ‰¼
+    void executeCommands(const ContextSPtr &context);
+    void present(); // ‰¼
 private:
     Device &device_;
     opengl::OpenglContexts contexts_;

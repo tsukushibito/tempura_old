@@ -84,8 +84,6 @@ public:
     PixelShaderSPtr createPixelShaderFromSource(const String &source);
     PixelShaderSPtr createPixelShaderFromBinary(const String &binary);
 
-    ShaderProgramSPtr createShaderProgram(const VertexShaderSPtr &vertex_shader, const PixelShaderSPtr &pixel_shader);
-
     void executeCommands(const ContextSPtr &context);
     void present();
 private:

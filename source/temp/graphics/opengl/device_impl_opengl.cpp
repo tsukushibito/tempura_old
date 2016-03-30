@@ -126,26 +126,6 @@ Device::PixelShaderSPtr Device::Impl::createPixelShaderFromBinary(const String &
     return nullptr;
 }
 
-Device::ShaderProgramSPtr Device::Impl::createShaderProgram(const VertexShaderSPtr &vertex_shader, const PixelShaderSPtr &pixel_shader) {
-	using namespace opengl;
-	auto program = glCallWithErrorCheck(glCreateProgram);
-
-	GLuint vs = vertex_shader->getNativeHandle().value_;
-	GLuint ps = pixel_shader->getNativeHandle().value_;
-
-	glCallWithErrorCheck(glAttachShader, program, vs);
-	glCallWithErrorCheck(glAttachShader, program, ps);
-
-	glCallWithErrorCheck(glLinkProgram, program);
-	GLint linked;
-	glCallWithErrorCheck(glGetProgramiv, program, GL_LINK_STATUS, &linked);
-
-	printProgramInfoLog(program);
-	if (linked == GL_FALSE) return nullptr;
-
-	return nullptr;
-}
-
 void Device::Impl::executeCommands(const Device::ContextSPtr &context) {
 }
 

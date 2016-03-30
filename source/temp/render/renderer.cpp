@@ -11,8 +11,6 @@ Renderer::Renderer(const graphics::DeviceSPtr &graphics_device) : device_(graphi
     clear_vs_res_->load();
     clear_ps_res_ = resource::PixelShaderResource::create("shader/glsl/clear_glsl.frag");
     clear_ps_res_->load();
-
-	device_->createShaderProgram(clear_vs_res_->get(), clear_ps_res_->get());
 }
 
 Renderer::SPtr Renderer::create(const graphics::DeviceSPtr &graphics_device) {
