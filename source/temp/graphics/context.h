@@ -58,6 +58,10 @@ public:
     void setPixelShader(const PixelShaderSPtr &pixel_shader);
     void setConstantBuffer(const String &name, const ConstantBufferSPtr &constant_buffer);
     void setTexture(const String &name, const TextureSPtr &texture);
+
+private:
+    class Impl;
+    Impl *impl_;
 };
 
 } // namespace graphics
