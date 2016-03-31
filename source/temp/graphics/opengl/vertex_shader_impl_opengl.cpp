@@ -37,7 +37,7 @@ namespace {
 	}
 
 	GLuint createOpenglVertexShaderFromBinary(const String &binary) {
-		(void*)&binary;
+		(void)&binary;
 		return 0;
 	}
 }
