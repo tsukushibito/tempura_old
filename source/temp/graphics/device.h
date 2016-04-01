@@ -39,27 +39,27 @@ class IndexBuffer;
 class Texture;
 
 struct DeviceParameter {
-    std::shared_ptr<system::Window> window;
-    std::shared_ptr<system::ThreadPool> main_thread;
-    std::shared_ptr<system::ThreadPool> render_thread;
-    std::shared_ptr<system::ThreadPool> load_thread;
-    std::shared_ptr<system::ThreadPool> worker_thread;
+    std::shared_ptr< system::Window > window;
+    std::shared_ptr< system::ThreadPool > main_thread;
+    std::shared_ptr< system::ThreadPool > render_thread;
+    std::shared_ptr< system::ThreadPool > load_thread;
+    std::shared_ptr< system::ThreadPool > worker_thread;
 };
 
-class Device : public SmartPointerObject<Device> , public FastPImpl {
+class Device : public SmartPointerObject< Device >, public FastPImpl {
 public:
-    using ContextSPtr = std::shared_ptr<Context>;
-    using BlendStateSPtr = std::shared_ptr<BlendState>;
-    using DepthStateSPtr = std::shared_ptr<DepthState>;
-    using RasterizeStateSPtr = std::shared_ptr<RasterizeState>;
-    using SamplerStateSPtr = std::shared_ptr<SamplerState>;
-    using VertexShaderSPtr = std::shared_ptr<VertexShader>;
-    using PixelShaderSPtr = std::shared_ptr<PixelShader>;
-    using ConstantBufferSPtr = std::shared_ptr<ConstantBuffer>;
-    using ShaderProgramSPtr = std::shared_ptr<ShaderProgram>;
-    using VertexBufferSPtr = std::shared_ptr<VertexBuffer>;
-    using IndexBufferSPtr = std::shared_ptr<IndexBuffer>;
-    using TextureSPtr = std::shared_ptr<Texture>;
+    using ContextSPtr = std::shared_ptr< Context >;
+    using BlendStateSPtr = std::shared_ptr< BlendState >;
+    using DepthStateSPtr = std::shared_ptr< DepthState >;
+    using RasterizeStateSPtr = std::shared_ptr< RasterizeState >;
+    using SamplerStateSPtr = std::shared_ptr< SamplerState >;
+    using VertexShaderSPtr = std::shared_ptr< VertexShader >;
+    using PixelShaderSPtr = std::shared_ptr< PixelShader >;
+    using ConstantBufferSPtr = std::shared_ptr< ConstantBuffer >;
+    using ShaderProgramSPtr = std::shared_ptr< ShaderProgram >;
+    using VertexBufferSPtr = std::shared_ptr< VertexBuffer >;
+    using IndexBufferSPtr = std::shared_ptr< IndexBuffer >;
+    using TextureSPtr = std::shared_ptr< Texture >;
 
     static SPtr create(const DeviceParameter &parameter);
 
@@ -77,7 +77,7 @@ public:
     IndexBufferSPtr createIndexBuffer(Size buffer_size);
 
     ConstantBufferSPtr createConstantBuffer(Size buffer_size);
- 
+
     VertexShaderSPtr createVertexShaderFromSource(const String &source);
     VertexShaderSPtr createVertexShaderFromBinary(const String &binary);
 
@@ -87,15 +87,16 @@ public:
     void executeCommands(const ContextSPtr &context);
     void present();
 
-	const NativeHandle &getNativeHandle() const { return native_handle_; }
+    const NativeHandle &getNativeHandle() const { return native_handle_; }
+
 private:
     class Impl;
     Impl *impl_;
 
     DeviceParameter parameter_;
-	NativeHandle native_handle_;
+    NativeHandle native_handle_;
 };
-    
+
 } // namespace graphics
 } // namespace temp
 
