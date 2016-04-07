@@ -21,14 +21,12 @@ struct NativeHandle {
     };
 };
 
-static const Size kImplSize = 8 * sizeof(void*);
+static const Size kImplSize = 8 * sizeof(void *);
 
 // Buffer class for fast pimpl idiom
 class FastPImpl {
 public:
-	FastPImpl() {
-		memset(impl_buffer_, 0, sizeof(impl_buffer_));
-	}
+    FastPImpl() { memset(impl_buffer_, 0, sizeof(impl_buffer_)); }
 
 protected:
     Int8 impl_buffer_[kImplSize];

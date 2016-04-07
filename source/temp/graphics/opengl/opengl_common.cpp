@@ -14,22 +14,6 @@ namespace temp {
 namespace graphics {
 namespace opengl {
 
-void draw(const DrawCommand &command) {
-    switch (command.type) {
-    case DrawType::Arrays: {
-        glDrawArrays();
-        break;
-    }
-    case DrawType::Elements: {
-        glDrawElements();
-        break;
-    }
-    default:
-        TEMP_ASSERT(false);
-        break;
-    }
-}
-
 OpenglContexts createContexts(void *window_handle, Size worker_thread_count) {
 #if defined TEMP_PLATFORM_WINDOWS
     return windows::createContexts(static_cast< HWND >(window_handle), worker_thread_count);
@@ -62,8 +46,8 @@ void swapBuffers(void *window_handle, void *context) {
 #endif
 }
 
-void APIENTRY
-debugProc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *user_param) {
+void APIENTRY debugProc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message,
+                        const void *user_param) {
 
 #ifndef TEMP_PLATFORM_MAC
     using namespace std;

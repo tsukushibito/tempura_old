@@ -53,33 +53,6 @@ namespace temp {
 namespace graphics {
 namespace opengl {
 
-enum class DrawType {
-    Arrays,
-    Elements,
-};
-
-struct DrawArrayArgs {
-    GLenum mode;
-    GLint first;
-    GLsizei count;
-};
-
-struct DrawElementsArgs {
-    GLenum mode;
-    GLsizei count;
-    GLenum type;
-    const GLvoid *indices;
-};
-
-struct DrawCommand {
-    DrawType type;
-
-    DrawArrayArgs drawArrayArgs;
-    DrawElementsArgs drawElementsArgs;
-};
-
-void draw(const DrawCommand &command);
-
 struct OpenglContexts {
     void *context_for_application_thread; // アプリ実行スレッド用
     void *context_for_main_thread;        // ゲームメインスレッド用
