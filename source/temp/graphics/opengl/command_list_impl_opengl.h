@@ -30,10 +30,11 @@ class Texture;
 class VertexBuffer;
 class IndexBuffer;
 
-const Size kConstantBufferSlotCount = 128;
-const Size kTextureSlotCount = 128;
-
 struct Command {
+    static const Size kConstantBufferSlotCount = 128;
+    static const Size kTextureSlotCount = 128;
+
+    Bool is_valid;
     BlendState *blend_state;
     DepthState *depth_state;
     RasterizeState *rasterize_state;
@@ -46,6 +47,26 @@ struct Command {
     IndexBuffer *index_buffer_;
 };
 
+using CommandUPtr = std::unique_ptr<Command>;
+
+class CommandBuffer {
+public:
+    CommandBuffer() {
+        commands_.reserve(kReservedCommandCount);
+    }
+
+    inline void pushCommand(CommandUPtr &&command) {
+        commands_.push_back(std::move(command));
+    }
+
+    inline Vector<CommandUPtr> &getCommandsRef() {
+        return commands_;
+    }
+private:
+    static const Size kReservedCommandCount = 32;
+    Vector<CommandUPtr> commands_;
+};
+    
 class CommandList::Impl {
     friend class CommandList;
 

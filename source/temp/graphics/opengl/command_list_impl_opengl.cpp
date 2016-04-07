@@ -10,11 +10,17 @@
 #ifdef TEMP_GRAPHICS_OPENGL
 #include "temp/graphics/opengl/command_list_impl_opengl.h"
 
+namespace  {
+const temp::Size kCommandCount = 32;
+} // namespace 
+
+
 namespace temp {
 namespace graphics {
 
 CommandList::Impl::Impl(CommandList &command_list)
-    : command_list_(command_list) {}
+    : command_list_(command_list) {
+}
 
 } // namespace graphics
 } // namespace temp
