@@ -23,7 +23,7 @@
 #elif defined TEMP_PLATFORM_WINDOWS
 #include <GL/wglew.h>
 #endif
-#else   // #ifdef TEMP_USE_GLEW
+#else // #ifdef TEMP_USE_GLEW
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <gl_ext/glext.h>
@@ -38,12 +38,12 @@
 #include "temp/graphics/opengl/temp_wglext_link.inl"
 #endif
 #undef TEMP_OPENGL_EXTENSION_LINK
-#endif  // #ifdef TEMP_USE_GLEW
+#endif // #ifdef TEMP_USE_GLEW
 #else
 #include <OpenGL/OpenGL.h>
 #include <OpenGL/gl3.h>
 #include <OpenGL/gl3ext.h>
-#endif  // #ifndef TEMP_PLATFORM_MAC
+#endif // #ifndef TEMP_PLATFORM_MAC
 
 #include "temp/container.h"
 #include "temp/temp_assert.h"
@@ -53,15 +53,39 @@ namespace temp {
 namespace graphics {
 namespace opengl {
 
-struct OpenglCommand {
+enum class DrawType {
+    Arrays,
+    Elements,
 };
 
+struct DrawArrayArgs {
+    GLenum mode;
+    GLint first;
+    GLsizei count;
+};
+
+struct DrawElementsArgs {
+    GLenum mode;
+    GLsizei count;
+    GLenum type;
+    const GLvoid *indices;
+};
+
+struct DrawCommand {
+    DrawType type;
+
+    DrawArrayArgs drawArrayArgs;
+    DrawElementsArgs drawElementsArgs;
+};
+
+void draw(const DrawCommand &command);
+
 struct OpenglContexts {
-    void *context_for_application_thread;   // アプリ実行スレッド用
-    void *context_for_main_thread;          // ゲームメインスレッド用
+    void *context_for_application_thread; // アプリ実行スレッド用
+    void *context_for_main_thread;        // ゲームメインスレッド用
     void *context_for_render_thread;
     void *context_for_load_thread;
-    Vector<void*> contexts_for_worker_thread;
+    Vector< void * > contexts_for_worker_thread;
 };
 
 OpenglContexts createContexts(void *window_handle, Size worker_thread_count);
@@ -86,7 +110,6 @@ void swapBuffers(void *window_handle, void *context);
  */
 void APIENTRY
 debugProc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *user_param);
-
 
 void checkError();
 
