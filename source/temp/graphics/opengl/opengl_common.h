@@ -9,6 +9,7 @@
 #ifndef GUARD_30a587128c704bc6afdf3171ce02ce8c
 #define GUARD_30a587128c704bc6afdf3171ce02ce8c
 
+#include <queue>
 #include "temp/define.h"
 
 #ifdef TEMP_PLATFORM_WINDOWS
@@ -51,7 +52,56 @@
 
 namespace temp {
 namespace graphics {
+
+class BlendState;
+class DepthState;
+class RasterizeState;
+class SamplerState;
+class VertexShader;
+class PixelShader;
+class ConstantBuffer;
+class Texture;
+class VertexBuffer;
+class IndexBuffer;
+
 namespace opengl {
+
+struct Command {
+    static const Size kConstantBufferSlotCount = 128;
+    static const Size kTextureSlotCount = 128;
+
+    Bool is_valid;
+    BlendState *blend_state;
+    DepthState *depth_state;
+    RasterizeState *rasterize_state;
+    SamplerState *sampler_state;
+    VertexShader *vertex_shader;
+    PixelShader *pixel_shader;
+    ConstantBuffer *constant_buffers_[kConstantBufferSlotCount];
+    Texture *textures_[kTextureSlotCount];
+    VertexBuffer *vertex_buffer_;
+    IndexBuffer *index_buffer_;
+};
+
+class CommandBuffer {
+public:
+	using UPtr = std::unique_ptr<CommandBuffer>;
+
+    CommandBuffer() {
+        commands_.reserve(kReservedCommandCount);
+    }
+
+    inline void pushCommand(const Command &command) {
+        commands_.push_back(command);
+    }
+
+    inline Vector<Command> &getCommandsRef() {
+        return commands_;
+    }
+private:
+    static const Size kReservedCommandCount = 32;
+    Vector<Command> commands_;
+};
 
 struct OpenglContexts {
     void *context_for_application_thread; // アプリ実行スレッド用

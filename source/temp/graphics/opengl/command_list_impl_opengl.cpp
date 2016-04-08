@@ -19,7 +19,9 @@ namespace temp {
 namespace graphics {
 
 CommandList::Impl::Impl(CommandList &command_list)
-    : command_list_(command_list) {
+    : command_list_(command_list) 
+	, command_buffer_(new CommandBuffer) {
+	command_list_.native_handle_.pointer_ = command_buffer_.get();
 }
 
 } // namespace graphics

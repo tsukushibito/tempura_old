@@ -1,6 +1,7 @@
 build/DerivedData/
 build/Debug/
 build/Release/
+build/project_files/
 *.xcodeproj
 *.sln
 *.vcxproj
@@ -11,3 +12,4 @@ build/Release/
 
 *.opendb
 build/TempuraTest.vcxproj.user
+*.pyc

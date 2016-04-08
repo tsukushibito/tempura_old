@@ -1,1 +1,0 @@
-gyp Tempura.gyp --depth=.

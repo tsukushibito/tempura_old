@@ -50,8 +50,8 @@
     },
     'targets': [
     {
-        'target_name': 'TempuraEngine',
-        'product_name': 'TempuraEngine',
+        'target_name': 'tempura_engine',
+        'product_name': 'tempura_engine',
         'type': 'static_library',
         'include_dirs': [
             '../source',
@@ -77,11 +77,11 @@
         ],
     },
     {
-        'target_name': 'TempuraTest',
-        'product_name': 'TempuraTest',
+        'target_name': 'tempura_test',
+        'product_name': 'tempura_test',
         'type': 'executable',
         'dependencies': [
-            'TempuraEngine',
+            'tempura_engine',
         ],
         'include_dirs': [
             '../source',
