@@ -28,7 +28,6 @@ private:
     Impl &operator=(const Impl &) = delete;
 
     CommandList &command_list_;
-	CommandBuffer::UPtr command_buffer_;
 };
 
 }

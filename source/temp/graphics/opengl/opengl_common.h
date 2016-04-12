@@ -70,7 +70,6 @@ struct Command {
     static const Size kConstantBufferSlotCount = 128;
     static const Size kTextureSlotCount = 128;
 
-    Bool is_valid;
     BlendState *blend_state;
     DepthState *depth_state;
     RasterizeState *rasterize_state;
@@ -81,6 +80,7 @@ struct Command {
     Texture *textures_[kTextureSlotCount];
     VertexBuffer *vertex_buffer_;
     IndexBuffer *index_buffer_;
+    Bool is_valid;
 };
 
 class CommandBuffer {
