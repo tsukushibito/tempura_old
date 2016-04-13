@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 import sys
-import gyp
+try:
+  import gyp
+except ImportError, e:
+  import os.path
+  sys.path.append(os.path.join(os.path.dirname(sys.argv[0]), 'pylib'))
+  import gyp
 
 import create_opengl_link_file
 
