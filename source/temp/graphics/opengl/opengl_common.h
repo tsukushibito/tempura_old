@@ -85,7 +85,7 @@ struct Command {
 
 class CommandBuffer {
 public:
-	using UPtr = std::unique_ptr<CommandBuffer>;
+    using UPtr = std::unique_ptr<CommandBuffer>;
 
     CommandBuffer() {
         commands_.reserve(kReservedCommandCount);

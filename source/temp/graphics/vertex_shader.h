@@ -18,10 +18,11 @@
 namespace temp {
 namespace graphics {
 
-class VertexShader : public SmartPointerObject<VertexShader> , public FastPImpl {
+class VertexShader : public SmartPointerObject< VertexShader >, public FastPImpl {
     friend class Device;
+
 private:
-	static SPtr create(NativeHandle device, const String &source, Bool is_binary);
+    static SPtr create(NativeHandle device, const String &source, Bool is_binary);
 
     VertexShader(NativeHandle device, const String &source, Bool is_binary);
 
@@ -36,7 +37,7 @@ private:
 
     NativeHandle native_handle_;
 };
-    
+
 } // namespace graphics
 } // namespace temp
 

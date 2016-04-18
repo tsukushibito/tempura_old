@@ -22,26 +22,21 @@ namespace temp {
 namespace graphics {
 
 VertexShader::SPtr VertexShader::create(NativeHandle device, const String &source, Bool is_binary) {
-	struct Creator : public VertexShader {
-		Creator(NativeHandle device, const String &source, Bool is_binary) : VertexShader(device, source, is_binary) {
-		}
-	};
-	auto p = std::make_shared<Creator>(device, source, is_binary);
-	return std::move(p);
+    struct Creator : public VertexShader {
+        Creator(NativeHandle device, const String &source, Bool is_binary) : VertexShader(device, source, is_binary) {}
+    };
+    auto p = std::make_shared< Creator >(device, source, is_binary);
+    return std::move(p);
 }
 
-VertexShader::VertexShader(NativeHandle device, const String &source, Bool is_binary) 
-{
-	static_assert(sizeof(Impl) <= sizeof(impl_buffer_), "size of impl_buffer_ is small.");
-	impl_ = new(impl_buffer_) Impl(*this, source, is_binary);
+VertexShader::VertexShader(NativeHandle device, const String &source, Bool is_binary) {
+    static_assert(sizeof(Impl) <= sizeof(impl_buffer_), "size of impl_buffer_ is small.");
+    impl_ = new (impl_buffer_) Impl(*this, source, is_binary);
 
-	(void)&device;	// 未使用引数
+    (void)&device; // 未使用引数
 }
 
-VertexShader::~VertexShader() {
-	impl_->~Impl();
-}
+VertexShader::~VertexShader() { impl_->~Impl(); }
 
 } // namespace graphics
 } // namespace temp
-
