@@ -27,8 +27,8 @@ namespace graphics {
 
 class Context;
 class BlendState;
-class DepthState;
-class RasterizeState;
+class DepthStencileState;
+class RasterizerState;
 class SamplerState;
 class VertexShader;
 class PixelShader;
@@ -50,8 +50,8 @@ class Device : public SmartPointerObject< Device >, public FastPImpl {
 public:
     using ContextSPtr = std::shared_ptr< Context >;
     using BlendStateSPtr = std::shared_ptr< BlendState >;
-    using DepthStateSPtr = std::shared_ptr< DepthState >;
-    using RasterizeStateSPtr = std::shared_ptr< RasterizeState >;
+    using DepthStencileStateSPtr = std::shared_ptr< DepthStencileState >;
+    using RasterizerStateSPtr = std::shared_ptr< RasterizerState >;
     using SamplerStateSPtr = std::shared_ptr< SamplerState >;
     using VertexShaderSPtr = std::shared_ptr< VertexShader >;
     using PixelShaderSPtr = std::shared_ptr< PixelShader >;
@@ -83,6 +83,12 @@ public:
 
     PixelShaderSPtr createPixelShaderFromSource(const String &source);
     PixelShaderSPtr createPixelShaderFromBinary(const String &binary);
+
+    BlendStateSPtr createBlendState(BlendMode blendMode);
+
+    DepthStencileStateSPtr createDepthStencileState(DepthStencileMode depthMode, DepthStencileMode stencilMode);
+
+    RasterizerStateSPtr createRasterizerState(const RasterizerDesc &desc);
 
     void executeCommands(const ContextSPtr &context);
     void present();

@@ -66,6 +66,11 @@ class IndexBuffer;
 
 namespace opengl {
 
+struct BlendFuncArg {
+    GLenum sfactor;
+    GLenum dfactor;
+};
+
 struct Command {
     static const Size kConstantBufferSlotCount = 128;
     static const Size kTextureSlotCount = 128;

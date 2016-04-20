@@ -14,13 +14,12 @@
 #include "temp/graphics/blend_state.h"
 #if defined TEMP_GRAPHICS_D3D11
 #elif defined TEMP_GRAPHICS_OPENGL
+#include "temp/graphics/opengl/blend_state_impl_opengl.h"
 #endif
 
 namespace temp {
 namespace graphics {
 
-class BlendState::Impl {
-};
 
 BlendState::SPtr BlendState::create(NativeHandle device) {
     struct Creator : public BlendState {

@@ -32,6 +32,50 @@ protected:
     Int8 impl_buffer_[kImplSize];
 };
 
+
+enum class BlendMode {
+    None,
+    AlphaBlending,
+    Add,
+    Subtract,
+    Multiply,
+    Screen,
+};
+
+enum class DepthStencileMode {
+    Never,
+    Less,
+    LessEqual,
+    Equal,
+    GreaterEqual,
+    Greater,
+    NotEqual,
+    Always,
+};
+
+enum class FillMode {
+    Line,
+    Fill,
+};
+
+enum class CullingMode {
+    CullingNone,
+    CullingFront,
+    CullingBack,
+};
+
+enum class FrontFace {
+    ClockWise,
+    CounterClockWise,
+};
+
+struct RasterizerDesc {
+    FillMode fillMode;
+    CullingMode cullMode;
+    FrontFace frontFace;
+};
+
+
 } // namespace graphics
 } // namespace temp
 

@@ -20,7 +20,7 @@ namespace graphics {
 
 class Device;
 class BlendState;
-class DepthState;
+class DepthStencileState;
 class RasterizeState;
 class SamplerState;
 class VertexShader;
@@ -36,7 +36,7 @@ class Context : public SmartPointerObject< Context >, public FastPImpl {
 private:
     using DeviceSPtr = std::shared_ptr<Device>;
     using BlendStateSPtr = std::shared_ptr<BlendState>;
-    using DepthStateSPtr = std::shared_ptr<DepthState>;
+    using DepthStencileStateSPtr = std::shared_ptr<DepthStencileState>;
     using RasterizeStateSPtr = std::shared_ptr<RasterizeState>;
     using SamplerStateSPtr = std::shared_ptr<SamplerState>;
     using VertexShaderSPtr = std::shared_ptr<VertexShader>;
