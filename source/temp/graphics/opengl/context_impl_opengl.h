@@ -22,7 +22,7 @@ namespace graphics {
 class Context::Impl {
     friend  class Context;
 private:
-    Impl(Context &context);
+    Impl(NativeHandle &device, Context &context);
     ~Impl();
     Impl &operator= (const Impl&) = delete;
 
@@ -34,6 +34,8 @@ private:
     void setTexture(const String &name, const TextureSPtr &texture);
 
     Context &context_;
+
+    opengl::Command command_;
 };
 
 } // namespace graphics

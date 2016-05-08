@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * @file device.cpp
  * @brief graphics device
  * @author tsukushibito
@@ -18,6 +18,15 @@
 #elif defined TEMP_GRAPHICS_OPENGL
 #include "temp/graphics/opengl/device_impl_opengl.h"
 #endif
+
+#include "temp/graphics/context.h"
+#include "temp/graphics/vertex_buffer.h"
+#include "temp/graphics/index_buffer.h"
+#include "temp/graphics/vertex_shader.h"
+#include "temp/graphics/pixel_shader.h"
+#include "temp/graphics/blend_state.h"
+#include "temp/graphics/depth_stencile_state.h"
+#include "temp/graphics/rasterizer_state.h"
 
 namespace temp {
 namespace graphics {
@@ -41,25 +50,49 @@ Device::Device(const DeviceParameter &param)
 }
 
 Device::~Device() {
-    // placement new ‚ÅƒXƒ^ƒbƒN‚É—Ìˆæ‚ðŠm•Û‚µ‚Ä‚¢‚é‚Ì‚Å–¾Ž¦“I‚ÉƒfƒXƒgƒ‰ƒNƒ^‚ðŒÄ‚Ño‚·
+    // placement new ã§ã‚¹ã‚¿ãƒƒã‚¯ã«é ˜åŸŸã‚’ç¢ºä¿ã—ã¦ã„ã‚‹ã®ã§æ˜Žç¤ºçš„ã«ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã‚’å‘¼ã³å‡ºã™
     impl_->~Impl(); 
     parameter_.main_thread = nullptr;
 }
 
+Device::ContextSPtr Device::createContext() {
+    return Context::create(native_handle_);
+}
+
+Device::VertexBufferSPtr Device::createVertexBuffer(Size size, const void *data) {
+    return VertexBuffer::create(native_handle_, size, data);
+}
+
+Device::IndexBufferSPtr Device::createIndexBuffer(Size size, const void *data) {
+    return IndexBuffer::create(native_handle_, size, data);
+}
+
 Device::VertexShaderSPtr Device::createVertexShaderFromSource(const String &source) {
-    return impl_->createVertexShaderFromSource(source);
+    return VertexShader::create(native_handle_, source, false);
 }
 
 Device::VertexShaderSPtr Device::createVertexShaderFromBinary(const String &binary) {
-    return impl_->createVertexShaderFromBinary(binary);
+    return VertexShader::create(native_handle_, binary, true);
 }
 
 Device::PixelShaderSPtr Device::createPixelShaderFromSource(const String &source) {
-    return impl_->createPixelShaderFromSource(source);
+    return PixelShader::create(native_handle_, source, false);
 }
 
 Device::PixelShaderSPtr Device::createPixelShaderFromBinary(const String &binary) {
-    return impl_->createPixelShaderFromBinary(binary);
+    return PixelShader::create(native_handle_, binary, true);
+}
+    
+Device::BlendStateSPtr Device::createBlendState(BlendMode blend_mode) {
+    return BlendState::create(native_handle_, blend_mode);
+}
+
+Device::DepthStencileStateSPtr Device::createDepthStencileState(DepthStencileFunc depth_func, DepthStencileFunc stencile_func) {
+    return DepthStencileState::create(native_handle_, depth_func, stencile_func);
+}
+
+Device::RasterizerStateSPtr Device::createRasterizerState(const RasterizerDesc &desc) {
+    return RasterizerState::create(native_handle_, desc);
 }
 
 void Device::present() {

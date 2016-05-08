@@ -71,20 +71,32 @@ struct BlendFuncArg {
     GLenum dfactor;
 };
 
+struct DepthStencileFuncArg {
+    GLenum depth_func;
+    GLenum stencile_func;
+};
+    
+struct RasterizerFuncArg {
+    GLenum polygon_mode;
+    GLenum front_face;
+    GLenum culling_mode;
+};
+
 struct Command {
+    static const Size kVertexBufferSlotCount = 4;
     static const Size kConstantBufferSlotCount = 128;
     static const Size kTextureSlotCount = 128;
 
     BlendState *blend_state;
     DepthState *depth_state;
     RasterizeState *rasterize_state;
-    SamplerState *sampler_state;
+    SamplerState *sampler_states[kTextureSlotCount];
     VertexShader *vertex_shader;
     PixelShader *pixel_shader;
-    ConstantBuffer *constant_buffers_[kConstantBufferSlotCount];
-    Texture *textures_[kTextureSlotCount];
-    VertexBuffer *vertex_buffer_;
-    IndexBuffer *index_buffer_;
+    ConstantBuffer *constant_buffers[kConstantBufferSlotCount];
+    Texture *textures[kTextureSlotCount];
+    VertexBuffer *vertex_buffer;
+    IndexBuffer *index_buffer;
     Bool is_valid;
 };
 

@@ -31,9 +31,7 @@ VertexShader::SPtr VertexShader::create(NativeHandle device, const String &sourc
 
 VertexShader::VertexShader(NativeHandle device, const String &source, Bool is_binary) {
     static_assert(sizeof(Impl) <= sizeof(impl_buffer_), "size of impl_buffer_ is small.");
-    impl_ = new (impl_buffer_) Impl(*this, source, is_binary);
-
-    (void)&device; // 未使用引数
+    impl_ = new (impl_buffer_) Impl(device, *this, source, is_binary);
 }
 
 VertexShader::~VertexShader() { impl_->~Impl(); }

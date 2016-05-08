@@ -20,11 +20,18 @@
 namespace temp {
 namespace graphics {
 
+PixelShader::SPtr PixelShader::create(NativeHandle device, const String &source, Bool is_binary) {
+    struct Creator : public PixelShader {
+        Creator(NativeHandle device, const String &source, Bool is_binary) : PixelShader(device, source, is_binary) {}
+    };
+    auto p = std::make_shared< Creator >(device, source, is_binary);
+    return std::move(p);
+}
+
 PixelShader::PixelShader(NativeHandle device, const String &source, Bool is_binary) 
 {
     static_assert(sizeof(Impl) <= sizeof(impl_buffer_), "size of impl_buffer_ is small.");
-    impl_ = new(impl_buffer_) Impl(*this, source, is_binary);
-	(void)&device;	// 未使用変数
+    impl_ = new(impl_buffer_) Impl(device, *this, source, is_binary);
 }
 
 PixelShader::~PixelShader() {

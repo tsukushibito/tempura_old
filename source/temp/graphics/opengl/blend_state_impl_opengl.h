@@ -21,7 +21,7 @@ namespace graphics {
 class BlendState::Impl {
     friend class BlendState;
 public:
-    Impl(BlendState &vertex_shader, BlendMode blend_mode);
+    Impl(NativeHandle device, BlendState &blend_state, BlendMode blend_mode);
     ~Impl();
 
     Impl &operator=(const Impl&) = delete;

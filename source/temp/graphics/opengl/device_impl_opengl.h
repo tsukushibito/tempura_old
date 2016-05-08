@@ -28,20 +28,8 @@ private:
 
     ContextSPtr createContext();
 
-    VertexBufferSPtr createVertexBuffer(Size buffer_size);
-
-    IndexBufferSPtr createIndexBuffer(Size buffer_size);
-
-    ConstantBufferSPtr createConstantBuffer(Size buffer_size);
- 
-    VertexShaderSPtr createVertexShaderFromSource(const String &source);
-    VertexShaderSPtr createVertexShaderFromBinary(const String &binary);
-
-    PixelShaderSPtr createPixelShaderFromSource(const String &source);
-    PixelShaderSPtr createPixelShaderFromBinary(const String &binary);
-
     void executeCommands(const ContextSPtr &context);
-    void present(); // ‰¼
+    void present(); // ä»®
 private:
     Device &device_;
     opengl::OpenglContexts contexts_;

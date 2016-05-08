@@ -32,6 +32,19 @@ protected:
     Int8 impl_buffer_[kImplSize];
 };
 
+enum class InputElementFormat {
+    Float32,
+    Int16,
+    Int32,
+};
+
+struct InputElementDesc {
+    String name;
+    UInt32 slot;
+    InputElementFormat format;
+    UInt32 count;
+    UInt32 offset;
+};
 
 enum class BlendMode {
     None,
@@ -42,7 +55,7 @@ enum class BlendMode {
     Screen,
 };
 
-enum class DepthStencileMode {
+enum class DepthStencileFunc {
     Never,
     Less,
     LessEqual,
@@ -70,9 +83,9 @@ enum class FrontFace {
 };
 
 struct RasterizerDesc {
-    FillMode fillMode;
-    CullingMode cullMode;
-    FrontFace frontFace;
+    FillMode fill_mode;
+    CullingMode cull_mode;
+    FrontFace front_face;
 };
 
 

@@ -22,7 +22,7 @@ namespace graphics {
 class PixelShader::Impl {
     friend class PixelShader;
 public:
-    Impl(PixelShader &pixel_shader, const String &source, Bool is_binary);
+    Impl(NativeHandle device, PixelShader &pixel_shader, const String &source, Bool is_binary);
     ~Impl();
 
     Impl &operator=(const Impl&) = delete;

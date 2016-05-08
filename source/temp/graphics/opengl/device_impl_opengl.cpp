@@ -17,6 +17,9 @@
 
 #include "temp/graphics/vertex_shader.h"
 #include "temp/graphics/pixel_shader.h"
+#include "temp/graphics/blend_state.h"
+#include "temp/graphics/depth_stencile_state.h"
+#include "temp/graphics/rasterizer_state.h"
 
 namespace temp {
 namespace graphics {
@@ -49,8 +52,26 @@ Device::Impl::Impl(Device &device) : device_(device) {
             [this, &window_handle, i](){opengl::makeCurrent(window_handle, contexts_.contexts_for_worker_thread[i]); });
         future.wait();
     }
-	
-	device.native_handle_.pointer_ = nullptr;	// OpenGL版は各スレッドでカレントに設定してあるので、OpenGLAPIで取得させることにする
+    
+    device.native_handle_.pointer_ = nullptr;   // OpenGL版は各スレッドでカレントに設定してあるので、OpenGLAPIで取得させることにする
+
+    GLuint ab, eab, vao;
+    opengl::glCallWithErrorCheck(glGenBuffers, 1, &ab);
+    opengl::glCallWithErrorCheck(glGenBuffers, 1, &eab);
+    opengl::glCallWithErrorCheck(glGenVertexArrays, 1, &vao);
+    opengl::glCallWithErrorCheck(glBindVertexArray, vao);
+    opengl::glCallWithErrorCheck(glBindBuffer, GL_ARRAY_BUFFER, ab);
+    opengl::glCallWithErrorCheck(glBindBuffer, GL_ELEMENT_ARRAY_BUFFER, ab);
+    GLint boundArrayObject, boundElementArrayObject;
+    opengl::glCallWithErrorCheck(glGetIntegerv, GL_ARRAY_BUFFER_BINDING, &boundArrayObject);
+    opengl::glCallWithErrorCheck(glGetIntegerv, GL_ELEMENT_ARRAY_BUFFER_BINDING, &boundElementArrayObject);
+    temp::system::ConsoleLogger::trace("array buffer binding : {0}", boundArrayObject);
+    temp::system::ConsoleLogger::trace("element array buffer binding : {0}", boundElementArrayObject);
+    opengl::glCallWithErrorCheck(glBindVertexArray, 0);
+    opengl::glCallWithErrorCheck(glGetIntegerv, GL_ARRAY_BUFFER_BINDING, &boundArrayObject);
+    opengl::glCallWithErrorCheck(glGetIntegerv, GL_ELEMENT_ARRAY_BUFFER_BINDING, &boundElementArrayObject);
+    temp::system::ConsoleLogger::trace("array buffer binding : {0}", boundArrayObject);
+    temp::system::ConsoleLogger::trace("element array buffer binding : {0}", boundElementArrayObject);
 }
 
 Device::Impl::~Impl() {
@@ -58,37 +79,6 @@ Device::Impl::~Impl() {
 }
 
 Device::ContextSPtr Device::Impl::createContext() {
-    return nullptr;
-}
-
-Device::VertexBufferSPtr Device::Impl::createVertexBuffer(Size buffer_size) {
-    return nullptr;
-}
-
-Device::IndexBufferSPtr Device::Impl::createIndexBuffer(Size buffer_size) {
-    return nullptr;
-}
-
-Device::ConstantBufferSPtr Device::Impl::createConstantBuffer(Size buffer_size) {
-    return nullptr;
-}
- 
-
-Device::VertexShaderSPtr Device::Impl::createVertexShaderFromSource(const String &source) {
-	// auto p = std::make_shared<VertexShader>(device_.native_handle_, source, false);
-    return VertexShader::create(device_.native_handle_, source, false);
-}
-
-Device::VertexShaderSPtr Device::Impl::createVertexShaderFromBinary(const String &binary) {
-    return nullptr;
-}
-
-Device::PixelShaderSPtr Device::Impl::createPixelShaderFromSource(const String &source) {
-    auto p = PixelShader::SPtr(new PixelShader(device_.native_handle_, source, false));
-    return std::move(p);
-}
-
-Device::PixelShaderSPtr Device::Impl::createPixelShaderFromBinary(const String &binary) {
     return nullptr;
 }
 

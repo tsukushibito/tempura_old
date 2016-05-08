@@ -72,9 +72,9 @@ public:
 public:
     ContextSPtr createContext();
 
-    VertexBufferSPtr createVertexBuffer(Size buffer_size);
+    VertexBufferSPtr createVertexBuffer(Size size, const void *data);
 
-    IndexBufferSPtr createIndexBuffer(Size buffer_size);
+    IndexBufferSPtr createIndexBuffer(Size size, const void *data);
 
     ConstantBufferSPtr createConstantBuffer(Size buffer_size);
 
@@ -84,9 +84,9 @@ public:
     PixelShaderSPtr createPixelShaderFromSource(const String &source);
     PixelShaderSPtr createPixelShaderFromBinary(const String &binary);
 
-    BlendStateSPtr createBlendState(BlendMode blendMode);
+    BlendStateSPtr createBlendState(BlendMode blend_mode);
 
-    DepthStencileStateSPtr createDepthStencileState(DepthStencileMode depthMode, DepthStencileMode stencilMode);
+    DepthStencileStateSPtr createDepthStencileState(DepthStencileFunc depth_func, DepthStencileFunc stencile_func);
 
     RasterizerStateSPtr createRasterizerState(const RasterizerDesc &desc);
 

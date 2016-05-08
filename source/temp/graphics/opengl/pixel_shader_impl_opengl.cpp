@@ -41,7 +41,7 @@ namespace {
 }
     
 
-PixelShader::Impl::Impl(PixelShader &pixel_shader, const String &source, Bool is_binary)
+PixelShader::Impl::Impl(NativeHandle device, PixelShader &pixel_shader, const String &source, Bool is_binary)
     : pixel_shader_(pixel_shader) {
 	if (is_binary) {
 		pixel_shader_.native_handle_.value_ = createOpenglPixelShaderFromBinary(source);
@@ -50,6 +50,8 @@ PixelShader::Impl::Impl(PixelShader &pixel_shader, const String &source, Bool is
 		pixel_shader_.native_handle_.value_ = createOpenglPixelShaderFromSource(source);
 	}
     temp::system::ConsoleLogger::trace("OpenGL Fragment Shader has created! id = {0}", pixel_shader_.getNativeHandle().value_);
+        
+    (void)device;
 }
 
 PixelShader::Impl::~Impl() {

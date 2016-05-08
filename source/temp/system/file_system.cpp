@@ -32,14 +32,14 @@ DecomposedPath decomposeAbsolutePath(const String &absPath) {
 
     decomposedPath.element_names_ = splitString(absPath, '/');
 
-    String topOneChar;
-    String topTowChar;
-    if (absPath.size() >= 1) topTowChar = absPath.substr(0, 1);
-    if (absPath.size() >= 2) topTowChar = absPath.substr(0, 2);
-    if (topTowChar == "//") {
+    String top_one_char;
+    String top_tow_char;
+    if (absPath.size() >= 1) top_one_char = absPath.substr(0, 1);
+    if (absPath.size() >= 2) top_tow_char = absPath.substr(0, 2);
+    if (top_tow_char == "//") {
         // URL todo: 不完全な実装なので、正しく実装
         decomposedPath.root_ = "//";
-    } else if (topOneChar == "/") {
+    } else if (top_one_char == "/") {
         // Windows以外のパス
         decomposedPath.root_ = "/";
     } else if (decomposedPath.element_names_.size() > 0) {

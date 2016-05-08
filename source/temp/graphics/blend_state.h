@@ -21,9 +21,9 @@ class BlendState : public SmartPointerObject< BlendState >, public FastPImpl {
     friend class Device;
 
 private:
-    static SPtr create(NativeHandle device);
+    static SPtr create(NativeHandle device, BlendMode blend_mode);
 
-    BlendState(NativeHandle device);
+    BlendState(NativeHandle device, BlendMode blend_mode);
 
 public:
     ~BlendState();

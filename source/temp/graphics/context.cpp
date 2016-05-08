@@ -9,8 +9,25 @@
 
 namespace temp {
 namespace graphics {
+    
+class Context::Impl {
+public:
+    Impl(NativeHandle &, Context &) {}
+};
 
-Context::Context(const DeviceSPtr &device) {
+Context::SPtr Context::create(NativeHandle &device) {
+    struct Creator : public Context {
+        Creator(NativeHandle device) : Context(device) { }
+    };
+
+    auto p = std::make_shared<Creator>(device);
+
+    return std::move(p);
+}
+
+Context::Context(NativeHandle &device) {
+    static_assert(sizeof(Impl) <= sizeof(impl_buffer_), "size of impl_buffer_ is small.");
+    impl_ = new (impl_buffer_) Impl(device, *this);
 }
 
 Context::~Context() {

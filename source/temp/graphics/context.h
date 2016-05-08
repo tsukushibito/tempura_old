@@ -21,7 +21,7 @@ namespace graphics {
 class Device;
 class BlendState;
 class DepthStencileState;
-class RasterizeState;
+class RasterizerState;
 class SamplerState;
 class VertexShader;
 class PixelShader;
@@ -37,7 +37,7 @@ private:
     using DeviceSPtr = std::shared_ptr<Device>;
     using BlendStateSPtr = std::shared_ptr<BlendState>;
     using DepthStencileStateSPtr = std::shared_ptr<DepthStencileState>;
-    using RasterizeStateSPtr = std::shared_ptr<RasterizeState>;
+    using RasterizerStateSPtr = std::shared_ptr<RasterizerState>;
     using SamplerStateSPtr = std::shared_ptr<SamplerState>;
     using VertexShaderSPtr = std::shared_ptr<VertexShader>;
     using PixelShaderSPtr = std::shared_ptr<PixelShader>;
@@ -47,11 +47,16 @@ private:
     using IndexBufferSPtr = std::shared_ptr<IndexBuffer>;
     using TextureSPtr = std::shared_ptr<Texture>;
 
-    Context(const DeviceSPtr &device);
+    static SPtr create(NativeHandle &native_handle);
+
+    Context(NativeHandle &device);
 
 public:
     ~Context();
 
+    void setBlendState(const BlendStateSPtr &blend_state);
+    void setDepthStencileState(const DepthStencileStateSPtr &depth_stencile_state);
+    void setRasterizerState(const RasterizerStateSPtr &rasterizer_state);
     void setVertexBuffer(UInt32 slotNum, const VertexBufferSPtr &vertex_buffer);
     void setIndexBuffer(const IndexBufferSPtr &index_buffer);
     void setVertexShader(const VertexShaderSPtr &vertex_shader);
@@ -59,6 +64,7 @@ public:
     void setConstantBuffer(const String &name, const ConstantBufferSPtr &constant_buffer);
     void setTexture(const String &name, const TextureSPtr &texture);
 
+    void draw();
 private:
     class Impl;
     Impl *impl_;

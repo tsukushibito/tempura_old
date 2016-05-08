@@ -20,23 +20,20 @@
 namespace temp {
 namespace graphics {
 
-
-BlendState::SPtr BlendState::create(NativeHandle device) {
+BlendState::SPtr BlendState::create(NativeHandle device, BlendMode blend_mode) {
     struct Creator : public BlendState {
-        Creator(NativeHandle device) : BlendState(device) {}
+        Creator(NativeHandle device, BlendMode blend_mode) : BlendState(device, blend_mode) {}
     };
-    auto p = std::make_shared< Creator >(device);
+    auto p = std::make_shared< Creator >(device, blend_mode);
     return std::move(p);
 }
 
-BlendState::BlendState(NativeHandle device) {
+BlendState::BlendState(NativeHandle device, BlendMode blend_mode) {
     static_assert(sizeof(Impl) <= sizeof(impl_buffer_), "size of impl_buffer_ is small.");
-    // impl_ = new (impl_buffer_) Impl(*this, source, is_binary);
-
-    (void)&device; // 未使用引数
+    impl_ = new (impl_buffer_) Impl(device, *this, blend_mode);
 }
 
 BlendState::~BlendState() { impl_->~Impl(); }
-    
+
 } // namespace graphics
 } // namespace temp

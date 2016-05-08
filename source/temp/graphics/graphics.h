@@ -11,6 +11,7 @@
 
 #include "temp/graphics/device.h"
 #include "temp/graphics/vertex_shader.h"
+#include "temp/graphics/blend_state.h"
 
 namespace temp {
 namespace graphics {

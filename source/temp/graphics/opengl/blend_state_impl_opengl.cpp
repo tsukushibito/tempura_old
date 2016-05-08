@@ -16,7 +16,7 @@
 namespace temp {
 namespace graphics {
 
-BlendState::Impl::Impl(BlendState &blend_state, BlendMode blend_mode) : blend_state_(blend_state) {
+BlendState::Impl::Impl(NativeHandle device, BlendState &blend_state, BlendMode blend_mode) : blend_state_(blend_state) {
     switch (blend_mode) {
     case BlendMode::None:
         arg_.sfactor = GL_ONE;
@@ -45,6 +45,8 @@ BlendState::Impl::Impl(BlendState &blend_state, BlendMode blend_mode) : blend_st
     }
     blend_state_.native_handle_.pointer_ = &arg_;
     temp::system::ConsoleLogger::trace("OpenGL Blend State has created!");
+    
+    (void)device;
 }
 
 BlendState::Impl::~Impl() {

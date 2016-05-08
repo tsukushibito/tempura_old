@@ -21,6 +21,8 @@ namespace graphics {
 class PixelShader : public SmartPointerObject<PixelShader> , public FastPImpl {
     friend class Device;
 private:
+    static SPtr create(NativeHandle device, const String &source, Bool is_binary);
+
     PixelShader(NativeHandle device, const String &source, Bool is_binary);
 
 public:

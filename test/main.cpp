@@ -8,6 +8,7 @@
 
 #include <cassert>
 #include "temp.h"
+// #include <OpenGL/gl3.h>
 
 class Test {
 public:
@@ -26,7 +27,7 @@ private:
     temp::system::ThreadPool::SPtr render_thread_;
     temp::system::ThreadPool::SPtr worker_threads_;
     temp::graphics::Device::SPtr device_;
-	temp::render::Renderer::SPtr renderer_;
+    temp::render::Renderer::SPtr renderer_;
 };
 
 Test::Test() {
@@ -43,43 +44,54 @@ Test::Test() {
     application_->setTerminateFunction(std::bind(&Test::term, this));
 }
 
-void Test::init()
-{
+void Test::init() {
     using namespace temp;
     using namespace temp::system;
-	using namespace temp::graphics;
-	using namespace temp::resource;
-	using namespace temp::render;
+    using namespace temp::graphics;
+    using namespace temp::resource;
+    using namespace temp::render;
 
     ConsoleLogger::initialize();
 
-    setCurrentDirectory("../");
+    setCurrentDirectory("../../");
     ConsoleLogger::trace("Current directory : {}", getCurrentDirectory().getAbsolute());
 
-	window_ = Window::create();
+    window_ = Window::create();
 
-	graphics::DeviceParameter devParam;
-	devParam.main_thread = application_->getMainThread();
-	devParam.load_thread = load_thread_;
-	devParam.render_thread = render_thread_;
-	devParam.worker_thread = worker_threads_;
-	devParam.window = window_;
-	device_ = graphics::Device::create(devParam);
-    
+    graphics::DeviceParameter devParam;
+    devParam.main_thread = application_->getMainThread();
+    devParam.load_thread = load_thread_;
+    devParam.render_thread = render_thread_;
+    devParam.worker_thread = worker_threads_;
+    devParam.window = window_;
+    device_ = graphics::Device::create(devParam);
+    auto blend_state = device_->createBlendState(graphics::BlendMode::None);
+    auto depth_stencile_state =
+        device_->createDepthStencileState(graphics::DepthStencileFunc::Always, graphics::DepthStencileFunc::Always);
+    graphics::RasterizerDesc desc;
+    desc.front_face = graphics::FrontFace::CounterClockWise;
+    desc.fill_mode = graphics::FillMode::Fill;
+    desc.cull_mode = graphics::CullingMode::CullingNone;
+    auto rasterizer_state = device_->createRasterizerState(desc);
+    String data;
+    temp::Float32 vertics[][3] = { { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
+    temp::Int16 indics[] = { 0, 1, 2, };
+    auto vertex_buffer = device_->createVertexBuffer(sizeof(vertics), vertics);
+    auto index_buffer = device_->createIndexBuffer(sizeof(indics), indics);
+
     VertexShaderResource::initialize(load_thread_, device_);
     PixelShaderResource::initialize(load_thread_, device_);
 
-	renderer_ = render::Renderer::create(device_);
-	auto camera = renderer_->createCamera();
+    renderer_ = render::Renderer::create(device_);
+    auto camera = renderer_->createCamera();
 }
 
-void Test::term()
-{
+void Test::term() {
     using namespace temp;
     using namespace temp::system;
-	using namespace temp::resource;
+    using namespace temp::resource;
 
-	renderer_ = nullptr;
+    renderer_ = nullptr;
 
     PixelShaderResource::terminate();
     VertexShaderResource::terminate();
@@ -87,7 +99,7 @@ void Test::term()
     device_ = nullptr;
     window_ = nullptr;
 
-	application_ = nullptr;
+    application_ = nullptr;
 
     load_thread_ = nullptr;
     render_thread_ = nullptr;
@@ -97,8 +109,11 @@ void Test::term()
 }
 
 void Test::update() {
-	auto future = render_thread_->pushJob([this]() { renderer_->renderAllViews(); renderer_->swapBackBuffers(); });
-	future.wait();
+    auto future = render_thread_->pushJob([this]() {
+        renderer_->renderAllViews();
+        renderer_->swapBackBuffers();
+    });
+    future.wait();
 }
 
 void Test::run() {
@@ -106,10 +121,9 @@ void Test::run() {
     application_->run();
 }
 
-int main(/*int argc, char const* argv[]*/)
-{
+int main(/*int argc, char const* argv[]*/) {
     Test test;
-	test.run();
+    test.run();
 
     return 0;
 }
