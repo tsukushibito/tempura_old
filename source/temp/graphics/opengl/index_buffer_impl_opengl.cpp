@@ -24,9 +24,9 @@ IndexBuffer::Impl::Impl(NativeHandle device, IndexBuffer &index_buffer, Size siz
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
 
-    index_buffer_.native_handle_.value_ = ibo;
+    index_buffer_.native_handle_.value = ibo;
 
-    temp::system::ConsoleLogger::trace("OpenGL Index Buffer has created! id = {0}", index_buffer_.native_handle_.value_);
+    temp::system::ConsoleLogger::trace("OpenGL Index Buffer has created! id = {0}", index_buffer_.native_handle_.value);
         
     (void)device;
 }
@@ -34,9 +34,9 @@ IndexBuffer::Impl::Impl(NativeHandle device, IndexBuffer &index_buffer, Size siz
 IndexBuffer::Impl::~Impl() {
     using namespace opengl;
 
-    glDeleteBuffers(1, (GLuint*)&index_buffer_.native_handle_.value_);
+    glDeleteBuffers(1, (GLuint*)&index_buffer_.native_handle_.value);
 
-    temp::system::ConsoleLogger::trace("OpenGL Index Buffer has deleted! id = {0}", index_buffer_.native_handle_.value_);
+    temp::system::ConsoleLogger::trace("OpenGL Index Buffer has deleted! id = {0}", index_buffer_.native_handle_.value);
 }
 
     

@@ -54,9 +54,10 @@ namespace temp {
 namespace graphics {
 
 class BlendState;
-class DepthState;
-class RasterizeState;
+class DepthStencileState;
+class RasterizerState;
 class SamplerState;
+class InputLayout;
 class VertexShader;
 class PixelShader;
 class ConstantBuffer;
@@ -88,14 +89,15 @@ struct Command {
     static const Size kTextureSlotCount = 128;
 
     BlendState *blend_state;
-    DepthState *depth_state;
-    RasterizeState *rasterize_state;
+    DepthStencileState *depth_stencile_state;
+    RasterizerState *rasterizer_state;
     SamplerState *sampler_states[kTextureSlotCount];
+    InputLayout *input_layout;
     VertexShader *vertex_shader;
     PixelShader *pixel_shader;
     ConstantBuffer *constant_buffers[kConstantBufferSlotCount];
     Texture *textures[kTextureSlotCount];
-    VertexBuffer *vertex_buffer;
+    VertexBuffer *vertex_buffers[kVertexBufferSlotCount];
     IndexBuffer *index_buffer;
     Bool is_valid;
 };

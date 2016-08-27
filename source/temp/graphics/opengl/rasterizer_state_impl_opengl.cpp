@@ -50,7 +50,7 @@ RasterizerState::Impl::Impl(NativeHandle device, RasterizerState &rasterizer_sta
     }
 
 
-    rasterizer_state_.native_handle_.pointer_ = &arg_;
+    rasterizer_state_.native_handle_.pointer = &arg_;
     temp::system::ConsoleLogger::trace("OpenGL Rasterizer State has created!");
 
     (void)device;

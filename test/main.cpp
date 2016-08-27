@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file main.cpp
  * @brief test main
  * @author tsukushibito
@@ -122,6 +122,10 @@ void Test::run() {
 }
 
 int main(/*int argc, char const* argv[]*/) {
+    temp::math::Vector2f vec2 = temp::math::Vector2f::kBasisX;
+    vec2 = 2 * vec2;
+    vec2 = vec2 + temp::math::Vector2f::kBasisY;
+    
     Test test;
     test.run();
 

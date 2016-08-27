@@ -54,7 +54,7 @@ DepthStencileState::Impl::Impl(NativeHandle device, DepthStencileState &depth_st
     arg_.depth_func = depthStencileFuncToGLenum(depth_func);
     arg_.stencile_func = depthStencileFuncToGLenum(stencile_func);
 
-    depth_stencile_state.native_handle_.pointer_ = &arg_;
+    depth_stencile_state.native_handle_.pointer = &arg_;
     temp::system::ConsoleLogger::trace("OpenGL Depth Stencile State has created!");
 
     (void)device;

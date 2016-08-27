@@ -29,6 +29,7 @@ public:
 
 private:
     InputLayout &input_layout_;
+    Vector<InputElementDesc> element_descs_;
 };
 
 } // namespace graphics

@@ -23,6 +23,7 @@ class BlendState;
 class DepthStencileState;
 class RasterizerState;
 class SamplerState;
+class InputLayout;
 class VertexShader;
 class PixelShader;
 class ConstantBuffer;
@@ -39,6 +40,7 @@ private:
     using DepthStencileStateSPtr = std::shared_ptr<DepthStencileState>;
     using RasterizerStateSPtr = std::shared_ptr<RasterizerState>;
     using SamplerStateSPtr = std::shared_ptr<SamplerState>;
+    using InputLayoutSPtr = std::shared_ptr<InputLayout>;
     using VertexShaderSPtr = std::shared_ptr<VertexShader>;
     using PixelShaderSPtr = std::shared_ptr<PixelShader>;
     using ConstantBufferSPtr = std::shared_ptr<ConstantBuffer>;
@@ -57,6 +59,7 @@ public:
     void setBlendState(const BlendStateSPtr &blend_state);
     void setDepthStencileState(const DepthStencileStateSPtr &depth_stencile_state);
     void setRasterizerState(const RasterizerStateSPtr &rasterizer_state);
+    void setInputLayout(const InputLayoutSPtr &input_layout);
     void setVertexBuffer(UInt32 slotNum, const VertexBufferSPtr &vertex_buffer);
     void setIndexBuffer(const IndexBufferSPtr &index_buffer);
     void setVertexShader(const VertexShaderSPtr &vertex_shader);
@@ -64,7 +67,8 @@ public:
     void setConstantBuffer(const String &name, const ConstantBufferSPtr &constant_buffer);
     void setTexture(const String &name, const TextureSPtr &texture);
 
-    void draw();
+    void draw(UInt32 vertex_count, UInt32 start_vertex_location);
+    void drawIndexed(UInt32 index_count, UInt32 start_index_location, Int32 base_vertex_location);
 private:
     class Impl;
     Impl *impl_;

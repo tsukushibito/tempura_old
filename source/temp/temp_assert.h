@@ -33,6 +33,6 @@ namespace temp {
    } 
 } // namespace temp
 
-#define TEMP_ASSERT(expr) (void)( (!!(expr)) || (temp::reportAssertion(#expr, __FILE__, __LINE__), 0) )
+#define TEMP_ASSERT(expr, msg) (void)( (!!(expr)) || (temp::reportAssertion(msg, __FILE__, __LINE__), 0) )
 
 #endif // GUARD_8b79d00eeb164860884f8bdb6ffa34fd

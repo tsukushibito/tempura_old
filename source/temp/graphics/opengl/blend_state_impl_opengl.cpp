@@ -43,7 +43,7 @@ BlendState::Impl::Impl(NativeHandle device, BlendState &blend_state, BlendMode b
         arg_.dfactor = GL_ONE_MINUS_SRC_COLOR;
         break;
     }
-    blend_state_.native_handle_.pointer_ = &arg_;
+    blend_state_.native_handle_.pointer = &arg_;
     temp::system::ConsoleLogger::trace("OpenGL Blend State has created!");
     
     (void)device;

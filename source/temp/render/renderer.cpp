@@ -1,4 +1,4 @@
-﻿#include <functional>
+#include <functional>
 #include "temp/temp_assert.h"
 #include "temp/graphics/device.h"
 #include "temp/render/renderer.h"
@@ -50,7 +50,7 @@ void Renderer::removeCamera(const Camera *camera) {
     // リストから削除
     auto new_end = std::remove_if(camera_list_.begin(), camera_list_.end(), 
         [&camera](Camera *ptr){ return ptr == camera; });
-    TEMP_ASSERT(new_end != camera_list_.end()); // 必ず削除されるべきカメラがあるはず
+    TEMP_ASSERT(new_end != camera_list_.end(), ""); // 必ず削除されるべきカメラがあるはず
     camera_list_.erase(new_end, camera_list_.end());    // 削除処理
 }
 

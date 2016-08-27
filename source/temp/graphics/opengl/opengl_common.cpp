@@ -135,7 +135,7 @@ void checkError() {
 
         errorCode = glGetError();
     } while (errorCode != GL_NO_ERROR);
-    TEMP_ASSERT(false && "OpenGL ERROR");
+    TEMP_ASSERT(false, "OpenGL ERROR");
 }
 
 void printShaderCompileInfoLog(GLuint shader) {

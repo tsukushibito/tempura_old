@@ -10,6 +10,7 @@
 #include "temp/type.h"
 #include "temp/container.h"
 #include "temp/temp_assert.h"
+#include "temp/temp_math.h"
 
 #include "temp/system/application.h"
 #include "temp/system/window.h"

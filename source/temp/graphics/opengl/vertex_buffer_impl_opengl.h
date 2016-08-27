@@ -28,6 +28,8 @@ public:
     Impl &operator=(const Impl&) = delete;
 private:
     VertexBuffer &vertex_buffer_;
+
+    //using VertexArrayObjectTable = HashMap<Context::SPtr>;
 };
     
 } // namespace graphics

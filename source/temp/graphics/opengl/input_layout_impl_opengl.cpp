@@ -20,6 +20,9 @@ namespace graphics {
 InputLayout::Impl::Impl(NativeHandle device, InputLayout &input_layout, const InputElementDesc element_descs[],
                         UInt32 element_count)
     : input_layout_(input_layout) {
+    element_descs_.resize(element_count);
+    memcpy(&element_descs_[0], element_descs, sizeof(InputElementDesc) * element_count);
+    input_layout.native_handle_.pointer = &element_descs_;
 }
 
 } // namespace graphics

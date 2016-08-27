@@ -44,19 +44,19 @@ namespace {
 PixelShader::Impl::Impl(NativeHandle device, PixelShader &pixel_shader, const String &source, Bool is_binary)
     : pixel_shader_(pixel_shader) {
 	if (is_binary) {
-		pixel_shader_.native_handle_.value_ = createOpenglPixelShaderFromBinary(source);
+		pixel_shader_.native_handle_.value = createOpenglPixelShaderFromBinary(source);
 	}
 	else {
-		pixel_shader_.native_handle_.value_ = createOpenglPixelShaderFromSource(source);
+		pixel_shader_.native_handle_.value = createOpenglPixelShaderFromSource(source);
 	}
-    temp::system::ConsoleLogger::trace("OpenGL Fragment Shader has created! id = {0}", pixel_shader_.getNativeHandle().value_);
+    temp::system::ConsoleLogger::trace("OpenGL Fragment Shader has created! id = {0}", pixel_shader_.getNativeHandle().value);
         
     (void)device;
 }
 
 PixelShader::Impl::~Impl() {
     using namespace opengl;
-    GLuint pixel_shader = pixel_shader_.getNativeHandle().value_;
+    GLuint pixel_shader = pixel_shader_.getNativeHandle().value;
     glCallWithErrorCheck(glDeleteShader, pixel_shader);
     temp::system::ConsoleLogger::trace("OpenGL Fragmentx Shader has deleted! id = {0}", pixel_shader);
 }

@@ -46,20 +46,20 @@ namespace {
 VertexShader::Impl::Impl(NativeHandle device, VertexShader &vertex_shader, const String &source, bool is_binary)
     : vertex_shader_(vertex_shader) {
     if (is_binary) {
-        vertex_shader_.native_handle_.value_ = createOpenglVertexShaderFromBinary(source);
+        vertex_shader_.native_handle_.value = createOpenglVertexShaderFromBinary(source);
     }
     else {
-        vertex_shader_.native_handle_.value_ = createOpenglVertexShaderFromSource(source);
+        vertex_shader_.native_handle_.value = createOpenglVertexShaderFromSource(source);
     }
 
-    temp::system::ConsoleLogger::trace("OpenGL Vertex Shader has created! id = {0}", vertex_shader_.getNativeHandle().value_);
+    temp::system::ConsoleLogger::trace("OpenGL Vertex Shader has created! id = {0}", vertex_shader_.getNativeHandle().value);
         
     (void)device;
 }
 
 VertexShader::Impl::~Impl() {
     using namespace opengl;
-    GLuint vertex_shader = vertex_shader_.getNativeHandle().value_;
+    GLuint vertex_shader = vertex_shader_.getNativeHandle().value;
     glCallWithErrorCheck(glDeleteShader, vertex_shader);
     temp::system::ConsoleLogger::trace("OpenGL Vertex Shader has deleted! id = {0}", vertex_shader);
 }

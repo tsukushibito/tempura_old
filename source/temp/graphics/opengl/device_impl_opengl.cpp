@@ -53,7 +53,7 @@ Device::Impl::Impl(Device &device) : device_(device) {
         future.wait();
     }
     
-    device.native_handle_.pointer_ = nullptr;   // OpenGL版は各スレッドでカレントに設定してあるので、OpenGLAPIで取得させることにする
+    device.native_handle_.pointer = nullptr;   // OpenGL版は各スレッドでカレントに設定してあるので、OpenGLAPIで取得させることにする
 
     GLuint ab, eab, vao;
     opengl::glCallWithErrorCheck(glGenBuffers, 1, &ab);

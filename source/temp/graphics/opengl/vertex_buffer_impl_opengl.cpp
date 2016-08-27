@@ -24,9 +24,9 @@ VertexBuffer::Impl::Impl(NativeHandle device, VertexBuffer &vertex_buffer, Size 
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
 
-    vertex_buffer_.native_handle_.value_ = vbo;
+    vertex_buffer_.native_handle_.value = vbo;
 
-    temp::system::ConsoleLogger::trace("OpenGL Vertex Buffer has created! id = {0}", vertex_buffer_.native_handle_.value_);
+    temp::system::ConsoleLogger::trace("OpenGL Vertex Buffer has created! id = {0}", vertex_buffer_.native_handle_.value);
         
     (void)device;
 }
@@ -34,9 +34,9 @@ VertexBuffer::Impl::Impl(NativeHandle device, VertexBuffer &vertex_buffer, Size 
 VertexBuffer::Impl::~Impl() {
     using namespace opengl;
 
-    glDeleteBuffers(1, (GLuint*)&vertex_buffer_.native_handle_.value_);
+    glDeleteBuffers(1, (GLuint*)&vertex_buffer_.native_handle_.value);
 
-    temp::system::ConsoleLogger::trace("OpenGL Vertex Buffer has deleted! id = {0}", vertex_buffer_.native_handle_.value_);
+    temp::system::ConsoleLogger::trace("OpenGL Vertex Buffer has deleted! id = {0}", vertex_buffer_.native_handle_.value);
 }
 
     

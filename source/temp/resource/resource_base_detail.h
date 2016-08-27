@@ -24,8 +24,8 @@ ResourceBase< T >::~ResourceBase() {
     unload();
 
     std::unique_lock< std::mutex > lock(s_table_mutex);
-    TEMP_ASSERT(s_resource_table->find(hash_) != s_resource_table->end()
-                && "Not exist in the table. Management is out of resources.");
+    TEMP_ASSERT(s_resource_table->find(hash_) != s_resource_table->end(),
+                "Not exist in the table. Management is out of resources.");
 
     // 管理テーブルから削除
     s_resource_table->erase(hash_);
@@ -75,7 +75,7 @@ void ResourceBase< T >::terminate() {
 
     s_graphics_device = nullptr;
     s_load_thread = nullptr;
-    TEMP_ASSERT(s_resource_table->empty() && "Exists not released resource.");
+    TEMP_ASSERT(s_resource_table->empty(), "Exists not released resource.");
     s_resource_table.release();
 }
 

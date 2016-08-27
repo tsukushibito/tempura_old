@@ -16,8 +16,8 @@ namespace graphics {
 
 struct NativeHandle {
     union {
-        void *pointer_;
-        Int32 value_;
+        void *pointer;
+        Int32 value;
     };
 };
 

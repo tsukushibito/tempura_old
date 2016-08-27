@@ -12,6 +12,7 @@
 #include "temp/define.h"
 #include "temp/type.h"
 #include "temp/container.h"
+#include "temp/utility.h"
 
 #include "temp/graphics/graphics_common.h"
 
@@ -31,11 +32,15 @@ public:
 
     const NativeHandle &getNativeHandle() const { return native_handle_; }
 
+    void addOnDeleteEvent(const std::function<void()> &func) { on_delete_event_.addFunction(func); }
+
 private:
     class Impl;
     Impl *impl_;
 
     NativeHandle native_handle_;
+
+    Event on_delete_event_;
 };
     
 } // namespace graphics
