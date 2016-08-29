@@ -15,11 +15,11 @@
             '../third_party/eigen/Eigen',
             '../third_party/spdlog/include',
         ],
-        'msvs_settings': {
-            'VCCLCompilerTool': {
-                'WarningLevel': '4', # /W4
+        'msbuild_settings': {
+            'ClCompile': {
+                'WarningLevel': 'Level4', # /W4
             },
-            'VCLinkerTool': {
+            'Link': {
                 'AdditionalDependencies': [
                     'kernel32.lib',
                     'user32.lib',
@@ -35,12 +35,13 @@
                     'odbccp32.lib',
                     'opengl32.lib',
                 ],
-                # 'TargetMachine': '17'
+                'TargetMachine': 'MachineX64'
             },
-            'VCLibrarianTool': {
+            'Lib': {
                 # 'TargetMachine': '17'
             },
         },
+        'msbuild_toolset': 'v140',
         'xcode_settings': {
             'GCC_VERSION': 'com.apple.compilers.llvm.clang.1_0',
             'CLANG_CXX_LANGUAGE_STANDARD': 'c++0x',
@@ -51,7 +52,7 @@
     'targets': [
     {
         'target_name': 'tempura_engine',
-        'product_name': 'tempura_engine',
+        'product_name': 'VCLinkerTooltempura_engine',
         'type': 'static_library',
         'include_dirs': [
             '../source',
