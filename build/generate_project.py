@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
+import platform
 try:
   import gyp
 except ImportError, e:
@@ -10,7 +11,10 @@ except ImportError, e:
 import create_opengl_link_file
 
 def gen_proj():
-    gyp.main(['tempura.gyp', '--depth=.', '--generator-output=./project_files'])
+    if platform.system() == 'Windows':
+        gyp.main(['tempura.gyp', '--depth=.', '--generator-output=./project_files', '-f', 'msvs', '-G', 'msvs_version=2012'])
+    else:
+        gyp.main(['tempura.gyp', '--depth=.', '--generator-output=./project_files'])
 
 if __name__ == '__main__':
     #create_opengl_link_file.download_extension_files()

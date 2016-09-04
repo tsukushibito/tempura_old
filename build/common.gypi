@@ -5,12 +5,12 @@
                 'defines':['DEBUG'],
                 'msvs_configuration_platform': 'x64',
                 'msvs_target_platform': 'x64',
-                'msvs_settings': {
-                    'VCCLCompilerTool': {
-                        'DebugInformationFormat': '3', # /Zi
-                        'Optimization': '0',
+                'msbuild_settings': {
+                    'ClCompile': {
+                        'DebugInformationFormat': 'ProgramDatabase', # /Zi
+                        'Optimization': 'Disabled',
                     },
-                    'VCLinkerTool': {
+                    'Link': {
                         'GenerateDebugInformation': 'true', # /DEBUG
                     },
                 },
