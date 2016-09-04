@@ -13,3 +13,5 @@ build/project_files/
 *.opendb
 build/TempuraTest.vcxproj.user
 *.pyc
+
+.DS_Store
