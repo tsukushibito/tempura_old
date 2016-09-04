@@ -143,6 +143,27 @@ void Test::testMath() {
     auto v1 = Vector2(-1.0f, 1.0f);
     ConsoleLogger::trace("Vector2::dot(v0, v1) = {0}", Vector2::dot(v0, v1));
 
+    Vector3 vec3(3, 4, 5);
+    Vector3 vec3xyz = vec3.xyz();
+    Vector3 vec3xzy = vec3.xzy();
+    Vector3 vec3yxz = vec3.yxz();
+    Vector3 vec3yzx = vec3.yzx();
+    Vector3 vec3zxy = vec3.zxy();
+    Vector3 vec3zyx = vec3.zyx();
+    TEMP_ASSERT(vec3xyz == Vector3(3, 4, 5), "");
+    TEMP_ASSERT(vec3xzy == Vector3(3, 5, 4), "");
+    TEMP_ASSERT(vec3yxz == Vector3(4, 3, 5), "");
+    TEMP_ASSERT(vec3yzx == Vector3(4, 5, 3), "");
+    TEMP_ASSERT(vec3zxy == Vector3(5, 3, 4), "");
+    TEMP_ASSERT(vec3zyx == Vector3(5, 4, 3), "");
+    TEMP_ASSERT(Vector3(3, 4, 0).lengthSquared() == 25, "");
+    TEMP_ASSERT(Vector3(3, 4, 0).length() == 5, "");
+    auto norm = Vector3(3, 3, 3).normalized();
+    auto angle = Vector3::angle(Vector3(1, 0, 0), Vector3(0, 1, 0));
+    auto axisZ = Vector3::cross(Vector3(1, 0, 0), Vector3(0, 1, 0));
+    auto zero = Vector3::dot(Vector3(1, 0, 0), Vector3(0, 1, 0));
+    TEMP_ASSERT(zero == 0, "");
+
 }
 
 int main(/*int argc, char const* argv[]*/) {
