@@ -129,15 +129,15 @@ void Test::testMath() {
     using namespace temp;
     using namespace temp::math;
     using temp::system::ConsoleLogger;
-    ConsoleLogger::trace("Vector2::kUp = {0}", Vector2::kUp.ToString());
-    ConsoleLogger::trace("Vector2::kDown = {0}", Vector2::kDown.ToString());
-    ConsoleLogger::trace("Vector2::kLeft = {0}", Vector2::kLeft.ToString());
-    ConsoleLogger::trace("Vector2::kRight = {0}", Vector2::kRight.ToString());
+    ConsoleLogger::trace("Vector2::kUp = {0}", Vector2::kUp.toString());
+    ConsoleLogger::trace("Vector2::kDown = {0}", Vector2::kDown.toString());
+    ConsoleLogger::trace("Vector2::kLeft = {0}", Vector2::kLeft.toString());
+    ConsoleLogger::trace("Vector2::kRight = {0}", Vector2::kRight.toString());
 
-    ConsoleLogger::trace("-Vector3::kUp = {0}", (-Vector2::kUp).ToString());
-    ConsoleLogger::trace("-Vector3::kDown = {0}", (-Vector2::kDown).ToString());
-    ConsoleLogger::trace("-Vector3::kLeft = {0}", (-Vector2::kLeft).ToString());
-    ConsoleLogger::trace("-Vector3::kRight = {0}", (-Vector2::kRight).ToString());
+    ConsoleLogger::trace("-Vector3::kUp = {0}", (-Vector2::kUp).toString());
+    ConsoleLogger::trace("-Vector3::kDown = {0}", (-Vector2::kDown).toString());
+    ConsoleLogger::trace("-Vector3::kLeft = {0}", (-Vector2::kLeft).toString());
+    ConsoleLogger::trace("-Vector3::kRight = {0}", (-Vector2::kRight).toString());
 
     auto v0 = Vector2(1.0f, 1.0f);
     auto v1 = Vector2(-1.0f, 1.0f);
@@ -163,7 +163,26 @@ void Test::testMath() {
     auto axisZ = Vector3::cross(Vector3(1, 0, 0), Vector3(0, 1, 0));
     auto zero = Vector3::dot(Vector3(1, 0, 0), Vector3(0, 1, 0));
     TEMP_ASSERT(zero == 0, "");
+    
+    Matrix44 mat(2, 0, 1, 1, 1, 1, 2, 3, -1, 2, 0, 0, 1, 0, 1, 10);
+    ConsoleLogger::trace(mat.toString().c_str());
+    auto det = mat.determinant();
+    TEMP_ASSERT(det == -43, "");
+    auto id = Matrix44::kIdentity;
+    auto inv = id.inverse();
+    TEMP_ASSERT(*inv == id, "");
 
+    Vector4 vec4(1, 3, 4, 1);
+    auto transformed = vec4 * id;
+    TEMP_ASSERT(transformed == vec4, "");
+    
+    inv = mat.inverse();
+    transformed = vec4 * mat * (*inv);
+    transformed = vec4 * (mat * (*inv));
+    //TEMP_ASSERT(transformed == vec4, "");
+
+    auto mat2 = mat * id;
+    TEMP_ASSERT(mat == mat2, "");
 }
 
 int main(/*int argc, char const* argv[]*/) {

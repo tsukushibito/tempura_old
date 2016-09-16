@@ -23,7 +23,7 @@ using UInt8 = std::uint8_t;
 using UInt16 = std::uint16_t;
 using UInt32 = std::uint32_t;
 using UInt64 = std::uint64_t;
-    
+
 using Float32 = float;
 using Float64 = double;
 
@@ -60,8 +60,38 @@ public:
     using UPtr = std::unique_ptr< T >;
     using SPtr = std::shared_ptr< T >;
     using WPtr = std::weak_ptr< T >;
+
 protected:
-    SmartPointerObject(){}
+    SmartPointerObject() {}
+};
+
+template < typename T >
+class Optional {
+public:
+    Optional()
+        : is_engaged_(false)
+        , value_() {}
+
+    explicit Optional(const T &value)
+        : is_engaged_(true)
+        , value_(value) {}
+
+    Optional &operator=(const T &value) {
+        value_ = value;
+        is_engaged_ = true;
+        return *this;
+    }
+
+    // bool型への暗黙変換
+    operator bool() const { return is_engaged_; }
+
+    // 内部オブジェクトへのアクセッサ
+    T const &operator*() const { return value_; }
+    T &operator*() { return value_; }
+
+private:
+    bool is_engaged_;
+    T value_;
 };
 
 } // namespace temp

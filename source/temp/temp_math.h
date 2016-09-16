@@ -10,6 +10,7 @@
 #define GUARD_ca39916478f54f2f841cc72e4a3e7693
 
 #include "math/vector.h"
+#include "math/matrix.h"
 
 
 #endif // GUARD_ca39916478f54f2f841cc72e4a3e7693
