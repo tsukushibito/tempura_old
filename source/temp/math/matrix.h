@@ -16,6 +16,9 @@
 namespace temp {
 namespace math {
 
+class RowOrder {};
+class ColOrder {};
+
 template<typename T>
 class Matrix44Base;
 template<typename T>
@@ -32,19 +35,23 @@ Matrix44Base<T> operator*(const Matrix44Base<T> &lhs, const Matrix44Base<T> &rhs
 template<typename T> 
 class Matrix44Base {
 public:
+    using Vec4 = Vector4Base<T>;
+
     Matrix44Base();
 
-    Matrix44Base(
-            T _11, T _21, T _31, T _41, 
-            T _12, T _22, T _32, T _42, 
-            T _13, T _23, T _33, T _43, 
-            T _14, T _24, T _34, T _44);
+    Matrix44Base(T element[16]);
 
-    Matrix44Base(
-            const Vector4Base<T> &col1, 
-            const Vector4Base<T> &col2, 
-            const Vector4Base<T> &col3, 
-            const Vector4Base<T> &col4);
+    Matrix44Base( RowOrder,
+        const Vec4 &row0,
+        const Vec4 &row1,
+        const Vec4 &row2,
+        const Vec4 &row3);
+
+    Matrix44Base( ColOrder,
+        const Vec4 &col0,
+        const Vec4 &col1,
+        const Vec4 &col2,
+        const Vec4 &col3);
 
     Matrix44Base(const Matrix44Base &) = default;
     Matrix44Base &operator=(const Matrix44Base &) = default;

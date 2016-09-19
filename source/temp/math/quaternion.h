@@ -13,97 +13,91 @@
 // #include <sstream>
 #include "temp/type.h"
 #include "temp/temp_assert.h"
+#include "temp/math/vector.h"
+#include "temp/math/matrix.h"
 
 namespace temp {
 namespace math {
 
-class Quaternion
+template < typename T >
+class QuaternionBase;
+template < typename T >
+QuaternionBase<T> operator*(const QuaternionBase<T> &lhs, const QuaternionBase<T> &rhs);
+template < typename T >
+QuaternionBase<T> operator*(Float32 lhs, const QuaternionBase<T> &rhs);
+template < typename T >
+QuaternionBase<T> operator*(const QuaternionBase<T> &lhs, Float32 rhs);
+template < typename T >
+QuaternionBase<T> operator/(const QuaternionBase<T> &lhs, Float32 rhs);
+
+template<typename T>
+class QuaternionBase
 {
 public:
-    Quaternion() : Quaternion(0.0f, 0.0f, 0.0f, 0.0f) { }
-    Quaternion(Float32 x, Float32 y, Float32 z, Float32 w) {
-        elements_[0] = x;
-        elements_[1] = y;
-        elements_[2] = z;
-        elements_[3] = w;
-    }
+    QuaternionBase();
+    QuaternionBase(T x, T y, T z, T w);
+    QuaternionBase(const Vector3Base<T> &euler);
 
-    Quaternion(const Quaternion &) = default;
-    Quaternion &operator=(const Quaternion &) = default;
+    QuaternionBase(const QuaternionBase &) = default;
+    QuaternionBase &operator=(const QuaternionBase &) = default;
 
-    Quaternion(Quaternion &&) = default;
-    Quaternion &operator=(Quaternion &&) = default;
+    QuaternionBase(QuaternionBase &&) = default;
+    QuaternionBase &operator=(QuaternionBase &&) = default;
 
-    ~Quaternion() = default;
+    ~QuaternionBase() = default;
 
-    String ToString() {
-        std::stringstream ss;
-        ss << "Quaternion( " << x() << ", " << y() << ", " << z() << ", " << w() << " )";
-        return ss.str();
-    }
+    String ToString();
 
-    Float32 &x() { return elements_[0]; }
-    const Float32 &x() const { return elements_[0]; }
-    Float32 &y() { return elements_[1]; }
-    const Float32 &y() const { return elements_[1]; }
-    Float32 &z() { return elements_[2]; }
-    const Float32 &z() const { return elements_[2]; }
-    Float32 &w() { return elements_[3]; }
-    const Float32 &w() const { return elements_[3]; }
+    T &x();
+    const T &x() const;
+    T &y();
+    const T &y() const;
+    T &z();
+    const T &z() const;
+    T &w();
+    const T &w() const;
 
-    Float32 &operator[](Size index) { TEMP_ASSERT(index <= 3, ""); return elements_[index]; }
-    const Float32 &operator[](Size index) const { TEMP_ASSERT(index <= 3, ""); return elements_[index]; }
+    T &operator[](Size index);
+    const T &operator[](Size index) const;
 
-    Quaternion conjugate() const {
-        return Quaternion(-x(), -y(), -z(), w());
-    }
+    QuaternionBase conjugate() const;
 
-    Float32 absoluteSquared() const {
-        return (x() * x()) + (y() * y()) + (z() * z()) + (w() * w());
-    }
+    T absoluteSquared() const;
 
-    Float32 absolute() const {
-        return sqrt(absoluteSquared());
-    }
+    T absolute() const;
 
-    Quaternion inverse() const {
-        return conjugate() / absoluteSquared();
-    }
+    QuaternionBase inverse() const;
 
-    friend Quaternion operator+(const Quaternion &lhs, const Quaternion &rhs) {
-        return Quaternion(lhs.x() + rhs.x(), lhs.y() + rhs.y(), lhs.z() + rhs.z(), lhs.w() + rhs.w());
-    }
+    Float32 dot() const;
 
-    friend Quaternion operator*(const Quaternion &lhs, const Quaternion &rhs) {
-        return Quaternion(
-            lhs.w() * rhs.x() + lhs.x() * rhs.w() + lhs.y() * rhs.z() - lhs.z() * rhs.y(),
-            lhs.w() * rhs.y() - lhs.x() * rhs.z() + lhs.y() * rhs.w() + lhs.z() * rhs.x(),
-            lhs.w() * rhs.z() + lhs.x() * rhs.y() - lhs.y() * rhs.x() + lhs.z() * rhs.w(),
-            lhs.w() * rhs.w() - lhs.x() * rhs.x() - lhs.y() * rhs.y() - lhs.z() * rhs.z(),
-            );
-    }
+    QuaternionBase normalized() const;
 
-    friend Quaternion operator*(Float32 lhs, const Quaternion &rhs) {
-        return Quaternion(lhs * x(), lhs * y(), lhs * z(), lhs * w());
-    }
+    Matrix44Base<T> toRotateMatrix() const;
 
-    friend Quaternion operator*(const Quaternion &lhs, Float32 rhs) {
-        return rhs * lhs;
-    }
+    Bool operator==(const QuaternionBase &rhs) const;
+    Bool operator!=(const QuaternionBase &rhs) const;
 
-    friend Quaternion operator/(const Quaternion &lhs, Float32 rhs) {
-        return lhs * (1 / rhs);
-    }
+    friend QuaternionBase operator*<T>(const QuaternionBase &lhs, const QuaternionBase &rhs);
+    friend QuaternionBase operator*<T>(Float32 lhs, const QuaternionBase &rhs);
+    friend QuaternionBase operator*<T>(const QuaternionBase &lhs, Float32 rhs);
+    friend QuaternionBase operator/<T>(const QuaternionBase &lhs, Float32 rhs);
 
 private:
-    Float32 elements_[4];
+    union {
+        T elements_[4];
+        Vector4 vec4_;
+    };
 
 public:
-    static const Quaternion kZero;
-    static const Quaternion kIdentity;
+    static const QuaternionBase kZero;
+    static const QuaternionBase kIdentity;
 };
+
+using Quaternion = QuaternionBase<Float32>;
 
 }   // math
 }   // temp
+
+#include "quaternion_detail.h"
 
 #endif // GUARD_310e3077c88749ee91ab93a6d1303417

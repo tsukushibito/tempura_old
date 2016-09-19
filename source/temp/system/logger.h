@@ -66,8 +66,18 @@ public:
     }
 
     template < typename... Args >
+    static void trace(const String &fmt, const Args &... args) {
+        trace(fmt.c_str(), args...);
+    }
+
+    template < typename... Args >
     static void debug(const char *fmt, const Args &... args) {
         pInstance->spLogger_->debug(fmt, args...);
+    }
+
+    template < typename... Args >
+    static void debug(const String &fmt, const Args &... args) {
+        debug(fmt.c_str(), args...);
     }
 
     template < typename... Args >
@@ -76,8 +86,18 @@ public:
     }
 
     template < typename... Args >
+    static void info(const String &fmt, const Args &... args) {
+        info(fmt.c_str(), args...);
+    }
+
+    template < typename... Args >
     static void notice(const char *fmt, const Args &... args) {
         pInstance->spLogger_->notice(fmt, args...);
+    }
+
+    template < typename... Args >
+    static void notice(const String &fmt, const Args &... args) {
+        notice(fmt.c_str(), args...);
     }
 
     template < typename... Args >
@@ -86,8 +106,18 @@ public:
     }
 
     template < typename... Args >
+    static void warn(const String &fmt, const Args &... args) {
+        warn(fmt.c_str(), args...);
+    }
+
+    template < typename... Args >
     static void error(const char *fmt, const Args &... args) {
         pInstance->spLogger_->error(fmt, args...);
+    }
+
+    template < typename... Args >
+    static void error(const String &fmt, const Args &... args) {
+        error(fmt.c_str(), args...);
     }
 
     template < typename... Args >
@@ -96,13 +126,28 @@ public:
     }
 
     template < typename... Args >
+    static void critical(const String &fmt, const Args &... args) {
+        critical(fmt.c_str(), args...);
+    }
+
+    template < typename... Args >
     static void alert(const char *fmt, const Args &... args) {
         pInstance->spLogger_->alert(fmt, args...);
     }
 
     template < typename... Args >
+    static void alert(const String &fmt, const Args &... args) {
+        alert(fmt.c_str(), args...);
+    }
+
+    template < typename... Args >
     static void emerg(const char *fmt, const Args &... args) {
         pInstance->spLogger_->emerg(fmt, args...);
+    }
+
+    template < typename... Args >
+    static void emerg(const String &fmt, const Args &... args) {
+        emerg(fmt.c_str(), args...);
     }
 
     static void setLevel(LogLevel level) { pInstance->spLogger_->set_level(static_cast< spdlog::level::level_enum >(level)); }

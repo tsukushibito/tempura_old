@@ -207,8 +207,8 @@ public:
     T &operator[](Size index);
     const T &operator[](Size index) const;
 
-    Bool operator==(const Vector4Base &rhs);
-    Bool operator!=(const Vector4Base &rhs);
+    Bool operator==(const Vector4Base &rhs) const;
+    Bool operator!=(const Vector4Base &rhs) const;
 
     Vector4Base operator-();
     Vector4Base operator+(const Vector4Base &rhs);

@@ -164,10 +164,14 @@ void Test::testMath() {
     auto zero = Vector3::dot(Vector3(1, 0, 0), Vector3(0, 1, 0));
     TEMP_ASSERT(zero == 0, "");
     
-    Matrix44 mat(2, 0, 1, 1, 1, 1, 2, 3, -1, 2, 0, 0, 1, 0, 1, 10);
-    ConsoleLogger::trace(mat.toString().c_str());
+    Matrix44 mat(RowOrder(),
+        Vector4( 2,  0,  1,  1), 
+        Vector4( 1,  1,  2,  3),
+        Vector4(-1,  2,  0,  0),
+        Vector4( 1,  0,  1, 10));
+    ConsoleLogger::trace(mat.toString());
     auto det = mat.determinant();
-    TEMP_ASSERT(det == -43, "");
+    TEMP_ASSERT(det == -23, "");
     auto id = Matrix44::kIdentity;
     auto inv = id.inverse();
     TEMP_ASSERT(*inv == id, "");
@@ -183,6 +187,14 @@ void Test::testMath() {
 
     auto mat2 = mat * id;
     TEMP_ASSERT(mat == mat2, "");
+
+    auto tmat = mat.transpose();
+    ConsoleLogger::trace(tmat.toString());
+
+    auto r = std::sin(math::pi32()/2.0f);
+    ConsoleLogger::trace("sin(PI) = {0}", r);
+
+    Quaternion quat;
 }
 
 int main(/*int argc, char const* argv[]*/) {

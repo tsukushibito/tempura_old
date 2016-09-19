@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file type.h
  * @brief type defines
  * @author tsukushibito
@@ -11,6 +11,13 @@
 
 #include <cstdint>
 #include <memory>
+#include <utility>
+
+#define TEMP_DEFINE_ALIAS(name, target)  \
+template<typename... Args>      \
+inline auto name(Args&&... args) -> decltype(target(std::forward<Args>(args)...))   \
+{ return target(std::forward<Args>(args)...);   }
+
 
 namespace temp {
 

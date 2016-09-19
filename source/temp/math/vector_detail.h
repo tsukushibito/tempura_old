@@ -395,12 +395,12 @@ const T &Vector4Base< T >::operator[](Size index) const {
 }
 
 template < typename T >
-Bool Vector4Base< T >::operator==(const Vector4Base< T > &rhs) {
+Bool Vector4Base< T >::operator==(const Vector4Base< T > &rhs) const {
     return (x() == rhs.x()) && (y() == rhs.y()) && (z() == rhs.z()) && (w() == rhs.w());
 }
 
 template < typename T >
-Bool Vector4Base< T >::operator!=(const Vector4Base< T > &rhs) {
+Bool Vector4Base< T >::operator!=(const Vector4Base< T > &rhs) const {
     return !((*this) == rhs);
 }
 

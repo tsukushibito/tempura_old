@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file matrix_detail.h
  * @brief matrix detail
  * @author tsukushibito
@@ -24,38 +24,52 @@ Matrix44Base< T >::Matrix44Base() {
 }
 
 template < typename T >
-Matrix44Base< T >::Matrix44Base(T _11, T _21, T _31, T _41, T _12, T _22, T _32, T _42, T _13, T _23, T _33, T _43, T _14, T _24,
-                                T _34, T _44) {
-    T temp[] = { _11, _21, _31, _41, _12, _22, _32, _42, _13, _23, _33, _43, _14, _24, _34, _44 };
-    for (Int32 col = 0; col < 4; ++col) {
-        for (Int32 row = 0; row < 4; ++row) {
-            m_[col][row] = temp[4 * col + row];
+Matrix44Base<T>::Matrix44Base(T element[16]) {
+    for (Size i = 0; i < 16; ++i) {
+        m_[i / 4][i % 4] = element[i];
+    }
+}
+
+template < typename T >
+Matrix44Base<T>::Matrix44Base(RowOrder,
+    const Vec4 &row0,
+    const Vec4 &row1,
+    const Vec4 &row2,
+    const Vec4 &row3) {
+    const Vec4 *rows[4] = {&row0, &row1, &row2, &row3};
+    for (Size row = 0; row < 4; ++row) {
+        for (Size col = 0; col < 4; ++col) {
+            col_[col][row] = (*rows[row])[col];
         }
     }
 }
 
 template < typename T >
-Matrix44Base< T >::Matrix44Base(const Vector4Base< T > &col1, const Vector4Base< T > &col2, const Vector4Base< T > &col3,
-                                const Vector4Base< T > &col4) {
-    col_[0] = col1;
-    col_[1] = col2;
-    col_[2] = col3;
-    col_[3] = col4;
+Matrix44Base<T>::Matrix44Base(ColOrder,
+    const Vec4 &col0,
+    const Vec4 &col1,
+    const Vec4 &col2,
+    const Vec4 &col3) {
+    col_[0] = col0;
+    col_[1] = col1;
+    col_[2] = col2;
+    col_[3] = col3;
 }
 
 template < typename T >
 String Matrix44Base< T >::toString() const {
     std::stringstream ss;
-    for (Int32 col = 0; col < 4; ++col) {
-        if (col == 0) {
+    ss << std::endl;
+    for (Int32 row = 0; row < 4; ++row) {
+        if (row == 0) {
             ss << "Matrix44( ";
         } else {
             ss << "          ";
         }
-        for (Int32 row = 0; row < 4; ++row) {
+        for (Int32 col = 0; col < 4; ++col) {
             ss << m_[col][row] << ", ";
         }
-        if (col == 3) {
+        if (row == 3) {
             ss << ")" << std::endl;
         } else {
             ss << std::endl;
@@ -242,7 +256,9 @@ Optional<Matrix44Base< T > > Matrix44Base< T >::inverse() const {
 }
 
 template < typename T >
-Matrix44Base< T > Matrix44Base< T >::transpose() const {}
+Matrix44Base< T > Matrix44Base< T >::transpose() const {
+    return Matrix44Base<T>(ColOrder(), row(0), row(1), row(2), row(3));
+}
 
 template < typename T >
 Vector4Base< T > Matrix44Base< T >::row(Size index) const {
@@ -254,11 +270,11 @@ template < typename T >
 const Matrix44Base<T> Matrix44Base<T>::kZero;
 template < typename T >
 const Matrix44Base<T> Matrix44Base<T>::kIdentity 
-    = Matrix44Base<T>(
-            1.0f, 0.0f, 0.0f, 0.0f, 
-            0.0f, 1.0f, 0.0f, 0.0f, 
-            0.0f, 0.0f, 1.0f, 0.0f, 
-            0.0f, 0.0f, 0.0f, 1.0f);
+    = Matrix44Base<T>(ColOrder(),
+            Vec4(1.0f, 0.0f, 0.0f, 0.0f), 
+            Vec4(0.0f, 1.0f, 0.0f, 0.0f), 
+            Vec4(0.0f, 0.0f, 1.0f, 0.0f), 
+            Vec4(0.0f, 0.0f, 0.0f, 1.0f));
 
 } // namespace math
 } // namespace temp
