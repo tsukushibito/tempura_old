@@ -66,6 +66,8 @@ public:
     T *operator[](Size index);
     const T *operator[](Size index) const;
 
+    T operator()(Size row, Size col) const;
+
     Bool operator==(const Matrix44Base &rhs);
     Bool operator!=(const Matrix44Base &rhs);
 

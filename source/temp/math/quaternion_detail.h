@@ -31,11 +31,11 @@ QuaternionBase<T>::QuaternionBase(const Vector3Base<T> &euler) {
     auto qy = QuaternionBase<T>(0, sin(euler.y() / 2), 0, cos(euler.y() / 2));
     auto qz = QuaternionBase<T>(0, 0, sin(euler.z() / 2), cos(euler.z() / 2));
 
-    *this = qz * qx * qy;
+    *this = (qz * qx * qy).normalized();
 }
 
 template<typename T>
-String QuaternionBase<T>::ToString() {
+String QuaternionBase<T>::toString() {
     std::stringstream ss;
     ss << "QuaternionBase( " << x() << ", " << y() << ", " << z() << ", " << w() << " )";
     return ss.str();
@@ -103,9 +103,9 @@ QuaternionBase<T> QuaternionBase<T>::normalized() const {
 
 template<typename T>
 Matrix44Base<T> QuaternionBase<T>::toRotateMatrix() const {
-    auto x2 = x() * x();
-    auto y2 = y() * y();
-    auto z2 = z() * z();
+    auto xx = x() * x();
+    auto yy = y() * y();
+    auto zz = z() * z();
     auto wx = w() * x();
     auto wy = w() * y();
     auto wz = w() * z();
@@ -114,10 +114,39 @@ Matrix44Base<T> QuaternionBase<T>::toRotateMatrix() const {
     auto yz = y() * z();
 
     return Matrix44Base<T>( RowOrder(),
-            Vector4Base<T>(1 - 2*y2 - 2*z2, 2*xy + 2*wz,     2*xz - 2*wy,     0),
-            Vector4Base<T>(2*xy - 2*wz,     1 - 2*x2 - 2*z2, 2*yz + 2*wx,     0),
-            Vector4Base<T>(2*xz - 2*wy,     2*yz - 2*wx,     1 - 2*x2 - 2*y2, 0),
+            Vector4Base<T>(1 - 2*(yy + zz), 2*(xy - wz),     2*(xz + wy),     0),
+            Vector4Base<T>(2*(xy + wz),     1 - 2*(zz + xx), 2*(yz - wx),     0),
+            Vector4Base<T>(2*(xz - wy),     2*(yz + wx),     1 - 2*(xx + yy), 0),
             Vector4Base<T>(0,               0,               0,               1)); 
+}
+
+template<typename T>
+Vector3Base<T> QuaternionBase<T>::toEulerAnglesZXY() const {
+    using std::atan2;
+    using std::asin;
+    using std::sqrt;
+    auto rotateMat = toRotateMatrix();
+    auto r11 = rotateMat(0, 0);
+    auto r21 = rotateMat(1, 0);
+    auto r31 = rotateMat(2, 0);
+    auto r32 = rotateMat(2, 1);
+    auto r33 = rotateMat(2, 2);
+
+    T x, y, z;
+    x = atan2(r32, r33);
+    y = atan2(-r31, sqrt(r32 * r32 + r33 * r33));
+    z = atan2(r21, r11);
+
+    return Vector3Base<T>(x, y, z);
+}
+
+template<typename T>
+Vector3Base<T> QuaternionBase<T>::rotateVector3(const Vector3Base<T> &rhs) const {
+    auto quat = *this;
+    auto conj = quat.conjugate();
+    auto target = QuaternionBase<T>(rhs.x(), rhs.y(), rhs.z(), 0);
+    auto rotated = conj * target * quat;
+    return Vector3Base<T>(rotated.x(), rotated.y(), rotated.z());
 }
 
 template<typename T>
@@ -136,13 +165,12 @@ QuaternionBase<T> operator*(const QuaternionBase<T> &lhs, const QuaternionBase<T
         lhs.w() * rhs.x() + lhs.x() * rhs.w() + lhs.y() * rhs.z() - lhs.z() * rhs.y(),
         lhs.w() * rhs.y() - lhs.x() * rhs.z() + lhs.y() * rhs.w() + lhs.z() * rhs.x(),
         lhs.w() * rhs.z() + lhs.x() * rhs.y() - lhs.y() * rhs.x() + lhs.z() * rhs.w(),
-        lhs.w() * rhs.w() - lhs.x() * rhs.x() - lhs.y() * rhs.y() - lhs.z() * rhs.z(),
-        );
+        lhs.w() * rhs.w() - lhs.x() * rhs.x() - lhs.y() * rhs.y() - lhs.z() * rhs.z());
 }
 
 template<typename T>
 QuaternionBase<T> operator*(Float32 lhs, const QuaternionBase<T> &rhs) {
-    return QuaternionBase<T>(lhs * x(), lhs * y(), lhs * z(), lhs * w());
+    return QuaternionBase<T>(lhs * rhs.x(), lhs * rhs.y(), lhs * rhs.z(), lhs * rhs.w());
 }
 
 template<typename T>

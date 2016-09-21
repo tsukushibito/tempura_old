@@ -46,7 +46,7 @@ public:
 
     ~QuaternionBase() = default;
 
-    String ToString();
+    String toString();
 
     T &x();
     const T &x() const;
@@ -73,6 +73,10 @@ public:
     QuaternionBase normalized() const;
 
     Matrix44Base<T> toRotateMatrix() const;
+
+    Vector3Base<T> toEulerAnglesZXY() const;
+
+    Vector3Base<T> rotateVector3(const Vector3Base<T> &rhs) const;
 
     Bool operator==(const QuaternionBase &rhs) const;
     Bool operator!=(const QuaternionBase &rhs) const;

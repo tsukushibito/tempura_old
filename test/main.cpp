@@ -194,7 +194,19 @@ void Test::testMath() {
     auto r = std::sin(math::pi32()/2.0f);
     ConsoleLogger::trace("sin(PI) = {0}", r);
 
-    Quaternion quat;
+    Quaternion quat(Vector3(math::pi32(), 0.0f, math::pi32()/2.0f));
+    auto abs = quat.absolute();
+    ConsoleLogger::trace("quat abs = {0}", abs);
+    auto euler = quat.toEulerAnglesZXY();
+    ConsoleLogger::trace("euler = {0}", euler.toString());
+
+    Vector3 forward = Vector3::kForward;
+    Quaternion rot(Vector3(math::pi32()/2.0f, math::pi32()/2.0f, math::pi32()));
+    auto rotated = rot.rotateVector3(forward);
+    ConsoleLogger::trace("rotated = {0}", rotated.toString());
+    auto rotMat = rot.toRotateMatrix();
+    auto rotated2 = Vector4(forward[0], forward[1], forward[2], 0) * rotMat;
+    ConsoleLogger::trace("rotated2 = {0}", rotated2.toString());
 }
 
 int main(/*int argc, char const* argv[]*/) {

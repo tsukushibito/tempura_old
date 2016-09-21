@@ -89,6 +89,11 @@ const T * Matrix44Base< T >::operator[](Size index) const {
 }
 
 template < typename T >
+T Matrix44Base<T>::operator()(Size row, Size col) const {
+    return col_[col][row];
+}
+
+template < typename T >
 Bool Matrix44Base<T>::operator==(const Matrix44Base &rhs) {
     return (col_[0] == rhs.col_[0] && col_[1] == rhs.col_[1] && col_[2] == rhs.col_[2] && col_[3] == rhs.col_[3]);
 }
