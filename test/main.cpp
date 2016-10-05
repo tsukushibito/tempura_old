@@ -194,7 +194,7 @@ void Test::testMath() {
     auto r = std::sin(math::pi32()/2.0f);
     ConsoleLogger::trace("sin(PI) = {0}", r);
 
-    Quaternion quat(Vector3(math::pi32(), 0.0f, math::pi32()/2.0f));
+    Quaternion quat(Vector3(math::pi32()/2.0f, 0.0f, 0.0f));
     auto abs = quat.absolute();
     ConsoleLogger::trace("quat abs = {0}", abs);
     auto euler = quat.toEulerAnglesZXY();

@@ -1,7 +1,5 @@
-build/DerivedData/
-build/Debug/
-build/Release/
-build/project_files/
+build/
+build_old/
 *.xcodeproj
 *.sln
 *.vcxproj
