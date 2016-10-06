@@ -90,7 +90,7 @@ public:
     friend QuaternionBase operator/<T>(const QuaternionBase &lhs, Float32 rhs);
 
 private:
-	Vector4 vec4_;
+	Vector4Base<T> vec4_;
 
 public:
     static const QuaternionBase kZero;
@@ -102,6 +102,6 @@ using Quaternion = QuaternionBase<Float32>;
 }   // math
 }   // temp
 
-#include "quaternion_detail.h"
+#include "temp/math/quaternion_detail.h"
 
 #endif // GUARD_310e3077c88749ee91ab93a6d1303417
