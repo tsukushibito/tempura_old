@@ -21,7 +21,7 @@ OpenglContexts createContexts(NsWindow window, Size worker_thread_count) {
 
     // 初期化
     NSOpenGLPixelFormat *pixelFormat = [[NSOpenGLPixelFormat alloc] initWithAttributes:att];
-    if (pixelFormat == nil) return; // TODO: バージョンを下げた設定で作成し直す
+    if (pixelFormat == nil) return OpenglContexts(); // TODO: バージョンを下げた設定で作成し直す
 
     // コンテキストの作成
     NSOpenGLContext *context_for_render =

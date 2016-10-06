@@ -19,7 +19,7 @@ inline Vector<String> splitString(const String &str, char delim) {
         }
     }
     
-    return std::move(elems);
+    return elems;
 }
 
 struct DecomposedPath {
@@ -59,7 +59,7 @@ DecomposedPath decomposeAbsolutePath(const String &absPath) {
         }
     }
 
-    return std::move(decomposedPath);
+    return decomposedPath;
 }
 
 } // namespace

@@ -45,7 +45,7 @@ void Path::convertToAbsolutePath(String &string) {
         string = abs_path;
     } else {
         auto n = errno;
-        printf("%s ´n", strerror(n));
+        printf("%s \n", strerror(n));
     }
 }
 
