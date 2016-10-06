@@ -10,7 +10,9 @@
 #define GUARD_f38e9a44859545f0be2822de4f33f79a
 
 #include <cmath>
-#include "type.h"
+// #include <sstream>
+#include "temp/type.h"
+#include "temp/temp_assert.h"
 
 namespace temp {
 namespace math {
@@ -21,184 +23,212 @@ namespace math {
  * @tparam T
  */
 template < typename T >
-class Vector2 {
+class Vector2Base;
+template < typename T >
+Vector2Base< T > operator*(Float32 lhs, const Vector2Base< T > &rhs);
+template < typename T >
+Vector2Base< T > operator*(const Vector2Base< T > &lhs, Float32 rhs);
+template < typename T >
+Vector2Base< T > operator/(const Vector2Base< T > &lhs, Float32 rhs);
+
+template < typename T >
+class Vector2Base {
 public:
+    Vector2Base();
+    Vector2Base(T x, T y);
 
-    Vector2() : Vector2((T)0, (T)0) {}
+    Vector2Base(const Vector2Base &) = default;
+    Vector2Base &operator=(const Vector2Base &) = default;
 
-    Vector2(T x, T y)
-        : x_(x)
-        , y_(y) {}
+    Vector2Base(Vector2Base &&) noexcept = default;
+    Vector2Base &operator=(Vector2Base &&) noexcept = default;
 
+    ~Vector2Base() = default;
 
-    T &x() { return x_; }
-    const T &x() const { return x_; }
-    T &y() { return y_; }
-    const T &y() const { return y_; }
+    String toString() const;
 
-    Float32 lengthSquared() const { return (x_ * x_) + (y_ * y_); }
-    Float32 length() const { return std::sqrt(lengthSquared()); }
-    Float32 normalized() const { return (*this) / length(); }
+    T &x();
+    const T &x() const;
+    T &y();
+    const T &y() const;
+
+    T &operator[](Size index);
+    const T &operator[](Size index) const;
+
+    Float32 lengthSquared() const;
+    Float32 length() const;
+    Float32 normalized() const;
+
+    Bool operator==(const Vector2Base &rhs);
+    Bool operator!=(const Vector2Base &rhs);
+    Vector2Base operator-() const;
+    Vector2Base operator+(const Vector2Base &rhs);
+    Vector2Base operator-(const Vector2Base &rhs);
+
+    friend Vector2Base operator*< T >(Float32 lhs, const Vector2Base &rhs);
+    friend Vector2Base operator*< T >(const Vector2Base &lhs, Float32 rhs);
+    friend Vector2Base operator/< T >(const Vector2Base &lhs, Float32 rhs);
+
+    static T dot(const Vector2Base &lhs, const Vector2Base &rhs);
+
+public:
+    static const Vector2Base kZero;
+    static const Vector2Base kLeft;
+    static const Vector2Base kRight;
+    static const Vector2Base kUp;
+    static const Vector2Base kDown;
 
 private:
-    T x_;
-    T y_;
-
-public:
-    static const Vector2 kZero;
-    static const Vector2 kBasisX;
-    static const Vector2 kBasisY;
+    T elements_[2];
 };
 
-template < typename T >
-const Vector2< T > Vector2< T >::kZero = Vector2< T >();
-template < typename T >
-const Vector2< T > Vector2< T >::kBasisX = Vector2< T >((T)1, (T)0);
-template < typename T >
-const Vector2< T > Vector2< T >::kBasisY = Vector2< T >((T)0, (T)1);
+using Vector2 = Vector2Base< Float32 >;
+using Vector2F64 = Vector2Base< Float64 >;
 
 template < typename T >
-bool operator==(const Vector2< T > &lhs, const Vector2< T > &rhs) {
-    return (lhs.x() == rhs.x()) && (lhs.y() == rhs.y());
-}
+class Vector3Base;
+template < typename T >
+Vector3Base< T > operator*(Float32 lhs, const Vector3Base< T > &rhs);
+template < typename T >
+Vector3Base< T > operator*(const Vector3Base< T > &lhs, Float32 rhs);
+template < typename T >
+Vector3Base< T > operator*(const Vector3Base< T > &lhs, const Vector3Base< T > &rhs);
+template < typename T >
+Vector3Base< T > operator/(const Vector3Base< T > &lhs, Float32 rhs);
 
 template < typename T >
-bool operator!=(const Vector2< T > &lhs, const Vector2< T > &rhs) {
-    return !(lhs == rhs);
-}
-
-template < typename T >
-Vector2< T > operator-(const Vector2< T > vec) {
-    return Vector2< T >(-vec.x(), -vec.y());
-}
-
-template < typename T >
-Vector2< T > operator+(const Vector2< T > &lhs, const Vector2< T > &rhs) {
-    return Vector2< T >(lhs.x() + rhs.x(), lhs.y() + rhs.y());
-}
-
-template < typename T >
-Vector2< T > operator-(const Vector2< T > &lhs, const Vector2< T > &rhs) {
-    return Vector2< T >(lhs.x() - rhs.x(), lhs.y() - rhs.y());
-}
-
-template < typename T >
-Vector2< T > operator*(Float32 lhs, const Vector2< T > &rhs) {
-    return Vector2< T >(lhs * rhs.x(), lhs * rhs.y());
-}
-
-template < typename T >
-Vector2< T > operator*(const Vector2< T > lhs, Float32 rhs) {
-    return rhs * lhs;
-}
-
-template < typename T >
-Vector2< T > operator/(Float32 lhs, const Vector2< T > &rhs) {
-    return Vector2< T >(lhs / rhs.x(), lhs / rhs.y());
-}
-
-template < typename T >
-Vector2< T > operator/(const Vector2< T > lhs, Float32 rhs) {
-    return rhs / lhs;
-}
-
-template < typename T >
-T dot(const Vector2< T > &lhs, const Vector2< T > &rhs) {
-    return lhs.x() * rhs.x() + lhs.y() * rhs.y();
-}
-
-using Vector2F32 = Vector2< Float32 >;
-using Vector2F64 = Vector2< Float64 >;
-
-template < typename T >
-class Vector3 {
+class Vector3Base {
 public:
-    Vector3(T x, T y, T z)
-        : x_(x)
-        , y_(y)
-        , z_(z) {}
+    Vector3Base();
 
-    Vector3() : Vector3((T)0, (T)0, (T)0) {}
+    Vector3Base(T x, T y, T z);
 
-    T &x() { return x_; }
-    const T &x() const { return x_; }
-    T &y() { return y_; }
-    const T &y() const { return y_; }
-    T &z() { return z_; }
-    const T &z() const { return z_; }
+    Vector3Base(const Vector3Base &) = default;
+    Vector3Base &operator=(const Vector3Base &) = default;
+
+    Vector3Base(Vector3Base &&) noexcept = default;
+    Vector3Base &operator=(Vector3Base &&) noexcept = default;
+
+    ~Vector3Base() = default;
+
+    String toString() const;
+
+    T &x();
+    const T &x() const;
+    T &y();
+    const T &y() const;
+    T &z();
+    const T &z() const;
+
+    T &operator[](Size index);
+    const T &operator[](Size index) const;
+
+    Vector3Base xyz() const;
+    Vector3Base xzy() const;
+    Vector3Base yxz() const;
+    Vector3Base yzx() const;
+    Vector3Base zxy() const;
+    Vector3Base zyx() const;
+
+    Float32 lengthSquared() const;
+    Float32 length() const;
+    Vector3Base normalized() const;
+
+    Bool operator==(const Vector3Base &rhs);
+    Bool operator!=(const Vector3Base &rhs);
+
+    Vector3Base operator-();
+    Vector3Base operator+(const Vector3Base &rhs);
+    Vector3Base operator-(const Vector3Base &rhs);
+
+    friend Vector3Base operator*< T >(Float32 lhs, const Vector3Base &rhs);
+    friend Vector3Base operator*< T >(const Vector3Base &lhs, Float32 rhs);
+    friend Vector3Base operator*< T >(const Vector3Base &lhs, const Vector3Base &rhs);
+    friend Vector3Base operator/< T >(const Vector3Base &lhs, Float32 rhs);
+
+    static Float32 angle(const Vector3Base &lhs, const Vector3Base &rhs);
+    static Vector3Base cross(const Vector3Base &lhs, const Vector3Base &rhs);
+    static Float32 distance(const Vector3Base &lhs, const Vector3Base &rhs);
+    static T dot(const Vector3Base &lhs, const Vector3Base &rhs);
 
 private:
-    T x_;
-    T y_;
-    T z_;
+    T elements_[3];
 
 public:
-    static const Vector3 kZero;
-    static const Vector3 kBasisX;
-    static const Vector3 kBasisY;
-    static const Vector3 kBasisZ;
+    static const Vector3Base kZero;
+    static const Vector3Base kLeft;
+    static const Vector3Base kRight;
+    static const Vector3Base kUp;
+    static const Vector3Base kDown;
+    static const Vector3Base kForward;
+    static const Vector3Base kBack;
 };
 
-using Vector3f = Vector3< Float32 >;
+using Vector3 = Vector3Base< Float32 >;
+
 
 template < typename T >
-Vector3< T > operator+(const Vector3< T > &lhs, const Vector3< T > &rhs) {
-    return Vector3< T >(lhs.x() + rhs.x(), lhs.y() + rhs.y(), lhs.z() + rhs.z());
-}
+class Vector4Base;
+template < typename T >
+Vector4Base< T > operator*(Float32 lhs, const Vector4Base< T > &rhs);
+template < typename T >
+Vector4Base< T > operator*(const Vector4Base< T > &lhs, Float32 rhs);
+template < typename T >
+Vector4Base< T > operator*(const Vector4Base< T > &lhs, const Vector4Base< T > &rhs);
+template < typename T >
+Vector4Base< T > operator/(const Vector4Base< T > &lhs, Float32 rhs);
 
 template < typename T >
-Vector3< T > operator-(const Vector3< T > &lhs, const Vector3< T > &rhs) {
-    return Vector3< T >(lhs.x() - rhs.x(), lhs.y() - rhs.y(), lhs.z() - rhs.z());
-}
-
-template < typename T >
-T dot(const Vector3< T > &lhs, const Vector3< T > &rhs) {
-    return lhs.x() * rhs.x() + lhs.y() * rhs.y() + lhs.z() + rhs.z();
-}
-
-template < typename T >
-Vector3< T > cross(const Vector3< T > &lhs, const Vector3< T > &rhs) {
-    return Vector3< T >(lhs.y() * rhs.z() - lhs.z() * rhs.y(), lhs.z() * rhs.x() - lhs.x() * rhs.z(),
-                        lhs.x() * rhs.y() - lhs.y() * rhs.x());
-}
-
-template < typename T >
-class Vector4 {
+class Vector4Base {
 public:
-    Vector4(T x, T y, T z, T w)
-        : x_(x)
-        , y_(y)
-        , z_(z)
-        , w_(w) {}
+    Vector4Base();
 
-    Vector4() : Vector4((T)0, (T)0, (T)0, (T)0) {}
+    Vector4Base(T x, T y, T z, T w);
 
-    T &x() { return x_; }
-    const T &x() const { return x_; }
-    T &y() { return y_; }
-    const T &y() const { return y_; }
-    T &z() { return z_; }
-    const T &z() const { return z_; }
-    T &w() { return w_; }
-    const T &w() const { return w_; }
+    Vector4Base(const Vector4Base &) = default;
+    Vector4Base &operator=(const Vector4Base &) = default;
 
+    Vector4Base(Vector4Base &&) noexcept = default;
+    Vector4Base &operator=(Vector4Base &&) noexcept = default;
+
+    ~Vector4Base() = default;
+
+    String toString() const;
+
+    T &x();
+    const T &x() const;
+    T &y();
+    const T &y() const;
+    T &z();
+    const T &z() const;
+    T &w();
+    const T &w() const;
+
+    T &operator[](Size index);
+    const T &operator[](Size index) const;
+
+    Bool operator==(const Vector4Base &rhs) const;
+    Bool operator!=(const Vector4Base &rhs) const;
+
+    Vector4Base operator-();
+    Vector4Base operator+(const Vector4Base &rhs);
+    Vector4Base operator-(const Vector4Base &rhs);
+
+    friend Vector4Base operator*< T >(Float32 lhs, const Vector4Base &rhs);
+    friend Vector4Base operator*< T >(const Vector4Base &lhs, Float32 rhs);
+    friend Vector4Base operator*< T >(const Vector4Base &lhs, const Vector4Base &rhs);
+    friend Vector4Base operator/< T >(const Vector4Base &lhs, Float32 rhs);
+
+    static T dot(const Vector4Base &lhs, const Vector4Base &rhs);
 private:
-    T x_;
-    T y_;
-    T z_;
-    T w_;
-
-public:
-    static const Vector4 kZero;
-    static const Vector4 kBasisX;
-    static const Vector4 kBasisY;
-    static const Vector4 kBasisZ;
-    static const Vector4 kBasisW;
+    T elements_[4];
 };
 
-using Vector4f = Vector4< Float32 >;
+using Vector4 = Vector4Base< Float32 >;
 
 } // namespace math
 } // namespace temp
+
+#include "temp/math/vector_detail.h"
 
 #endif // GUARD_f38e9a44859545f0be2822de4f33f79a
