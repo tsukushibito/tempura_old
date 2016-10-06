@@ -56,15 +56,18 @@ public:
     Matrix44Base(const Matrix44Base &) = default;
     Matrix44Base &operator=(const Matrix44Base &) = default;
 
-    Matrix44Base(Matrix44Base &&) noexcept = default;
-    Matrix44Base &operator=(Matrix44Base &&) noexcept = default;
+#if _MSC_VER<1900
+#else
+    Matrix44Base(Matrix44Base &&) = default;
+    Matrix44Base &operator=(Matrix44Base &&) = default;
+#endif
 
     ~Matrix44Base() = default;
 
     String toString() const;
 
-    T *operator[](Size index);
-    const T *operator[](Size index) const;
+    Vector4Base<T> *operator[](Size index);
+    const Vector4Base<T> *operator[](Size index) const;
 
     T operator()(Size row, Size col) const;
 
@@ -81,10 +84,7 @@ public:
     Optional<Matrix44Base> inverse() const;
     Matrix44Base transpose() const;
 private:
-    union {
-        T m_[4][4];
-        Vector4Base<T> col_[4];
-    };
+	Vector4Base<T> cols_[4];
 
     Vector4Base<T> row(Size index) const;
 

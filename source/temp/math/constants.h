@@ -16,15 +16,15 @@ namespace temp {
 namespace math {
 
 template<typename T>
-constexpr T pi();
+const T pi();
 
 template<>
-Float32 pi() {
+const Float32 pi() {
     return 3.14159265f;
 }
 
 template<>
-Float64 pi() {
+const Float64 pi() {
     return 3.141592653589793;
 }
 

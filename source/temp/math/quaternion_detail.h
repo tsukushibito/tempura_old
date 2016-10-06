@@ -16,11 +16,8 @@ template<typename T>
 QuaternionBase<T>::QuaternionBase() : QuaternionBase(0.0f, 0.0f, 0.0f, 0.0f) { }
 
 template<typename T>
-QuaternionBase<T>::QuaternionBase(T x, T y, T z, T w) {
-    elements_[0] = x;
-    elements_[1] = y;
-    elements_[2] = z;
-    elements_[3] = w;
+QuaternionBase<T>::QuaternionBase(T x, T y, T z, T w) 
+: vec4_(x, y, z, w) {
 }
 
 template<typename T>
@@ -42,34 +39,34 @@ String QuaternionBase<T>::toString() {
 }
 
 template<typename T>
-T &QuaternionBase<T>::x() { return elements_[0]; }
+T &QuaternionBase<T>::x() { return vec4_[0]; }
 
 template<typename T>
-const T &QuaternionBase<T>::x() const { return elements_[0]; }
+const T &QuaternionBase<T>::x() const { return vec4_[0]; }
 
 template<typename T>
-T &QuaternionBase<T>::y() { return elements_[1]; }
+T &QuaternionBase<T>::y() { return vec4_[1]; }
 
 template<typename T>
-const T &QuaternionBase<T>::y() const { return elements_[1]; }
+const T &QuaternionBase<T>::y() const { return vec4_[1]; }
 
 template<typename T>
-T &QuaternionBase<T>::z() { return elements_[2]; }
+T &QuaternionBase<T>::z() { return vec4_[2]; }
 
 template<typename T>
-const T &QuaternionBase<T>::z() const { return elements_[2]; }
+const T &QuaternionBase<T>::z() const { return vec4_[2]; }
 
 template<typename T>
-T &QuaternionBase<T>::w() { return elements_[3]; }
+T &QuaternionBase<T>::w() { return vec4_[3]; }
 
 template<typename T>
-const T &QuaternionBase<T>::w() const { return elements_[3]; }
+const T &QuaternionBase<T>::w() const { return vec4_[3]; }
 
 template<typename T>
-T &QuaternionBase<T>::operator[](Size index) { TEMP_ASSERT(index <= 3, ""); return elements_[index]; }
+T &QuaternionBase<T>::operator[](Size index) { TEMP_ASSERT(index <= 3, ""); return vec4_[index]; }
 
 template<typename T>
-const T &QuaternionBase<T>::operator[](Size index) const { TEMP_ASSERT(index <= 3, ""); return elements_[index]; }
+const T &QuaternionBase<T>::operator[](Size index) const { TEMP_ASSERT(index <= 3, ""); return vec4_[index]; }
 
 template<typename T>
 QuaternionBase<T> QuaternionBase<T>::conjugate() const {

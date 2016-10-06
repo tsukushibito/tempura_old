@@ -41,8 +41,11 @@ public:
     QuaternionBase(const QuaternionBase &) = default;
     QuaternionBase &operator=(const QuaternionBase &) = default;
 
+#if _MSC_VER<1900
+#else
     QuaternionBase(QuaternionBase &&) = default;
     QuaternionBase &operator=(QuaternionBase &&) = default;
+#endif
 
     ~QuaternionBase() = default;
 
@@ -87,10 +90,7 @@ public:
     friend QuaternionBase operator/<T>(const QuaternionBase &lhs, Float32 rhs);
 
 private:
-    union {
-        T elements_[4];
-        Vector4 vec4_;
-    };
+	Vector4 vec4_;
 
 public:
     static const QuaternionBase kZero;
