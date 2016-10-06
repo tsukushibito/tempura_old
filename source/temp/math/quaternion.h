@@ -43,8 +43,8 @@ public:
 
 #if _MSC_VER<1900
 #else
-    QuaternionBase(QuaternionBase &&) = default;
-    QuaternionBase &operator=(QuaternionBase &&) = default;
+    QuaternionBase(QuaternionBase &&) noexcept = default;
+    QuaternionBase &operator=(QuaternionBase &&) noexcept = default;
 #endif
 
     ~QuaternionBase() = default;

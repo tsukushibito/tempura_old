@@ -18,6 +18,15 @@ namespace math {
 
 template<typename T>
 class TransformBase {
+public:
+    TransformBase() : TransformBase(Vec3::kZero, Quat::kIdentity, Vec3(1, 1, 1)) {}
+private:
+    using Vec3 = Vector3Base<T>;
+    using Quat = QuaternionBase<T>;
+
+    Vec3 translation_;
+    Quat rotation_;
+    Vec3 scale_;
 };
     
 } // namespace math

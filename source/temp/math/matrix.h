@@ -58,8 +58,8 @@ public:
 
 #if _MSC_VER<1900
 #else
-    Matrix44Base(Matrix44Base &&) = default;
-    Matrix44Base &operator=(Matrix44Base &&) = default;
+    Matrix44Base(Matrix44Base &&) noexcept = default;
+    Matrix44Base &operator=(Matrix44Base &&) noexcept = default;
 #endif
 
     ~Matrix44Base() = default;
