@@ -143,6 +143,10 @@ void Test::testMath() {
     auto v1 = Vector2(-1.0f, 1.0f);
     ConsoleLogger::trace("Vector2::dot(v0, v1) = {0}", Vector2::dot(v0, v1));
 
+	Vector3 x = Vector3::kRight;
+	Vector3 nx = Vector3::kLeft;
+	auto z = x + nx;
+
     Vector3 vec3(3, 4, 5);
     Vector3 vec3xyz = vec3.xyz();
     Vector3 vec3xzy = vec3.xzy();
@@ -169,7 +173,7 @@ void Test::testMath() {
         Vector4( 1,  1,  2,  3),
         Vector4(-1,  2,  0,  0),
         Vector4( 1,  0,  1, 10));
-    ConsoleLogger::trace(mat.toString());
+	ConsoleLogger::trace("\n{0}", mat.toString());
     auto det = mat.determinant();
     TEMP_ASSERT(det == -23, "");
     auto id = Matrix44::kIdentity;
@@ -189,24 +193,37 @@ void Test::testMath() {
     TEMP_ASSERT(mat == mat2, "");
 
     auto tmat = mat.transpose();
-    ConsoleLogger::trace(tmat.toString());
+	ConsoleLogger::trace("\n{0}", tmat.toString());
 
-    auto r = std::sin(math::pi32()/2.0f);
+    auto r = std::sin(math::pi()/2.0f);
     ConsoleLogger::trace("sin(PI) = {0}", r);
 
-    Quaternion quat(Vector3(math::pi32()/2.0f, 0.0f, 0.0f));
+    Quaternion quat(Vector3(math::pi()/2.0f, 0.0f, 0.0f));
     auto abs = quat.absolute();
     ConsoleLogger::trace("quat abs = {0}", abs);
     auto euler = quat.toEulerAnglesZXY();
     ConsoleLogger::trace("euler = {0}", euler.toString());
 
     Vector3 forward = Vector3::kForward;
-    Quaternion rot(Vector3(math::pi32()/2.0f, math::pi32()/2.0f, math::pi32()));
+    Quaternion rot(Vector3(math::pi()/2.0f, math::pi()/2.0f, math::pi()));
     auto rotated = rot.rotateVector3(forward);
     ConsoleLogger::trace("rotated = {0}", rotated.toString());
     auto rotMat = rot.toRotateMatrix();
     auto rotated2 = Vector4(forward[0], forward[1], forward[2], 0) * rotMat;
     ConsoleLogger::trace("rotated2 = {0}", rotated2.toString());
+
+	Transform t1;
+	ConsoleLogger::trace("t1 = \n{0}", t1.toString());
+	ConsoleLogger::trace("t1.Matrix = \n{0}", t1.toMatrix().toString());
+
+	Transform t2(Vector3(2.0f, 3.0f, 1.0f), Quaternion(Vector3(pi()/2, 0, 0)), Vector3(1, 1, 1));
+	Transform t3(Vector3(1.0f, 2.0f, 4.0f), Quaternion(Vector3(0, pi()/2, 0)), Vector3(1, 1, 1));
+
+	auto t12 = t1 * t2;
+	ConsoleLogger::trace("t12 = \n{0}", t12.toString());
+
+	auto t23 = t2 * t3;
+	ConsoleLogger::trace("t23 = \n{0}", t23.toString());
 }
 
 int main(/*int argc, char const* argv[]*/) {
