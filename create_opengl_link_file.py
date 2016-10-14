@@ -3,9 +3,9 @@ import urllib
 import re
 
 registry_url = 'http://www.opengl.org/registry/api/GL/'
-opengl_dir = '../third_party/opengl/gl_ext/'
+opengl_dir = 'third_party/opengl/gl_ext/'
 extension_files = ['glext.h', 'glcorearb.h', 'glxext.h', 'wglext.h']
-temp_opengl_dir = '../source/temp/graphics/opengl/'
+temp_opengl_dir = 'third_party/opengl/gl_ext/'
 
 def download_extension_files():
     for file_name in extension_files:

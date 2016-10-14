@@ -33,7 +33,7 @@ extern "C" {
 ** used to make the header, and the header can be found at
 **   http://www.opengl.org/registry/
 **
-** Khronos $Revision: 32433 $ on $Date: 2016-02-10 02:02:08 -0500 (Wed, 10 Feb 2016) $
+** Khronos $Revision: 33136 $ on $Date: 2016-09-15 06:33:58 -0400 (Thu, 15 Sep 2016) $
 */
 
 #if defined(_WIN32) && !defined(APIENTRY) && !defined(__CYGWIN__) && !defined(__SCITECH_SNAP__)
@@ -41,7 +41,7 @@ extern "C" {
 #include <windows.h>
 #endif
 
-#define WGL_WGLEXT_VERSION 20160209
+#define WGL_WGLEXT_VERSION 20160914
 
 /* Generated C header for:
  * API: wgl
