@@ -14,9 +14,13 @@
 namespace temp {
 namespace scene_graph {
 
-class Transform {
+class Transform : public SmartPointerObject<Transform> {
 public:
 private:
+	Transform *_parent;
+	math::Vector3 localPosition_;
+	math::Quaternion localRotation_;
+	math::Vector3 localScale_;
 };
     
 } // namespace scene_graph
