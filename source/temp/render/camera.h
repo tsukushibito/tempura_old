@@ -11,17 +11,29 @@
 
 #include "temp/type.h"
 #include "temp/container.h"
+#include "temp/math/matrix.h"
 
 namespace temp {
 namespace render {
 
 class Renderer;
-using RendererSPtr = std::shared_ptr< Renderer >;
+class RenderTarget;
+using RenderTargetSPtr = std::shared_ptr<RenderTarget>;
 
 class Camera : public SmartPointerObject< Camera > {
-public:
-    explicit Camera() {}
+    friend Renderer;
+private:
+    static SPtr create();
 
+    Camera();
+
+public:
+    ~Camera();
+
+private:
+    
+    temp::math::Matrix44SPtr worldMatrix_;
+    Float32 fov_;
 };
 
 } // namespace render
