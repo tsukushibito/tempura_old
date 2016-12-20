@@ -75,8 +75,8 @@ public:
 
     String toString() const;
 
-    Vector4Base<T> *operator[](Size index);
-    const Vector4Base<T> *operator[](Size index) const;
+    Vector4Base<T> &operator[](Size index);
+    const Vector4Base<T> &operator[](Size index) const;
 
     T operator()(Size row, Size col) const;
 

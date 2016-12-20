@@ -33,10 +33,10 @@ extern "C" {
 ** used to make the header, and the header can be found at
 **   http://www.opengl.org/registry/
 **
-** Khronos $Revision: 32433 $ on $Date: 2016-02-10 02:02:08 -0500 (Wed, 10 Feb 2016) $
+** Khronos $Revision: 33136 $ on $Date: 2016-09-15 06:33:58 -0400 (Thu, 15 Sep 2016) $
 */
 
-#define GLX_GLXEXT_VERSION 20160209
+#define GLX_GLXEXT_VERSION 20160914
 
 /* Generated C header for:
  * API: glx
@@ -317,6 +317,11 @@ void glXFreeContextEXT (Display *dpy, GLXContext context);
 #endif
 #endif /* GLX_EXT_import_context */
 
+#ifndef GLX_EXT_libglvnd
+#define GLX_EXT_libglvnd 1
+#define GLX_VENDOR_NAMES_EXT              0x20F6
+#endif /* GLX_EXT_libglvnd */
+
 #ifndef GLX_EXT_stereo_tree
 #define GLX_EXT_stereo_tree 1
 typedef struct {
@@ -542,6 +547,11 @@ unsigned int *glXEnumerateVideoDevicesNV (Display *dpy, int screen, int *nelemen
 int glXBindVideoDeviceNV (Display *dpy, unsigned int video_slot, unsigned int video_device, const int *attrib_list);
 #endif
 #endif /* GLX_NV_present_video */
+
+#ifndef GLX_NV_robustness_video_memory_purge
+#define GLX_NV_robustness_video_memory_purge 1
+#define GLX_GENERATE_RESET_ON_VIDEO_MEMORY_PURGE_NV 0x20F7
+#endif /* GLX_NV_robustness_video_memory_purge */
 
 #ifndef GLX_NV_swap_group
 #define GLX_NV_swap_group 1

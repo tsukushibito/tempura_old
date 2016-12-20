@@ -57,8 +57,8 @@ void initializeOpenglExtension() {
 #define TEMP_OPENGL_EXTENSION_LINK(func, name) \
 	if(name == nullptr) *(void**)(&name) = wglGetProcAddress(#name);	\
 	// if(name == nullptr) temp::system::ConsoleLogger::info("OpenGL extention : {0} not supported.", #name);
-#include "temp/graphics/opengl/temp_glext_link.inl"
-#include "temp/graphics/opengl/temp_wglext_link.inl"
+#include <gl_ext/temp_glext_link.inl>
+#include <gl_ext/temp_wglext_link.inl>
 #undef TEMP_OPENGL_EXTENSION_LINK
 }
 

@@ -54,7 +54,6 @@ Matrix44Base<T>::Matrix44Base(ColOrder,
 template < typename T >
 String Matrix44Base< T >::toString() const {
     std::stringstream ss;
-    ss << std::endl;
     for (Int32 row = 0; row < 4; ++row) {
         if (row == 0) {
             ss << "Matrix44( ";
@@ -74,12 +73,12 @@ String Matrix44Base< T >::toString() const {
 }
 
 template < typename T >
-Vector4Base<T> * Matrix44Base< T >::operator[](Size index) {
+Vector4Base<T> &Matrix44Base< T >::operator[](Size index) {
     return cols_[index];
 }
 
 template < typename T >
-const Vector4Base<T> * Matrix44Base< T >::operator[](Size index) const {
+const Vector4Base<T> &Matrix44Base< T >::operator[](Size index) const {
     return cols_[index];
 }
 

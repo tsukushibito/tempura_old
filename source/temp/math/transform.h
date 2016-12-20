@@ -54,7 +54,11 @@ private:
     Vec3 scale_;
 };
 
+using Transform = TransformBase<Float32>;
+
 } // namespace math
 } // namespace temp
+
+#include "temp/math/transform_detail.h"
 
 #endif // GUARD_eda5a08059f94525963f08502bb89b8a

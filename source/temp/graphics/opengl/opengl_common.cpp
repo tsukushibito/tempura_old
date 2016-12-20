@@ -2,8 +2,8 @@
 
 #if defined TEMP_PLATFORM_WINDOWS
 #define TEMP_OPENGL_EXTENSION_LINK(func, name) func name = nullptr;
-#include "temp/graphics/opengl/temp_glext_link.inl"
-#include "temp/graphics/opengl/temp_wglext_link.inl"
+#include <gl_ext/temp_glext_link.inl>
+#include <gl_ext/temp_wglext_link.inl>
 #undef TEMP_OPENGL_EXTENSION_LINK
 #include "temp/graphics/opengl/windows/opengl_windows.h"
 #elif defined TEMP_PLATFORM_MAC

@@ -16,20 +16,20 @@ namespace temp {
 namespace math {
 
 template<typename T>
-const T pi();
+const T piBase();
 
 template<>
-const Float32 pi() {
+const Float32 piBase() {
     return 3.14159265f;
 }
 
 template<>
-const Float64 pi() {
+const Float64 piBase() {
     return 3.141592653589793;
 }
 
-TEMP_DEFINE_ALIAS(pi32, pi<Float32>);
-TEMP_DEFINE_ALIAS(pi64, pi<Float64>);
+TEMP_DEFINE_ALIAS(pi, piBase<Float32>);
+TEMP_DEFINE_ALIAS(pi64, piBase<Float64>);
 
 } // namespace math
 } // namespace temp
