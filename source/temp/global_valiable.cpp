@@ -9,9 +9,7 @@
 #include "temp/global_valiable.h"
 
 namespace {
-    char dummy;	// VisualStudio ‚Ì warning LNK4221 ‰ñ”ð‚Ì‚½‚ß
+char dummy;  // VisualStudio ‚Ì warning LNK4221 ‰ñ”ð‚Ì‚½‚ß
 }
 
-namespace temp{
-}
-
+namespace temp {}

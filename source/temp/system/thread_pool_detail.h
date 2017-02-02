@@ -10,12 +10,14 @@ inline ThreadPool::ThreadPool(const String &name, Size threadCount)
             for (;;) {
                 JobType job;
                 {
-                    std::unique_lock< std::mutex > lock(this->queue_mutex_);
+                    std::unique_lock<std::mutex> lock(this->queue_mutex_);
                     this->condition_.wait(lock, [this, i]() {
-                        return this->stop_ || !this->job_queue_.empty() || !this->specific_job_queues_[i].empty();
+                        return this->stop_ || !this->job_queue_.empty() ||
+                               !this->specific_job_queues_[i].empty();
                     });
 
-                    if (this->stop_ && this->job_queue_.empty() && this->specific_job_queues_[i].empty()) {
+                    if (this->stop_ && this->job_queue_.empty() &&
+                        this->specific_job_queues_[i].empty()) {
                         return;
                     }
 
@@ -27,7 +29,8 @@ inline ThreadPool::ThreadPool(const String &name, Size threadCount)
                         this->job_queue_.pop();
                     }
                 }
-                if (job) job();
+                if (job)
+                    job();
             }
         };
         worker_threads_.emplace_back(worker_function);
@@ -36,7 +39,7 @@ inline ThreadPool::ThreadPool(const String &name, Size threadCount)
 
 inline ThreadPool::~ThreadPool() {
     {
-        std::unique_lock< std::mutex > lock(queue_mutex_);
+        std::unique_lock<std::mutex> lock(queue_mutex_);
         stop_ = true;
     }
 
@@ -46,27 +49,31 @@ inline ThreadPool::~ThreadPool() {
     }
 }
 
-inline ThreadPool::SPtr ThreadPool::create(const String &name, Size thread_count) {
+inline ThreadPool::SPtr ThreadPool::create(const String &name,
+                                           Size          thread_count) {
     struct Creator : public ThreadPool {
-        Creator(const String &name, Size thread_count) : ThreadPool(name, thread_count) {}
+        Creator(const String &name, Size thread_count)
+            : ThreadPool(name, thread_count) {}
     };
 
     // todo:ジョブ用プールアロケータを作成しallocate_sharedを使用する
-    auto p = std::make_shared< Creator >(name, thread_count);
+    auto p = std::make_shared<Creator>(name, thread_count);
     return std::move(p);
 }
 
-template < typename F, typename... Args >
-auto ThreadPool::pushJob(F &&function, Args &&... args) -> std::future< typename std::result_of< F(Args...) >::type > {
+template <typename F, typename... Args>
+auto ThreadPool::pushJob(F &&function, Args &&... args)
+    -> std::future<typename std::result_of<F(Args...)>::type> {
 
-    using ReturnType = typename std::result_of< F(Args...) >::type;
-    using PackagedTask = std::packaged_task< ReturnType() >;
+    using ReturnType   = typename std::result_of<F(Args...)>::type;
+    using PackagedTask = std::packaged_task<ReturnType()>;
 
-    auto task = std::make_shared< PackagedTask >(std::bind(std::forward< F >(function), std::forward< Args >(args)...));
+    auto task = std::make_shared<PackagedTask>(
+        std::bind(std::forward<F>(function), std::forward<Args>(args)...));
 
-    std::future< ReturnType > result = task->get_future();
+    std::future<ReturnType> result = task->get_future();
     {
-        std::unique_lock< std::mutex > lock(queue_mutex_);
+        std::unique_lock<std::mutex> lock(queue_mutex_);
         if (stop_) {
             // TEMP_ASSERT(false, "");
             return result;
@@ -79,17 +86,19 @@ auto ThreadPool::pushJob(F &&function, Args &&... args) -> std::future< typename
     return result;
 }
 
-template < typename F, typename... Args >
-auto ThreadPool::pushJobToSpecificThreadQueue(Size threadIndex, F &&function, Args &&... args)
-    -> std::future< typename std::result_of< F(Args...) >::type > {
+template <typename F, typename... Args>
+auto ThreadPool::pushJobToSpecificThreadQueue(Size threadIndex, F &&function,
+                                              Args &&... args)
+    -> std::future<typename std::result_of<F(Args...)>::type> {
 
-    using ReturnType = typename std::result_of< F(Args...) >::type;
-    using PackagedTask = std::packaged_task< ReturnType() >;
+    using ReturnType   = typename std::result_of<F(Args...)>::type;
+    using PackagedTask = std::packaged_task<ReturnType()>;
 
-    auto task = std::make_shared< PackagedTask >(std::bind(std::forward< F >(function), std::forward< Args >(args)...));
-    std::future< ReturnType > result = task->get_future();
+    auto task = std::make_shared<PackagedTask>(
+        std::bind(std::forward<F>(function), std::forward<Args>(args)...));
+    std::future<ReturnType> result = task->get_future();
     {
-        std::unique_lock< std::mutex > lock(queue_mutex_);
+        std::unique_lock<std::mutex> lock(queue_mutex_);
         if (stop_) {
             // TEMP_ASSERT(false, "");
             return result;
@@ -103,7 +112,7 @@ auto ThreadPool::pushJobToSpecificThreadQueue(Size threadIndex, F &&function, Ar
 }
 
 inline ThreadPool::JobType ThreadPool::popJob() {
-    std::unique_lock< std::mutex > lock(queue_mutex_);
+    std::unique_lock<std::mutex> lock(queue_mutex_);
     if (this->job_queue_.empty()) {
         return JobType();
     }
@@ -113,8 +122,9 @@ inline ThreadPool::JobType ThreadPool::popJob() {
     return job;
 }
 
-inline ThreadPool::JobType ThreadPool::popJobFromSpecificThreadQueue(Size thread_index) {
-    std::unique_lock< std::mutex > lock(queue_mutex_);
+inline ThreadPool::JobType
+ThreadPool::popJobFromSpecificThreadQueue(Size thread_index) {
+    std::unique_lock<std::mutex> lock(queue_mutex_);
     if (this->specific_job_queues_[thread_index].empty()) {
         return JobType();
     }

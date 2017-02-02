@@ -11,16 +11,15 @@
 
 #include <cmath>
 #include <utility>
+
 #include "temp/math/constants.h"
-#include "temp/math/vector.h"
 #include "temp/math/matrix.h"
 #include "temp/math/quaternion.h"
 #include "temp/math/transform.h"
+#include "temp/math/vector.h"
 
 namespace temp {
-namespace math {
+namespace math {}  // namespace math
+}  // namespace temp
 
-} // namespace math
-} // namespace temp
-
-#endif // GUARD_ca39916478f54f2f841cc72e4a3e7693
+#endif  // GUARD_ca39916478f54f2f841cc72e4a3e7693

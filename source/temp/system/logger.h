@@ -24,19 +24,18 @@ namespace temp {
 namespace system {
 
 enum class LogLevel {
-    Trace = spdlog::level::trace,
-    Debug = spdlog::level::debug,
-    Info = spdlog::level::info,
-    Notice = spdlog::level::notice,
-    Warn = spdlog::level::warn,
-    Error = spdlog::level::err,
+    Trace    = spdlog::level::trace,
+    Debug    = spdlog::level::debug,
+    Info     = spdlog::level::info,
+    Notice   = spdlog::level::notice,
+    Warn     = spdlog::level::warn,
+    Error    = spdlog::level::err,
     Critical = spdlog::level::critical,
-    Alert = spdlog::level::alert,
-    Emerg = spdlog::level::emerg,
+    Alert    = spdlog::level::alert,
+    Emerg    = spdlog::level::emerg,
 };
 
-template < typename LoggerCreatorType >
-class Logger : temp::Uncopyable {
+template <typename LoggerCreatorType> class Logger : temp::Uncopyable {
 private:
     Logger() {
         spLogger_ = LoggerCreatorType::create();
@@ -60,101 +59,104 @@ public:
         delete pInstance;
     }
 
-    template < typename... Args >
+    template <typename... Args>
     static void trace(const char *fmt, const Args &... args) {
         pInstance->spLogger_->trace(fmt, args...);
     }
 
-    template < typename... Args >
+    template <typename... Args>
     static void trace(const String &fmt, const Args &... args) {
         trace(fmt.c_str(), args...);
     }
 
-    template < typename... Args >
+    template <typename... Args>
     static void debug(const char *fmt, const Args &... args) {
         pInstance->spLogger_->debug(fmt, args...);
     }
 
-    template < typename... Args >
+    template <typename... Args>
     static void debug(const String &fmt, const Args &... args) {
         debug(fmt.c_str(), args...);
     }
 
-    template < typename... Args >
+    template <typename... Args>
     static void info(const char *fmt, const Args &... args) {
         pInstance->spLogger_->info(fmt, args...);
     }
 
-    template < typename... Args >
+    template <typename... Args>
     static void info(const String &fmt, const Args &... args) {
         info(fmt.c_str(), args...);
     }
 
-    template < typename... Args >
+    template <typename... Args>
     static void notice(const char *fmt, const Args &... args) {
         pInstance->spLogger_->notice(fmt, args...);
     }
 
-    template < typename... Args >
+    template <typename... Args>
     static void notice(const String &fmt, const Args &... args) {
         notice(fmt.c_str(), args...);
     }
 
-    template < typename... Args >
+    template <typename... Args>
     static void warn(const char *fmt, const Args &... args) {
         pInstance->spLogger_->warn(fmt, args...);
     }
 
-    template < typename... Args >
+    template <typename... Args>
     static void warn(const String &fmt, const Args &... args) {
         warn(fmt.c_str(), args...);
     }
 
-    template < typename... Args >
+    template <typename... Args>
     static void error(const char *fmt, const Args &... args) {
         pInstance->spLogger_->error(fmt, args...);
     }
 
-    template < typename... Args >
+    template <typename... Args>
     static void error(const String &fmt, const Args &... args) {
         error(fmt.c_str(), args...);
     }
 
-    template < typename... Args >
+    template <typename... Args>
     static void critical(const char *fmt, const Args &... args) {
         pInstance->spLogger_->critical(fmt, args...);
     }
 
-    template < typename... Args >
+    template <typename... Args>
     static void critical(const String &fmt, const Args &... args) {
         critical(fmt.c_str(), args...);
     }
 
-    template < typename... Args >
+    template <typename... Args>
     static void alert(const char *fmt, const Args &... args) {
         pInstance->spLogger_->alert(fmt, args...);
     }
 
-    template < typename... Args >
+    template <typename... Args>
     static void alert(const String &fmt, const Args &... args) {
         alert(fmt.c_str(), args...);
     }
 
-    template < typename... Args >
+    template <typename... Args>
     static void emerg(const char *fmt, const Args &... args) {
         pInstance->spLogger_->emerg(fmt, args...);
     }
 
-    template < typename... Args >
+    template <typename... Args>
     static void emerg(const String &fmt, const Args &... args) {
         emerg(fmt.c_str(), args...);
     }
 
-    static void setLevel(LogLevel level) { pInstance->spLogger_->set_level(static_cast< spdlog::level::level_enum >(level)); }
+    static void setLevel(LogLevel level) {
+        pInstance->spLogger_->set_level(
+            static_cast<spdlog::level::level_enum>(level));
+    }
 
 private:
-    static Logger *pInstance;
-    std::shared_ptr< spdlog::logger > spLogger_;
+    static Logger *                 pInstance;
+    std::shared_ptr<spdlog::logger> spLogger_;
 
 #ifdef TEMP_PLATFORM_WINDOWS
     // デバッグコンソール出力用ストリームバッファ
@@ -162,7 +164,7 @@ private:
     public:
         virtual int_type overflow(int_type c = EOF) {
             if (c != EOF) {
-                char buf[] = { static_cast< char >(c), '\0' };
+                char buf[] = {static_cast<char>(c), '\0'};
                 OutputDebugStringA(buf);
                 printf(buf);
             }
@@ -171,27 +173,29 @@ private:
     };
 
     static debug_stream_buf dsb;
-    static std::streambuf *default_rdbuf;
+    static std::streambuf * default_rdbuf;
 #endif
 };
 
-template < typename LoggerCreatorType >
-Logger< LoggerCreatorType > *Logger< LoggerCreatorType >::pInstance = nullptr;
+template <typename LoggerCreatorType>
+Logger<LoggerCreatorType> *Logger<LoggerCreatorType>::pInstance = nullptr;
 #ifdef TEMP_PLATFORM_WINDOWS
-template < typename LoggerCreatorType >
-typename Logger< LoggerCreatorType >::debug_stream_buf Logger< LoggerCreatorType >::dsb;
-template < typename LoggerCreatorType >
-std::streambuf *Logger< LoggerCreatorType >::default_rdbuf = nullptr;
+template <typename LoggerCreatorType>
+typename Logger<LoggerCreatorType>::debug_stream_buf
+    Logger<LoggerCreatorType>::dsb;
+template <typename LoggerCreatorType>
+std::streambuf *Logger<LoggerCreatorType>::default_rdbuf = nullptr;
 #endif
 
 struct ConsoleLoggerCreator {
-    static std::shared_ptr< spdlog::logger > create() {
-        auto ostream_sink = std::make_shared< spdlog::sinks::ostream_sink_mt >(std::cout);
-        return std::make_shared< spdlog::logger >("TempuraConsole", ostream_sink);
+    static std::shared_ptr<spdlog::logger> create() {
+        auto ostream_sink =
+            std::make_shared<spdlog::sinks::ostream_sink_mt>(std::cout);
+        return std::make_shared<spdlog::logger>("TempuraConsole", ostream_sink);
     }
 };
 
-using ConsoleLogger = Logger< ConsoleLoggerCreator >;
+using ConsoleLogger = Logger<ConsoleLoggerCreator>;
 }
 }
 

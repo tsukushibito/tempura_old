@@ -14,10 +14,11 @@
 
 namespace temp {
 namespace system {
+
 class Timer {
 public:
     Timer();
-    void reset();
+    void  reset();
     Int64 nanoseconds() const;
     Int64 microseconds() const;
     Int64 milliseconds() const;
@@ -30,4 +31,4 @@ private:
 };
 }
 }
-#endif // GUARD_bb53053fe21d4c4fbec1c796aca1ae18
+#endif  // GUARD_bb53053fe21d4c4fbec1c796aca1ae18

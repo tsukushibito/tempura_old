@@ -18,11 +18,13 @@ namespace render {
 
 class Renderer;
 class RenderTarget;
-using RenderTargetSPtr = std::shared_ptr<RenderTarget>;
 
 class Camera : public SmartPointerObject< Camera > {
     friend Renderer;
 private:
+    using Matrix44SPtr = temp::math::Matrix44SPtr;
+    using RenderTargetSPtr = std::shared_ptr<RenderTarget>;
+
     static SPtr create();
 
     Camera();
@@ -30,9 +32,9 @@ private:
 public:
     ~Camera();
 
-private:
-    
-    temp::math::Matrix44SPtr worldMatrix_;
+public:
+    RenderTargetSPtr renderTarget_;
+    Matrix44SPtr worldMatrix_;
     Float32 fov_;
 };
 

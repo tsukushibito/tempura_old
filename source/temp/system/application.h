@@ -16,9 +16,9 @@ namespace system {
 
 class ThreadPool;
 
-class Application : public SmartPointerObject< Application > {
+class Application : public SmartPointerObject<Application> {
 private:
-    using ThreadPoolSPtr = std::shared_ptr< ThreadPool >;
+    using ThreadPoolSPtr = std::shared_ptr<ThreadPool>;
 
     Application();
 
@@ -26,18 +26,18 @@ public:
     ~Application();
 
 public:
-    void setInitializeFunction(const std::function< void(void) > &func);
-    void setUpdateFunction(const std::function< void(void) > &func);
-    void setTerminateFunction(const std::function< void(void) > &func);
+    void setInitializeFunction(const std::function<void(void)> &func);
+    void setUpdateFunction(const std::function<void(void)> &func);
+    void setTerminateFunction(const std::function<void(void)> &func);
 
     Int32 run();
-    void exit();
+    void  exit();
 
     ThreadPoolSPtr getMainThread() const;
 
 private:
     class Impl;
-    std::unique_ptr< Impl > impl_;
+    std::unique_ptr<Impl> impl_;
 
 public:
     static SPtr create();

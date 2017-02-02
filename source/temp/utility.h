@@ -10,21 +10,20 @@
 #define GUARD_ab3eabae086c462da5846bb0dd37aff7
 
 #include <functional>
+
 #include "temp/container.h"
 
 namespace temp {
 
 class Event {
 public:
-    Event(){}
+    Event() {}
 
     void addFunction(const std::function<void()> &function) {
         function_queue_.push_back(function);
     }
 
-    void clear() {
-        function_queue_.clear();
-    }
+    void clear() { function_queue_.clear(); }
 
     void execute() {
         while (function_queue_.size() > 0) {
@@ -38,6 +37,6 @@ private:
     Deque<std::function<void()>> function_queue_;
 };
 
-} // namespace temp
+}  // namespace temp
 
-#endif // GUARD_ab3eabae086c462da5846bb0dd37aff7
+#endif  // GUARD_ab3eabae086c462da5846bb0dd37aff7

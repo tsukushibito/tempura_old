@@ -1,0 +1,8 @@
+---
+BasedOnStyle: 'Google'
+AccessModifierOffset: -4
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+BreakConstructorInitializersBeforeComma: true
+IndentWidth: 4
+MaxEmptyLinesToKeep: 2
