@@ -1,10 +1,8 @@
 ﻿namespace temp {
 namespace system {
 
-inline ThreadPool::ThreadPool(const String &name, Size threadCount)
-    : name_(name)
-    , specific_job_queues_(threadCount)
-    , stop_(false) {
+inline ThreadPool::ThreadPool(const String& name, Size threadCount)
+    : name_(name), specific_job_queues_(threadCount), stop_(false) {
     for (Size i = 0; i < threadCount; ++i) {
         auto worker_function = [this, i]() {
             for (;;) {
@@ -12,25 +10,25 @@ inline ThreadPool::ThreadPool(const String &name, Size threadCount)
                 {
                     std::unique_lock<std::mutex> lock(this->queue_mutex_);
                     this->condition_.wait(lock, [this, i]() {
-                        return this->stop_ || !this->job_queue_.empty() ||
-                               !this->specific_job_queues_[i].empty();
+                        return this->stop_ || !this->job_queue_.empty()
+                               || !this->specific_job_queues_[i].empty();
                     });
 
-                    if (this->stop_ && this->job_queue_.empty() &&
-                        this->specific_job_queues_[i].empty()) {
+                    if (this->stop_ && this->job_queue_.empty()
+                        && this->specific_job_queues_[i].empty()) {
                         return;
                     }
 
                     if (!specific_job_queues_[i].empty()) {
                         job = std::move(this->specific_job_queues_[i].front());
                         this->specific_job_queues_[i].pop();
+
                     } else if (!this->job_queue_.empty()) {
                         job = std::move(this->job_queue_.front());
                         this->job_queue_.pop();
                     }
                 }
-                if (job)
-                    job();
+                if (job) job();
             }
         };
         worker_threads_.emplace_back(worker_function);
@@ -44,15 +42,15 @@ inline ThreadPool::~ThreadPool() {
     }
 
     condition_.notify_all();
-    for (auto &&worker_thread : worker_threads_) {
+    for (auto&& worker_thread : worker_threads_) {
         worker_thread.join();
     }
 }
 
-inline ThreadPool::SPtr ThreadPool::create(const String &name,
+inline ThreadPool::SPtr ThreadPool::create(const String& name,
                                            Size          thread_count) {
     struct Creator : public ThreadPool {
-        Creator(const String &name, Size thread_count)
+        Creator(const String& name, Size thread_count)
             : ThreadPool(name, thread_count) {}
     };
 
@@ -62,9 +60,8 @@ inline ThreadPool::SPtr ThreadPool::create(const String &name,
 }
 
 template <typename F, typename... Args>
-auto ThreadPool::pushJob(F &&function, Args &&... args)
+auto ThreadPool::pushJob(F&& function, Args&&... args)
     -> std::future<typename std::result_of<F(Args...)>::type> {
-
     using ReturnType   = typename std::result_of<F(Args...)>::type;
     using PackagedTask = std::packaged_task<ReturnType()>;
 
@@ -87,10 +84,9 @@ auto ThreadPool::pushJob(F &&function, Args &&... args)
 }
 
 template <typename F, typename... Args>
-auto ThreadPool::pushJobToSpecificThreadQueue(Size threadIndex, F &&function,
-                                              Args &&... args)
+auto ThreadPool::pushJobToSpecificThreadQueue(Size threadIndex, F&& function,
+                                              Args&&... args)
     -> std::future<typename std::result_of<F(Args...)>::type> {
-
     using ReturnType   = typename std::result_of<F(Args...)>::type;
     using PackagedTask = std::packaged_task<ReturnType()>;
 
@@ -122,8 +118,8 @@ inline ThreadPool::JobType ThreadPool::popJob() {
     return job;
 }
 
-inline ThreadPool::JobType
-ThreadPool::popJobFromSpecificThreadQueue(Size thread_index) {
+inline ThreadPool::JobType ThreadPool::popJobFromSpecificThreadQueue(
+    Size thread_index) {
     std::unique_lock<std::mutex> lock(queue_mutex_);
     if (this->specific_job_queues_[thread_index].empty()) {
         return JobType();
@@ -134,5 +130,5 @@ ThreadPool::popJobFromSpecificThreadQueue(Size thread_index) {
     return job;
 }
 
-} // namespace system
-} // namespace temp
+}  // namespace system
+}  // namespace temp

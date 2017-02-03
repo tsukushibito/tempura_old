@@ -15,7 +15,7 @@
 
 #define TEMP_DEFINE_ALIAS(name, target)                   \
     template <typename... Args>                           \
-    inline auto name(Args &&... args)                     \
+    inline auto name(Args&&... args)                      \
         ->decltype(target(std::forward<Args>(args)...)) { \
         return target(std::forward<Args>(args)...);       \
     }
@@ -46,8 +46,8 @@ protected:
     ~Uncopyable() = default;
 
 private:
-    Uncopyable(const Uncopyable &) = delete;
-    Uncopyable &operator=(const Uncopyable &) = delete;
+    Uncopyable(const Uncopyable&) = delete;
+    Uncopyable& operator=(const Uncopyable&) = delete;
 };
 
 template <typename T>
@@ -57,7 +57,7 @@ protected:
     virtual ~Singleton() = default;
 
 public:
-    static T &getInstance() {
+    static T& getInstance() {
         static T instance;
         return instance;
     }
@@ -79,9 +79,9 @@ class Optional {
 public:
     Optional() : is_engaged_(false), value_() {}
 
-    explicit Optional(const T &value) : is_engaged_(true), value_(value) {}
+    explicit Optional(const T& value) : is_engaged_(true), value_(value) {}
 
-    Optional &operator=(const T &value) {
+    Optional& operator=(const T& value) {
         value_      = value;
         is_engaged_ = true;
         return *this;
@@ -91,8 +91,8 @@ public:
     operator bool() const { return is_engaged_; }
 
     // 内部オブジェクトへのアクセッサ
-    T const &operator*() const { return value_; }
-    T &operator*() { return value_; }
+    T const& operator*() const { return value_; }
+    T& operator*() { return value_; }
 
 private:
     bool is_engaged_;

@@ -15,7 +15,7 @@ namespace temp {
 namespace system {
 
 union WindowHandle {
-    void *pointer_;
+    void* pointer_;
     Size  value_;
 };
 

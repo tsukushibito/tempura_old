@@ -3,6 +3,9 @@ BasedOnStyle: 'Google'
 AccessModifierOffset: -4
 AlignConsecutiveAssignments: true
 AlignConsecutiveDeclarations: true
+BreakBeforeBinaryOperators: All
 BreakConstructorInitializersBeforeComma: true
+DerivePointerAlignment: false
 IndentWidth: 4
+IndentCaseLabels: false
 MaxEmptyLinesToKeep: 2

@@ -15,15 +15,15 @@
 namespace temp {
 namespace math {
 
-template<typename T>
+template <typename T>
 const T piBase();
 
-template<>
+template <>
 const Float32 piBase() {
     return 3.14159265f;
 }
 
-template<>
+template <>
 const Float64 piBase() {
     return 3.141592653589793;
 }
@@ -31,7 +31,7 @@ const Float64 piBase() {
 TEMP_DEFINE_ALIAS(pi, piBase<Float32>);
 TEMP_DEFINE_ALIAS(pi64, piBase<Float64>);
 
-} // namespace math
-} // namespace temp
+}  // namespace math
+}  // namespace temp
 
-#endif // GUARD_4a560546b1294abf9fc477f361f28606
+#endif  // GUARD_4a560546b1294abf9fc477f361f28606

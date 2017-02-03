@@ -9,9 +9,6 @@
 #ifndef GUARD_45b24cf7bd344c0aadb1e393915359dd
 #define GUARD_45b24cf7bd344c0aadb1e393915359dd
 
-#include "temp/container.h"
-#include "temp/define.h"
-#include "temp/type.h"
 #include <condition_variable>
 #include <deque>
 #include <functional>
@@ -19,6 +16,9 @@
 #include <mutex>
 #include <queue>
 #include <thread>
+#include "temp/container.h"
+#include "temp/define.h"
+#include "temp/type.h"
 
 namespace temp {
 namespace system {
@@ -28,27 +28,27 @@ public:
     using JobType = std::function<void(void)>;
 
 private:
-    ThreadPool(const String &name, Size threadCount);
+    ThreadPool(const String& name, Size threadCount);
 
 protected:
     ~ThreadPool();
 
 public:
-    static SPtr create(const String &name, Size threadCount);
+    static SPtr create(const String& name, Size threadCount);
 
     template <typename F, typename... Args>
-    auto pushJob(F &&function, Args &&... args)
+    auto pushJob(F&& function, Args&&... args)
         -> std::future<typename std::result_of<F(Args...)>::type>;
 
     template <typename F, typename... Args>
-    auto pushJobToSpecificThreadQueue(Size threadIndex, F &&function,
-                                      Args &&... args)
+    auto pushJobToSpecificThreadQueue(Size threadIndex, F&& function,
+                                      Args&&... args)
         -> std::future<typename std::result_of<F(Args...)>::type>;
 
     JobType popJob();
     JobType popJobFromSpecificThreadQueue(Size threadIndex);
 
-    const String &getName() const { return name_; }
+    const String& getName() const { return name_; }
     Size          getThreadCount() const { return worker_threads_.size(); }
     Bool          isJobQueueEmpty() const { return job_queue_.empty(); }
     Size          getJobCount() const { return job_queue_.size(); }
@@ -72,9 +72,9 @@ private:
     std::condition_variable condition_;
     Bool                    stop_;
 };
-} // namespace system
-} // namespace temp
+}  // namespace system
+}  // namespace temp
 
 #include "thread_pool_detail.h"
 
-#endif // GUARD_45b24cf7bd344c0aadb1e393915359dd
+#endif  // GUARD_45b24cf7bd344c0aadb1e393915359dd
