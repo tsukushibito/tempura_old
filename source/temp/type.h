@@ -99,5 +99,24 @@ private:
     T    value_;
 };
 
+template <typename T>
+class Handle {
+public:
+    Handle() {}
+    explicit Handle(Int32 value) : value_(value) {}
+
+    ~Handle() = default;
+
+    Handle(const Handle& rhs) = default;
+
+    Handle& operator=(const Handle& rhs) = default;
+
+    bool operator==(const Handle& rhs) const { return value_ == rhs.value_; }
+    bool operator!=(const Handle& rhs) const { return !(*this == rhs); }
+
+private:
+    Int32 value_ = 0;
+};
+
 }  // namespace temp
 #endif  // GUARD_6b1252d3036740fdad7d9e1dd5fe06c9

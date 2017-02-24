@@ -41,11 +41,8 @@ public:
     QuaternionBase(const QuaternionBase&) = default;
     QuaternionBase& operator=(const QuaternionBase&) = default;
 
-#if _MSC_VER < 1900
-#else
     QuaternionBase(QuaternionBase&&) noexcept = default;
     QuaternionBase& operator=(QuaternionBase&&) noexcept = default;
-#endif
 
     ~QuaternionBase() = default;
 

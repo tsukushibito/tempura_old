@@ -60,11 +60,8 @@ public:
     // コピー代入演算子
     Matrix44Base& operator=(const Matrix44Base&) = default;
 
-#if _MSC_VER < 1900
-#else
     Matrix44Base(Matrix44Base&&) noexcept = default;
     Matrix44Base& operator=(Matrix44Base&&) noexcept = default;
-#endif
 
     ~Matrix44Base() = default;
 
@@ -100,8 +97,9 @@ public:
 };
 
 using Matrix44     = Matrix44Base<Float32>;
-using Matrix44UPtr = std::unique_ptr<Matrix44> using Matrix44SPtr
-    = std::shared_ptr<Matrix44> using Matrix44WPtr = std::weak_ptr<Matrix44>
+using Matrix44UPtr = std::unique_ptr<Matrix44>;
+using Matrix44SPtr = std::shared_ptr<Matrix44>;
+using Matrix44WPtr = std::weak_ptr<Matrix44>;
 
 }  // namespace math
 }  // namespace temp

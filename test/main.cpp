@@ -224,9 +224,12 @@ void Test::testMath() {
 
 	auto t23 = t2 * t3;
 	ConsoleLogger::trace("t23 = \n{0}", t23.toString());
+
 }
 
 int main(/*int argc, char const* argv[]*/) {
+    using temp::system::ConsoleLogger;
+
 
     Test test;
     test.run();

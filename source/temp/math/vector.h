@@ -40,11 +40,8 @@ public:
     Vector2Base(const Vector2Base&) = default;
     Vector2Base& operator=(const Vector2Base&) = default;
 
-#if _MSC_VER < 1900
-#else
     Vector2Base(Vector2Base&&) noexcept = default;
     Vector2Base& operator=(Vector2Base&&) noexcept = default;
-#endif
 
     ~Vector2Base() = default;
 
@@ -109,11 +106,8 @@ public:
     Vector3Base(const Vector3Base&) = default;
     Vector3Base& operator=(const Vector3Base&) = default;
 
-#if _MSC_VER < 1900
-#else
-    Vector3Base(Vector3Base&&) noexcept            = default;
+    Vector3Base(Vector3Base&&) noexcept = default;
     Vector3Base& operator=(Vector3Base&&) noexcept = default;
-#endif
 
     ~Vector3Base() = default;
 
@@ -195,11 +189,8 @@ public:
     Vector4Base(const Vector4Base&) = default;
     Vector4Base& operator=(const Vector4Base&) = default;
 
-#if _MSC_VER < 1900
-#else
-    Vector4Base(Vector4Base&&) noexcept            = default;
+    Vector4Base(Vector4Base&&) noexcept = default;
     Vector4Base& operator=(Vector4Base&&) noexcept = default;
-#endif
 
     ~Vector4Base() = default;
 

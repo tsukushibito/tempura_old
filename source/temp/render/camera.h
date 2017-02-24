@@ -9,36 +9,80 @@
 #ifndef GUARD_082c71951f804213bb68ce9b2d068884
 #define GUARD_082c71951f804213bb68ce9b2d068884
 
-#include "temp/type.h"
 #include "temp/container.h"
 #include "temp/math/matrix.h"
+#include "temp/math/transform.h"
+#include "temp/type.h"
 
 namespace temp {
 namespace render {
 
 class Renderer;
-class RenderTarget;
+class RenderTexture;
 
-class Camera : public SmartPointerObject< Camera > {
-    friend Renderer;
-private:
-    using Matrix44SPtr = temp::math::Matrix44SPtr;
-    using RenderTargetSPtr = std::shared_ptr<RenderTarget>;
-
-    static SPtr create();
-
-    Camera();
-
-public:
-    ~Camera();
-
-public:
-    RenderTargetSPtr renderTarget_;
-    Matrix44SPtr worldMatrix_;
-    Float32 fov_;
+enum class ClearFlag {
+    SolidColor,
+    Skybox,
+    DepthOnly,
+    DontClear,
 };
 
-} // namespace render
-} // namespace temp
+enum class ProjectionType {
+    Perspective,
+    Orthographic,
+};
 
-#endif // GUARD_082c71951f804213bb68ce9b2d068884
+struct CameraData {
+    math::Matrix44 viewMatrix_;
+    math::Matrix44 projMatrix_;
+
+    ClearFlag clearFlag_ = ClearFlag::SolidColor;
+
+    Int32 cullingMask_ = 0xffffffff;
+
+    std::shared_ptr<RenderTexture> renderTexture_;
+};
+
+using CameraDataHandle = temp::Handle<CameraData>;
+
+class Camera {
+    using RendererWPtr = std::weak_ptr<Renderer>;
+
+public:
+    Camera(const RendererWPtr& renderer);
+
+    ~Camera();
+
+    void setTransform(const math::Transform& transform);
+
+    void setPerspective(Float32 fovy, Float32 aspect, Float32 znear,
+                        Float32 zfar);
+
+    void setOrthographic(Float32 left, Float32 right, Float32 top,
+                         Float32 bottom, Float32 znear, Float32 zfar);
+
+    const CameraData& getData() const;
+
+private:
+    RendererWPtr renderer_;
+
+    CameraDataHandle dataHandle_ = -1;
+
+    math::Transform transform_;
+
+    Float32 fovy_   = 0.0f;
+    Float32 aspect_ = 0.0f;
+    Float32 znear_  = 0.0f;
+    Float32 zfar_   = 0.0f;
+    Float32 left_   = 0.0f;
+    Float32 right_  = 0.0f;
+    Float32 top_    = 0.0f;
+    Float32 bottom_ = 0.0f;
+};
+
+void cameraDataGavageCollect();
+
+}  // namespace render
+}  // namespace temp
+
+#endif  // GUARD_082c71951f804213bb68ce9b2d068884
