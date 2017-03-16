@@ -9,14 +9,16 @@
 #ifndef GUARD_8b79d00eeb164860884f8bdb6ffa34fd
 #define GUARD_8b79d00eeb164860884f8bdb6ffa34fd
 
+#include "temp/define.h"
+#include "temp/container.h"
+#include "temp/type.h"
+
 #ifdef TEMP_PLATFORM_WINDOWS
 #include <Windows.h>
 #endif
+
 #include <iostream>
 
-#include "temp/container.h"
-#include "temp/define.h"
-#include "temp/type.h"
 
 
 namespace temp {

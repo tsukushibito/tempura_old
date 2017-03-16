@@ -29,8 +29,11 @@ public:
     TransformBase(const TransformBase&) = default;
     TransformBase& operator=(const TransformBase&) = default;
 
+#if defined(_MSC_VER) && _MSC_VER < 1900
+#else
     TransformBase(TransformBase&&) noexcept = default;
     TransformBase& operator=(TransformBase&&) noexcept = default;
+#endif
 
     ~TransformBase() = default;
 

@@ -14,11 +14,11 @@
 #ifdef TEMP_PLATFORM_WINDOWS
 #include <Windows.h>
 
-#include "temp/graphics/opengl/opengl_common.h"
+#include "temp/graphics_old/opengl/opengl_common.h"
 #include "temp/type.h"
 
 namespace temp {
-namespace graphics {
+namespace graphics_old {
 namespace opengl {
 namespace windows {
 

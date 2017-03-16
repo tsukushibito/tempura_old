@@ -69,10 +69,8 @@ public:
         // DestroyWindow(hWnd_);
     }
 
-    WindowHandle getWindowHandle() {
-        WindowHandle handle;
-        handle.pointer_ = hWnd_;
-        return handle;
+    WindowHandle windowHandle() const {
+		return WindowHandle(0);
     }
 
 private:
@@ -84,9 +82,6 @@ Window::Window(Size width, Size height)
 
 Window::~Window() {}
 
-WindowHandle Window::getWindowHandle() const {
-    return impl_->getWindowHandle();
-}
 
 Window::SPtr Window::create(Size width, Size height) {
     struct Creator : public Window {

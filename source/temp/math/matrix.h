@@ -60,8 +60,11 @@ public:
     // コピー代入演算子
     Matrix44Base& operator=(const Matrix44Base&) = default;
 
+#if defined(_MSC_VER) && _MSC_VER < 1900
+#else
     Matrix44Base(Matrix44Base&&) noexcept = default;
     Matrix44Base& operator=(Matrix44Base&&) noexcept = default;
+#endif
 
     ~Matrix44Base() = default;
 

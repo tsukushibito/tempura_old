@@ -65,7 +65,7 @@ void initializeOpenglExtension() {
 } // namespace
 
 namespace temp {
-namespace graphics {
+namespace graphics_old {
 namespace opengl {
 namespace windows {
 
