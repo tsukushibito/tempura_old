@@ -113,6 +113,8 @@ public:
 
     bool operator==(const Handle& rhs) const { return value_ == rhs.value_; }
     bool operator!=(const Handle& rhs) const { return !(*this == rhs); }
+    
+    Int32 value() const { return value_; }
 
 private:
     Int32 value_ = 0;

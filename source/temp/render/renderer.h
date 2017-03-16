@@ -16,7 +16,7 @@
 #include "temp/resource/pixel_shader_resource.h"
 
 namespace temp {
-namespace graphics {
+namespace graphics_old {
 class Device; 
 using DeviceSPtr = std::shared_ptr<Device>;
 } // namespace graphics
@@ -44,10 +44,10 @@ private:
 
 class Renderer : public SmartPointerObject<Renderer> {
 private:
-    Renderer(const graphics::DeviceSPtr &graphics_device);
+    Renderer(const graphics_old::DeviceSPtr &graphics_device);
 
 public:
-    static SPtr create(const graphics::DeviceSPtr &graphics_device);
+    static SPtr create(const graphics_old::DeviceSPtr &graphics_device);
 
     CameraSPtr createCamera();
 
@@ -59,7 +59,7 @@ private:
     void removeCamera(const Camera *camera);
 
 private:
-    graphics::DeviceSPtr device_;
+    graphics_old::DeviceSPtr device_;
     std::mutex camera_list_mutex_;
     Vector<Camera*> camera_list_;
 

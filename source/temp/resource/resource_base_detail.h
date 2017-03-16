@@ -61,7 +61,7 @@ typename ResourceBase< T >::SPtr ResourceBase< T >::create(const system::Path &p
 
 template < typename T >
 void ResourceBase< T >::initialize(const system::ThreadPool::SPtr &load_thread,
-        const graphics::Device::SPtr &graphics_device) {
+        const graphics_old::Device::SPtr &graphics_device) {
     s_resource_table.reset(new ResourceTable);
     s_load_thread = load_thread;
     s_graphics_device = graphics_device;
@@ -130,7 +130,7 @@ String &ResourceBase< T >::getBuffer() {
 }
 
 template < typename T >
-graphics::Device::SPtr ResourceBase< T >::getGraphicsDevcie() {
+graphics_old::Device::SPtr ResourceBase< T >::getGraphicsDevcie() {
     return s_graphics_device;
 }
 
@@ -197,7 +197,7 @@ template < typename T >
 system::ThreadPool::SPtr ResourceBase< T >::s_load_thread = nullptr;
 
 template < typename T >
-graphics::Device::SPtr ResourceBase< T >::s_graphics_device = nullptr;
+graphics_old::Device::SPtr ResourceBase< T >::s_graphics_device = nullptr;
 
 template < typename T >
 typename ResourceBase< T >::ResourceTableUPtr ResourceBase< T >::s_resource_table = nullptr;

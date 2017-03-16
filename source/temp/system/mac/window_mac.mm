@@ -6,8 +6,10 @@
 * @date 2016-02-21
 */
 #import <Cocoa/Cocoa.h>
+#include "temp/temp_assert.h"
 #include "temp/system/window.h"
 #include "temp/system/application.h"
+#include "temp/system/mac/mac.h"
 
 @interface WindowDelegate : NSObject < NSWindowDelegate > {
 }
@@ -30,7 +32,7 @@ public:
     Impl(Size width, Size height) {
         delegate_ = [[WindowDelegate alloc] init];
         window_ = [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, width, height)
-                                              styleMask:NSTitledWindowMask | NSMiniaturizableWindowMask | NSClosableWindowMask
+                                              styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskClosable
                                                 backing:NSBackingStoreBuffered
                                                   defer:NO];
         [window_ setTitle:@"てんぷら"];
@@ -42,26 +44,28 @@ public:
                     NSWindowCollectionBehaviorFullScreenPrimary;
         [window_ setCollectionBehavior:behavior];
         [window_ orderFrontRegardless];
+
+        handle_ = mac::pushNsWindowToTable(window_); 
     }
 
-    ~Impl() {}
-
-    WindowHandle getWindowHandle() const {
-        WindowHandle handle;
-        handle.pointer_ = (__bridge void *)window_;
-        return handle;
+    ~Impl() {
+        NSWindow* window = mac::windowHandleToNSWindow(handle_);
+        mac::removeNsWindowFromTable(window);
     }
+
+    WindowHandle handle() const { return handle_; }
 
 private:
+    WindowHandle handle_;
     NSWindow *window_;
     WindowDelegate *delegate_;
 };
 
-Window::Window(Size width, Size height) : impl_(new Impl(width, height)) {}
+Window::Window(Size width, Size height) : impl_(new Impl(width, height)) {
+    handle_ = impl_->handle();
+    }
 
 Window::~Window() {}
-
-WindowHandle Window::getWindowHandle() const { return impl_->getWindowHandle(); }
 
 Window::SPtr Window::create(Size width, Size height) {
     struct Creator : public Window {
@@ -71,5 +75,6 @@ Window::SPtr Window::create(Size width, Size height) {
     auto p = std::make_shared< Creator >(width, height);
     return std::move(p);
 }
+
 }
 }

@@ -15,7 +15,7 @@
 #include "temp/system/thread_pool.h"
 #include "temp/system/file_system.h"
 
-#include "temp/graphics/device.h"
+#include "temp/graphics_old/device.h"
 
 namespace temp {
 namespace resource {
@@ -53,7 +53,7 @@ public:
 
     static SPtr create(const system::Path &path);
 
-    static void initialize(const system::ThreadPool::SPtr &load_thread, const graphics::Device::SPtr &graphics_device);
+    static void initialize(const system::ThreadPool::SPtr &load_thread, const graphics_old::Device::SPtr &graphics_device);
 
     static void terminate();
 
@@ -72,7 +72,7 @@ public:
 protected:
     String &getBuffer();
 
-    static graphics::Device::SPtr getGraphicsDevcie();
+    static graphics_old::Device::SPtr getGraphicsDevcie();
     static system::ThreadPool::SPtr getLoadThread();
 
 private:
@@ -83,7 +83,7 @@ private:
 protected:
 
     static system::ThreadPool::SPtr s_load_thread;
-    static graphics::Device::SPtr s_graphics_device;
+    static graphics_old::Device::SPtr s_graphics_device;
     static ResourceTableUPtr s_resource_table;
     static std::mutex s_table_mutex;
 

@@ -14,10 +14,8 @@
 namespace temp {
 namespace system {
 
-union WindowHandle {
-    void* pointer_;
-    Size  value_;
-};
+class Window;
+using WindowHandle = temp::Handle<Window>;
 
 class Window : public SmartPointerObject<Window> {
 private:
@@ -29,17 +27,19 @@ public:
 public:
     static SPtr create(Size width = 1280, Size height = 720);
 
-    WindowHandle getWindowHandle() const;
-    Size         getWidth() const { return width_; }
-    Size         getHeight() const { return height_; }
+    WindowHandle windowHandle() const { return handle_; }
+    Size         width() const { return width_; }
+    Size         height() const { return height_; }
 
 private:
     class Impl;
     std::unique_ptr<Impl> impl_;
 
-    Size width_;
-    Size height_;
+    WindowHandle handle_;
+    Size         width_;
+    Size         height_;
 };
+
 }
 }
 

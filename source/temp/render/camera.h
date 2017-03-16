@@ -66,8 +66,6 @@ public:
 private:
     RendererWPtr renderer_;
 
-    CameraDataHandle dataHandle_ = -1;
-
     math::Transform transform_;
 
     Float32 fovy_   = 0.0f;

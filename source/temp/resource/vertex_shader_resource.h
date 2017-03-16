@@ -9,7 +9,7 @@
 #ifndef GUARD_64bef9fa34394904a86f76b33d413d66
 #define GUARD_64bef9fa34394904a86f76b33d413d66
 
-#include "temp/graphics/vertex_shader.h"
+#include "temp/graphics_old/vertex_shader.h"
 #include "temp/resource/resource_base.h"
 
 namespace temp {
@@ -21,12 +21,12 @@ private:
     VertexShaderResource(const system::Path &path);
 
 public:
-    graphics::VertexShader::SPtr get() const { return vertex_shader_; }
+    graphics_old::VertexShader::SPtr get() const { return vertex_shader_; }
 
 private:
     void loginImpl();
 
-    graphics::VertexShader::SPtr vertex_shader_;
+    graphics_old::VertexShader::SPtr vertex_shader_;
 };
     
 } // namespace resource

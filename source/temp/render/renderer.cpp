@@ -6,16 +6,16 @@
 namespace temp {
 namespace render {
 
-Renderer::Renderer(const graphics::DeviceSPtr &graphics_device) : device_(graphics_device) {
+Renderer::Renderer(const graphics_old::DeviceSPtr &graphics_device) : device_(graphics_device) {
     clear_vs_res_ = resource::VertexShaderResource::create("shader/glsl/clear_glsl.vert");
     clear_vs_res_->load();
     clear_ps_res_ = resource::PixelShaderResource::create("shader/glsl/clear_glsl.frag");
     clear_ps_res_->load();
 }
 
-Renderer::SPtr Renderer::create(const graphics::DeviceSPtr &graphics_device) {
+Renderer::SPtr Renderer::create(const graphics_old::DeviceSPtr &graphics_device) {
     struct Creator : public Renderer {
-        Creator(const graphics::DeviceSPtr &graphics_device) 
+        Creator(const graphics_old::DeviceSPtr &graphics_device)
             : Renderer(graphics_device) {
         }
     };

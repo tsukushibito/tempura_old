@@ -11,7 +11,7 @@
 // #include <OpenGL/gl3.h>
 
 class Test {
-public:
+   public:
     Test();
 
     void init();
@@ -22,14 +22,13 @@ public:
 
     void testMath();
 
-private:
+   private:
     temp::system::Application::SPtr application_;
     temp::system::Window::SPtr window_;
     temp::system::ThreadPool::SPtr load_thread_;
     temp::system::ThreadPool::SPtr render_thread_;
     temp::system::ThreadPool::SPtr worker_threads_;
     temp::graphics::Device::SPtr device_;
-    temp::render::Renderer::SPtr renderer_;
 };
 
 Test::Test() {
@@ -56,36 +55,11 @@ void Test::init() {
     ConsoleLogger::initialize();
 
     setCurrentDirectory("../../");
-    ConsoleLogger::trace("Current directory : {}", getCurrentDirectory().getAbsolute());
+    ConsoleLogger::trace("Current directory : {}",
+                         getCurrentDirectory().getAbsolute());
 
     window_ = Window::create();
-
-    graphics::DeviceParameter devParam;
-    devParam.main_thread = application_->getMainThread();
-    devParam.load_thread = load_thread_;
-    devParam.render_thread = render_thread_;
-    devParam.worker_thread = worker_threads_;
-    devParam.window = window_;
-    device_ = graphics::Device::create(devParam);
-    auto blend_state = device_->createBlendState(graphics::BlendMode::None);
-    auto depth_stencile_state =
-        device_->createDepthStencileState(graphics::DepthStencileFunc::Always, graphics::DepthStencileFunc::Always);
-    graphics::RasterizerDesc desc;
-    desc.front_face = graphics::FrontFace::CounterClockWise;
-    desc.fill_mode = graphics::FillMode::Fill;
-    desc.cull_mode = graphics::CullingMode::CullingNone;
-    auto rasterizer_state = device_->createRasterizerState(desc);
-    String data;
-    temp::Float32 vertics[][3] = { { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
-    temp::Int16 indics[] = { 0, 1, 2, };
-    auto vertex_buffer = device_->createVertexBuffer(sizeof(vertics), vertics);
-    auto index_buffer = device_->createIndexBuffer(sizeof(indics), indics);
-
-    VertexShaderResource::initialize(load_thread_, device_);
-    PixelShaderResource::initialize(load_thread_, device_);
-
-    renderer_ = render::Renderer::create(device_);
-    auto camera = renderer_->createCamera();
+    device_ = Device::create(window_->windowHandle());
 
     testMath();
 }
@@ -95,12 +69,6 @@ void Test::term() {
     using namespace temp::system;
     using namespace temp::resource;
 
-    renderer_ = nullptr;
-
-    PixelShaderResource::terminate();
-    VertexShaderResource::terminate();
-
-    device_ = nullptr;
     window_ = nullptr;
 
     application_ = nullptr;
@@ -113,10 +81,7 @@ void Test::term() {
 }
 
 void Test::update() {
-    auto future = render_thread_->pushJob([this]() {
-        renderer_->renderAllViews();
-        renderer_->swapBackBuffers();
-    });
+    auto future = render_thread_->pushJob([this]() {});
     future.wait();
 }
 
@@ -137,15 +102,16 @@ void Test::testMath() {
     ConsoleLogger::trace("-Vector3::kUp = {0}", (-Vector2::kUp).toString());
     ConsoleLogger::trace("-Vector3::kDown = {0}", (-Vector2::kDown).toString());
     ConsoleLogger::trace("-Vector3::kLeft = {0}", (-Vector2::kLeft).toString());
-    ConsoleLogger::trace("-Vector3::kRight = {0}", (-Vector2::kRight).toString());
+    ConsoleLogger::trace("-Vector3::kRight = {0}",
+                         (-Vector2::kRight).toString());
 
     auto v0 = Vector2(1.0f, 1.0f);
     auto v1 = Vector2(-1.0f, 1.0f);
     ConsoleLogger::trace("Vector2::dot(v0, v1) = {0}", Vector2::dot(v0, v1));
 
-	Vector3 x = Vector3::kRight;
-	Vector3 nx = Vector3::kLeft;
-	auto z = x + nx;
+    Vector3 x = Vector3::kRight;
+    Vector3 nx = Vector3::kLeft;
+    auto z = x + nx;
 
     Vector3 vec3(3, 4, 5);
     Vector3 vec3xyz = vec3.xyz();
@@ -167,13 +133,10 @@ void Test::testMath() {
     auto axisZ = Vector3::cross(Vector3(1, 0, 0), Vector3(0, 1, 0));
     auto zero = Vector3::dot(Vector3(1, 0, 0), Vector3(0, 1, 0));
     TEMP_ASSERT(zero == 0, "");
-    
-    Matrix44 mat(RowOrder(),
-        Vector4( 2,  0,  1,  1), 
-        Vector4( 1,  1,  2,  3),
-        Vector4(-1,  2,  0,  0),
-        Vector4( 1,  0,  1, 10));
-	ConsoleLogger::trace("\n{0}", mat.toString());
+
+    Matrix44 mat(RowOrder(), Vector4(2, 0, 1, 1), Vector4(1, 1, 2, 3),
+                 Vector4(-1, 2, 0, 0), Vector4(1, 0, 1, 10));
+    ConsoleLogger::trace("\n{0}", mat.toString());
     auto det = mat.determinant();
     TEMP_ASSERT(det == -23, "");
     auto id = Matrix44::kIdentity;
@@ -183,53 +146,53 @@ void Test::testMath() {
     Vector4 vec4(1, 3, 4, 1);
     auto transformed = vec4 * id;
     TEMP_ASSERT(transformed == vec4, "");
-    
+
     inv = mat.inverse();
     transformed = vec4 * mat * (*inv);
     transformed = vec4 * (mat * (*inv));
-    //TEMP_ASSERT(transformed == vec4, "");
+    // TEMP_ASSERT(transformed == vec4, "");
 
     auto mat2 = mat * id;
     TEMP_ASSERT(mat == mat2, "");
 
     auto tmat = mat.transpose();
-	ConsoleLogger::trace("\n{0}", tmat.toString());
+    ConsoleLogger::trace("\n{0}", tmat.toString());
 
-    auto r = std::sin(math::pi()/2.0f);
+    auto r = std::sin(math::pi() / 2.0f);
     ConsoleLogger::trace("sin(PI) = {0}", r);
 
-    Quaternion quat(Vector3(math::pi()/2.0f, 0.0f, 0.0f));
+    Quaternion quat(Vector3(math::pi() / 2.0f, 0.0f, 0.0f));
     auto abs = quat.absolute();
     ConsoleLogger::trace("quat abs = {0}", abs);
     auto euler = quat.toEulerAnglesZXY();
     ConsoleLogger::trace("euler = {0}", euler.toString());
 
     Vector3 forward = Vector3::kForward;
-    Quaternion rot(Vector3(math::pi()/2.0f, math::pi()/2.0f, math::pi()));
+    Quaternion rot(Vector3(math::pi() / 2.0f, math::pi() / 2.0f, math::pi()));
     auto rotated = rot.rotateVector3(forward);
     ConsoleLogger::trace("rotated = {0}", rotated.toString());
     auto rotMat = rot.toRotateMatrix();
     auto rotated2 = Vector4(forward[0], forward[1], forward[2], 0) * rotMat;
     ConsoleLogger::trace("rotated2 = {0}", rotated2.toString());
 
-	Transform t1;
-	ConsoleLogger::trace("t1 = \n{0}", t1.toString());
-	ConsoleLogger::trace("t1.Matrix = \n{0}", t1.toMatrix().toString());
+    Transform t1;
+    ConsoleLogger::trace("t1 = \n{0}", t1.toString());
+    ConsoleLogger::trace("t1.Matrix = \n{0}", t1.toMatrix().toString());
 
-	Transform t2(Vector3(2.0f, 3.0f, 1.0f), Quaternion(Vector3(pi()/2, 0, 0)), Vector3(1, 1, 1));
-	Transform t3(Vector3(1.0f, 2.0f, 4.0f), Quaternion(Vector3(0, pi()/2, 0)), Vector3(1, 1, 1));
+    Transform t2(Vector3(2.0f, 3.0f, 1.0f), Quaternion(Vector3(pi() / 2, 0, 0)),
+                 Vector3(1, 1, 1));
+    Transform t3(Vector3(1.0f, 2.0f, 4.0f), Quaternion(Vector3(0, pi() / 2, 0)),
+                 Vector3(1, 1, 1));
 
-	auto t12 = t1 * t2;
-	ConsoleLogger::trace("t12 = \n{0}", t12.toString());
+    auto t12 = t1 * t2;
+    ConsoleLogger::trace("t12 = \n{0}", t12.toString());
 
-	auto t23 = t2 * t3;
-	ConsoleLogger::trace("t23 = \n{0}", t23.toString());
-
+    auto t23 = t2 * t3;
+    ConsoleLogger::trace("t23 = \n{0}", t23.toString());
 }
 
 int main(/*int argc, char const* argv[]*/) {
     using temp::system::ConsoleLogger;
-
 
     Test test;
     test.run();

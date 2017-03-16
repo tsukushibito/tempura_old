@@ -1,22 +1,18 @@
 /**
  * @file graphics.h
- * @brief graphics
+ * @brief
  * @author tsukushibito
  * @version 0.0.1
- * @date 2016-02-28
+ * @date 2017-02-27
  */
 #pragma once
-#ifndef GUARD_3bef4891b6cd4afabcb615ae4dd8e9cf
-#define GUARD_3bef4891b6cd4afabcb615ae4dd8e9cf
+#ifndef GUARD_06ee30f321684357842780bfa43ecbf1
+#define GUARD_06ee30f321684357842780bfa43ecbf1
 
 #include "temp/graphics/device.h"
-#include "temp/graphics/vertex_shader.h"
-#include "temp/graphics/blend_state.h"
 
 namespace temp {
-namespace graphics {
-    
-} // namespace graphics
-} // namespace temp
+namespace graphics {}
+}
 
-#endif // GUARD_3bef4891b6cd4afabcb615ae4dd8e9cf
+#endif  // GUARD_06ee30f321684357842780bfa43ecbf1

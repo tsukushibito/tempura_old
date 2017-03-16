@@ -1,18 +1,19 @@
 /**
  * @file opengl_mac.h
- * @brief opengl utility for mac
+ * @brief OpenGL OSX依存部分
  * @author tsukushibito
  * @version 0.0.1
- * @date 2016-03-01
+ * @date 2017-03-01
  */
 #pragma once
-#ifndef GUARD_9421abba898147c393b08f37b524790f
-#define GUARD_9421abba898147c393b08f37b524790f
+#ifndef GUARD_f46e2e02182b48f1bdc18d05b9fc86fa
+#define GUARD_f46e2e02182b48f1bdc18d05b9fc86fa
+
 #include "temp/define.h"
 
 #ifdef TEMP_PLATFORM_MAC
 
-#include "temp/graphics/opengl/opengl_common.h"
+#include "temp/graphics/opengl/opengl_device.h"
 #include "temp/type.h"
 
 namespace temp {
@@ -20,20 +21,18 @@ namespace graphics {
 namespace opengl {
 namespace mac {
 
-using NsWindow = void*;
-using NsOpenglContext = void*;
+DeviceHandle createContext(const temp::system::WindowHandle& window_handle);
 
-OpenglContexts createContexts(NsWindow window, Size worker_thread_count);
-void deleteContexts(const OpenglContexts &contexts);
+void deleteContext(void* context);
 
-void makeCurrent(NsWindow window, NsOpenglContext context);
-    
-void swapBuffers(NsWindow window, NsOpenglContext context);
+void makeCurrent(void* context);
 
-} // namespace mac
-} // namespace opengl
-} // namespace graphics
-} // namespace temp
+void swapBuffers(void* context);
 
-#endif
-#endif // GUARD_9421abba898147c393b08f37b524790f
+void* deviceHandleToNsOpenGlContext(const DeviceHandle& handle);
+}
+}
+}
+}
+#endif  // TEMP_PLATFORM_MAC
+#endif  // GUARD_f46e2e02182b48f1bdc18d05b9fc86fa

@@ -9,7 +9,7 @@
 #ifndef GUARD_7fc393d9de364368879b6e84c0a1dee5
 #define GUARD_7fc393d9de364368879b6e84c0a1dee5
 
-#include "temp/graphics/pixel_shader.h"
+#include "temp/graphics_old/pixel_shader.h"
 #include "temp/resource/resource_base.h"
 
 namespace temp {
@@ -21,12 +21,12 @@ private:
     PixelShaderResource(const system::Path &path);
 
 public:
-    graphics::PixelShader::SPtr get() const { return pixel_shader_; }
+    graphics_old::PixelShader::SPtr get() const { return pixel_shader_; }
 
 private:
     void loginImpl();
 
-    graphics::PixelShader::SPtr pixel_shader_;
+    graphics_old::PixelShader::SPtr pixel_shader_;
 };
    
 } // namespace resource 
