@@ -9,7 +9,7 @@
 #ifndef GUARD_c63f349cadc54355a8cca8adfd97d484
 #define GUARD_c63f349cadc54355a8cca8adfd97d484
 
-#include "temp/define.h"
+#include "temp/graphics/opengl/opengl_define.h"
 #include "temp/type.h"
 
 #ifdef TEMP_GRAPHICS_OPENGL

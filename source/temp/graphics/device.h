@@ -30,8 +30,8 @@ public:
     ~Device();
 
     DeviceHandle handle();
-/*
-    TextureSPtr createTexture();
+
+    TextureSPtr createTexture(const TextureDesc& desc);
 
     VertexBufferSPtr createVertexBuffer(Size size, void* data);
 
@@ -42,7 +42,7 @@ public:
 
     PixelShaderSPtr createPixelShaderFromSource(Size size, void* sourceCode);
     PixelShaderSPtr createPixelShaderFromBinary(Size size, void* binaryCode);
-*/
+
 private:
     class Impl;
     std::unique_ptr<Impl> impl_;

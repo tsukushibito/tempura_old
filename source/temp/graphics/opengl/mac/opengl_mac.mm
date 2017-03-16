@@ -106,10 +106,12 @@ DeviceHandle createContext(const temp::system::WindowHandle& window_handle) {
 
     [NSOpenGLContext clearCurrentContext];
 
-    return DeviceHandle();
+    return pushNSOpenGLContextToTable(context);
 }
 
-void deleteContext(void* context) {}
+void deleteContext(void* context) {
+    removeNSOpenGLContextFromTable((__bridge NSOpenGLContext*)context);
+}
 
 void makeCurrent(void* context) {
     NSOpenGLContext *ns_context = (__bridge NSOpenGLContext*)context;

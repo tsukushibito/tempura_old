@@ -22,15 +22,15 @@
 #include <gl_ext/glext.h>
 
 #define TEMP_OPENGL_EXTENSION_LINK(func, name) extern func name;
-
 #include <gl_ext/temp_glext_link.inl>
+
 #if defined(TEMP_PLATFORM_LINUX)
 #include <gl_ext/glxext.h>
+
 #elif defined(TEMP_PLATFORM_WINDOWS)
 #include <gl_ext/wglext.h>
 #include <gl_ext/temp_wglext_link.inl>
 #endif
-
 #undef TEMP_OPENGL_EXTENSION_LINK
 
 #else

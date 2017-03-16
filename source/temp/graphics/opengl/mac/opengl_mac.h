@@ -9,7 +9,7 @@
 #ifndef GUARD_f46e2e02182b48f1bdc18d05b9fc86fa
 #define GUARD_f46e2e02182b48f1bdc18d05b9fc86fa
 
-#include "temp/define.h"
+#include "temp/graphics/opengl/opengl_define.h"
 
 #ifdef TEMP_PLATFORM_MAC
 

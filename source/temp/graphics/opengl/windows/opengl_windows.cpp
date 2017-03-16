@@ -1,4 +1,4 @@
-#include "temp/graphics/opengl/windows/opengl_windows.h"
+ï»¿#include "temp/graphics/opengl/windows/opengl_windows.h"
 
 #if defined(TEMP_PLATFORM_WINDOWS)
 
@@ -14,193 +14,201 @@ namespace opengl {
 namespace windows {
 
 namespace {
-	// ƒnƒ“ƒhƒ‹ŠÇ—ƒe[ƒuƒ‹
-    temp::Vector<HGLRC> g_handle_table;
-    std::mutex g_handle_table_mutex;
+// ãƒãƒ³ãƒ‰ãƒ«ç®¡ç†ãƒ†ãƒ¼ãƒ–ãƒ«
+temp::Vector<HGLRC> g_handle_table;
+std::mutex          g_handle_table_mutex;
 
-    DeviceHandle pushHGLRCToTable(HGLRC context) {
-        std::lock_guard<std::mutex> lock(g_handle_table_mutex);
-        for (Int32 i = 0; i < g_handle_table.size(); ++i) {
-            if (g_handle_table[i] == context) {
-                std::cout << "HGLRC[0x" << std::hex << context << "] already exists in table!" << std::endl;
-                return DeviceHandle(i);
-            }
-            else if (g_handle_table[i] == nullptr) {
-                return DeviceHandle(i);
-            }
+DeviceHandle pushHGLRCToTable(HGLRC context) {
+    std::lock_guard<std::mutex> lock(g_handle_table_mutex);
+    for (Int32 i = 0; i < g_handle_table.size(); ++i) {
+        if (g_handle_table[i] == context) {
+            std::cout << "HGLRC[0x" << std::hex << context
+                      << "] already exists in table!" << std::endl;
+            return DeviceHandle(i);
+        } else if (g_handle_table[i] == nullptr) {
+            return DeviceHandle(i);
         }
-
-        g_handle_table.push_back(context);
-        return DeviceHandle(g_handle_table.size() - 1);
     }
 
-    void removeNSOpenGLContextFromTable(HGLRC context) {
-        std::lock_guard<std::mutex> lock(g_handle_table_mutex);
-        for (Int32 i = 0; i < g_handle_table.size(); ++i) {
-            if (g_handle_table[i] == context) {
-                g_handle_table[i] = nullptr;
-                return;
-            }
+    g_handle_table.push_back(context);
+    return DeviceHandle(g_handle_table.size() - 1);
+}
+
+void removeNSOpenGLContextFromTable(HGLRC context) {
+    std::lock_guard<std::mutex> lock(g_handle_table_mutex);
+    for (Int32 i = 0; i < g_handle_table.size(); ++i) {
+        if (g_handle_table[i] == context) {
+            g_handle_table[i] = nullptr;
+            return;
         }
-        std::cout << "HGLRC[0x" << std::hex << context << "] is not found in table!" << std::endl;
     }
+    std::cout << "HGLRC[0x" << std::hex << context << "] is not found in table!"
+              << std::endl;
+}
 
-    HGLRC deviceHandleToHGLRC(const DeviceHandle& handle) {
-        std::lock_guard<std::mutex> lock(g_handle_table_mutex);
-        return nullptr;
-    }
+HGLRC deviceHandleToHGLRC(const DeviceHandle& handle) {
+    std::lock_guard<std::mutex> lock(g_handle_table_mutex);
+    return nullptr;
+}
 
 
-	// ƒ_ƒ~[ƒEƒBƒ“ƒhƒEì¬
-	HWND createDummyWindow() {
-		const size_t kMaxStrSize = 100;
-		HINSTANCE instance_handle = GetModuleHandle(NULL);
-		CHAR window_class_name[kMaxStrSize] = "Dummy";
-		WNDCLASSEX wcex;
+// ãƒ€ãƒŸãƒ¼ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ä½œæˆ
+HWND createDummyWindow() {
+    const size_t kMaxStrSize                    = 100;
+    HINSTANCE    instance_handle                = GetModuleHandle(NULL);
+    CHAR         window_class_name[kMaxStrSize] = "Dummy";
+    WNDCLASSEX   wcex;
 
-		wcex.cbSize = sizeof(WNDCLASSEX);
+    wcex.cbSize = sizeof(WNDCLASSEX);
 
-		wcex.style = CS_HREDRAW | CS_VREDRAW;
-		wcex.lpfnWndProc = DefWindowProc;
-		wcex.cbClsExtra = 0;
-		wcex.cbWndExtra = 0;
-		wcex.hInstance = instance_handle;
-		wcex.hIcon = NULL;
-		wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
-		wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-		wcex.lpszMenuName = NULL;
-		wcex.lpszClassName = window_class_name;
-		wcex.hIconSm = NULL;
+    wcex.style         = CS_HREDRAW | CS_VREDRAW;
+    wcex.lpfnWndProc   = DefWindowProc;
+    wcex.cbClsExtra    = 0;
+    wcex.cbWndExtra    = 0;
+    wcex.hInstance     = instance_handle;
+    wcex.hIcon         = NULL;
+    wcex.hCursor       = LoadCursor(NULL, IDC_ARROW);
+    wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+    wcex.lpszMenuName  = NULL;
+    wcex.lpszClassName = window_class_name;
+    wcex.hIconSm       = NULL;
 
-		RegisterClassEx(&wcex);
+    RegisterClassEx(&wcex);
 
-		return CreateWindow(window_class_name, "", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL,
-							instance_handle, NULL);
-	}
+    return CreateWindow(window_class_name, "", WS_OVERLAPPEDWINDOW,
+                        CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL,
+                        instance_handle, NULL);
+}
 
-	// ƒ_ƒ~[ƒRƒ“ƒeƒLƒXƒgì¬
-	HGLRC createDummyOpenglContext(HDC hdc) {
-		// Œ»İ‘Î‰‚µ‚Ä‚¢‚éƒtƒH[ƒ}ƒbƒg‚Ì”‚ğQÆ‚·‚é
-		// int format_count= DescribePixelFormat( hTempDC, 0, 0, NULL );
+// ãƒ€ãƒŸãƒ¼ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆä½œæˆ
+HGLRC createDummyOpenglContext(HDC hdc) {
+    // ç¾åœ¨å¯¾å¿œã—ã¦ã„ã‚‹ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã®æ•°ã‚’å‚ç…§ã™ã‚‹
+    // int format_count= DescribePixelFormat( hTempDC, 0, 0, NULL );
 
-		PIXELFORMATDESCRIPTOR pfd;
-		// —ñ‹“‚·‚é
-		// for (int i = 0; i < format_count; ++i) {
-		//     DescribePixelFormat(hTempDC, i + 1, sizeof(PIXELFORMATDESCRIPTOR), &pfd);
-		//     break;
-		// }
-		DescribePixelFormat(hdc, 1, sizeof(PIXELFORMATDESCRIPTOR), &pfd);
+    PIXELFORMATDESCRIPTOR pfd;
+    // åˆ—æŒ™ã™ã‚‹
+    // for (int i = 0; i < format_count; ++i) {
+    //     DescribePixelFormat(hTempDC, i + 1, sizeof(PIXELFORMATDESCRIPTOR),
+    //     &pfd);
+    //     break;
+    // }
+    DescribePixelFormat(hdc, 1, sizeof(PIXELFORMATDESCRIPTOR), &pfd);
 
-		// ƒsƒNƒZƒ‹ƒtƒH[ƒ}ƒbƒg‚Ì‘I‘ğ
-		int pfmt = ChoosePixelFormat(hdc, &pfd);
-		SetPixelFormat(hdc, pfmt, &pfd);
+    // ãƒ”ã‚¯ã‚»ãƒ«ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã®é¸æŠ
+    int pfmt = ChoosePixelFormat(hdc, &pfd);
+    SetPixelFormat(hdc, pfmt, &pfd);
 
-		// OpenGL ƒRƒ“ƒeƒLƒXƒg‚Ìì¬
-		return wglCreateContext(hdc);
-	}
+    // OpenGL ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã®ä½œæˆ
+    return wglCreateContext(hdc);
+}
 
-	// OpenGLŠg’£‚Ì‰Šú‰»
-	void initializeOpenglExtension() {
-	#define TEMP_OPENGL_EXTENSION_LINK(func, name) \
-		if(name == nullptr) *(void**)(&name) = wglGetProcAddress(#name);	\
-		// if(name == nullptr) temp::system::ConsoleLogger::info("OpenGL extention : {0} not supported.", #name);
-	#include <gl_ext/temp_glext_link.inl>
-	#include <gl_ext/temp_wglext_link.inl>
-	#undef TEMP_OPENGL_EXTENSION_LINK
-	}
+// OpenGLæ‹¡å¼µã®åˆæœŸåŒ–
+void initializeOpenglExtension() {
+#define TEMP_OPENGL_EXTENSION_LINK(func, name)                        \
+    if (name == nullptr) *(void**)(&name) = wglGetProcAddress(#name); \
+// if(name == nullptr) temp::system::ConsoleLogger::info("OpenGL extention : {0}
+// not supported.", #name);
+#include <gl_ext/temp_glext_link.inl>
+#include <gl_ext/temp_wglext_link.inl>
+#undef TEMP_OPENGL_EXTENSION_LINK
+}
 }
 
 DeviceHandle createContext(const temp::system::WindowHandle& window_handle) {
-    // OpeGLŠg’£‹@”\‰Šú‰»—p‚Ìƒ_ƒ~[ƒEƒBƒ“ƒhƒE‚ÆƒRƒ“ƒeƒLƒXƒg‚ğì¬
-    auto dummy_window_handle = createDummyWindow();
+    // OpeGLæ‹¡å¼µæ©Ÿèƒ½åˆæœŸåŒ–ç”¨ã®ãƒ€ãƒŸãƒ¼ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã¨ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã‚’ä½œæˆ
+    auto dummy_window_handle  = createDummyWindow();
     auto dummy_device_context = GetDC(dummy_window_handle);
     auto dummy_opengl_context = createDummyOpenglContext(dummy_device_context);
     BOOL result = wglMakeCurrent(dummy_device_context, dummy_opengl_context);
 
-	GLenum error;
+    GLenum error;
 #ifdef TEMP_USE_GLEW
-	// glew‚Ì‰Šú‰»
-	error = glewInit();
-	if (error != GLEW_OK)
-	{
-		ConsoleLogger::error("glewInit failed!: {0}", glewGetErrorString(error));
-	}
-	else
-	{
-		ConsoleLogger::info("glewInit version: {0}", glewGetString(GLEW_VERSION));
-	}
+    // glewã®åˆæœŸåŒ–
+    error = glewInit();
+    if (error != GLEW_OK) {
+        ConsoleLogger::error("glewInit failed!: {0}",
+                             glewGetErrorString(error));
+    } else {
+        ConsoleLogger::info("glewInit version: {0}",
+                            glewGetString(GLEW_VERSION));
+    }
 #else
-	initializeOpenglExtension();
+    initializeOpenglExtension();
 #endif
-	// OpenGLî•ñæ“¾
-	using temp::system::ConsoleLogger;
-	auto vendor = glGetString(GL_VENDOR);
-	if (vendor != nullptr) ConsoleLogger::info("[OpenGL] vendor : {0}", vendor);
-	auto renderer = glGetString(GL_RENDER);
-	if (renderer != nullptr) ConsoleLogger::info("[OpenGL] renderer : {0}", renderer);
-	auto version = glGetString(GL_VERSION);
-	if (version != nullptr) ConsoleLogger::info("[OpenGL] version : {0}", version);
-	auto extensions = glGetString(GL_EXTENSIONS);
-	if ( extensions != nullptr) ConsoleLogger::info("[OpenGL] extensions : {0}", extensions);
-	String version_string = reinterpret_cast<const char*>(version);
-	StringStream ss(version_string);
-	Vector<String> num_strs;
-	String temp;
-	while (std::getline(ss, temp, '.')) {
-		num_strs.push_back(temp);
-	}
-	int majorVersion = std::stoi(num_strs[0]);
-	int minorVersion = std::stoi(num_strs[1]);
+    // OpenGLæƒ…å ±å–å¾—
+    using temp::system::ConsoleLogger;
+    auto vendor = glGetString(GL_VENDOR);
+    if (vendor != nullptr) ConsoleLogger::info("[OpenGL] vendor : {0}", vendor);
+    auto renderer = glGetString(GL_RENDER);
+    if (renderer != nullptr)
+        ConsoleLogger::info("[OpenGL] renderer : {0}", renderer);
+    auto version = glGetString(GL_VERSION);
+    if (version != nullptr)
+        ConsoleLogger::info("[OpenGL] version : {0}", version);
+    auto extensions = glGetString(GL_EXTENSIONS);
+    if (extensions != nullptr)
+        ConsoleLogger::info("[OpenGL] extensions : {0}", extensions);
+    String         version_string = reinterpret_cast<const char*>(version);
+    StringStream   ss(version_string);
+    Vector<String> num_strs;
+    String         temp;
+    while (std::getline(ss, temp, '.')) {
+        num_strs.push_back(temp);
+    }
+    int majorVersion = std::stoi(num_strs[0]);
+    int minorVersion = std::stoi(num_strs[1]);
 
 
-    // Šg’£‹@”\‚É‚æ‚éƒRƒ“ƒeƒLƒXƒg‚Ìì¬
-    const FLOAT fAtribList[] = { 0, 0 };
+    // æ‹¡å¼µæ©Ÿèƒ½ã«ã‚ˆã‚‹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã®ä½œæˆ
+    const FLOAT fAtribList[] = {0, 0};
 
-    // ƒsƒNƒZƒ‹ƒtƒH[ƒ}ƒbƒgw’è—p
+    // ãƒ”ã‚¯ã‚»ãƒ«ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆæŒ‡å®šç”¨
     const int pixel_format_attrib_list[] = {
         // WGL_CONTEXT_MAJOR_VERSION_ARB, 1,
         // WGL_CONTEXT_MINOR_VERSION_ARB, 0,
-        WGL_DRAW_TO_WINDOW_ARB, GL_TRUE, //
-        WGL_SUPPORT_OPENGL_ARB, GL_TRUE, //
-        WGL_DOUBLE_BUFFER_ARB,  GL_TRUE, //
+        WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,  //
+        WGL_SUPPORT_OPENGL_ARB, GL_TRUE,  //
+        WGL_DOUBLE_BUFFER_ARB, GL_TRUE,   //
         // WGL_DOUBLE_BUFFER_ARB, GL_FALSE, //
-        WGL_ACCELERATION_ARB,   WGL_FULL_ACCELERATION_ARB, //
-        WGL_PIXEL_TYPE_ARB,     WGL_TYPE_RGBA_ARB,         //
-        WGL_COLOR_BITS_ARB,     32,                        //
-        WGL_DEPTH_BITS_ARB,     24,                        //
-        WGL_STENCIL_BITS_ARB,   8,                         //
-        0,                      0,                         //
+        WGL_ACCELERATION_ARB, WGL_FULL_ACCELERATION_ARB,  //
+        WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,            //
+        WGL_COLOR_BITS_ARB, 32,                           //
+        WGL_DEPTH_BITS_ARB, 24,                           //
+        WGL_STENCIL_BITS_ARB, 8,                          //
+        0, 0,                                             //
     };
 
-    // ƒRƒ“ƒeƒLƒXƒgì¬—p
-    int context_attrib_list[] = {
-        WGL_CONTEXT_MAJOR_VERSION_ARB,
-        majorVersion, //
-        WGL_CONTEXT_MINOR_VERSION_ARB,
-        minorVersion, //
+    // ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆä½œæˆç”¨
+    int context_attrib_list[]
+        = { WGL_CONTEXT_MAJOR_VERSION_ARB,
+            majorVersion,  //
+            WGL_CONTEXT_MINOR_VERSION_ARB,
+            minorVersion,  //
 #if DEBUG
-        WGL_CONTEXT_FLAGS_ARB,
-        WGL_CONTEXT_DEBUG_BIT_ARB,
+            WGL_CONTEXT_FLAGS_ARB,
+            WGL_CONTEXT_DEBUG_BIT_ARB,
 #endif
-        WGL_CONTEXT_PROFILE_MASK_ARB,
-        WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
-        0,
-        0, // End
-    };
+            WGL_CONTEXT_PROFILE_MASK_ARB,
+            WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
+            0,
+            0,  // End
+          };
 
-    int pixelFormat = 0;
-    UINT numFormats = 0;
-    HDC hdc = GetDC(window_handle);
+    int  pixelFormat = 0;
+    UINT numFormats  = 0;
+    HDC  hdc         = GetDC(window_handle);
 
-    // ƒsƒNƒZƒ‹ƒtƒH[ƒ}ƒbƒg‘I‘ğ
-    BOOL isValid = wglChoosePixelFormatARB(hdc, pixel_format_attrib_list, fAtribList, 1, &pixelFormat, &numFormats);
+    // ãƒ”ã‚¯ã‚»ãƒ«ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆé¸æŠ
+    BOOL isValid
+        = wglChoosePixelFormatARB(hdc, pixel_format_attrib_list, fAtribList, 1,
+                                  &pixelFormat, &numFormats);
 
     error = glGetError();
     if (isValid == FALSE) {
         assert(false);
     }
 
-    // ƒsƒNƒZƒ‹ƒtƒH[ƒ}ƒbƒgİ’è
+    // ãƒ”ã‚¯ã‚»ãƒ«ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆè¨­å®š
     PIXELFORMATDESCRIPTOR pfd;
     DescribePixelFormat(hdc, pixelFormat, sizeof(PIXELFORMATDESCRIPTOR), &pfd);
     result = SetPixelFormat(hdc, pixelFormat, &pfd);
@@ -210,7 +218,7 @@ DeviceHandle createContext(const temp::system::WindowHandle& window_handle) {
 
     auto context = wglCreateContextAttribsARB(hdc, NULL, context_attrib_list);
     while (context == NULL) {
-        // ¬Œ÷‚·‚é‚Ü‚Åƒo[ƒWƒ‡ƒ“‚ğ‰º‚°‚é
+        // æˆåŠŸã™ã‚‹ã¾ã§ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã‚’ä¸‹ã’ã‚‹
         context_attrib_list[3] -= 1;
         if (context_attrib_list[3] < 0) {
             context_attrib_list[3] = 10;
@@ -222,13 +230,13 @@ DeviceHandle createContext(const temp::system::WindowHandle& window_handle) {
         context = wglCreateContextAttribsARB(hdc, NULL, context_attrib_list);
     }
 
-    // ƒJƒŒƒ“ƒgƒRƒ“ƒeƒLƒXƒg‚ğ‰ğœ
+    // ã‚«ãƒ¬ãƒ³ãƒˆã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã‚’è§£é™¤
     result = wglMakeCurrent((HDC)NULL, (HGLRC)NULL);
     if (result == FALSE) {
         assert(false);
     }
 
-    // ƒ_ƒ~[‚ÌƒRƒ“ƒeƒLƒXƒg‚ÆƒEƒBƒ“ƒhƒE‚ğíœ
+    // ãƒ€ãƒŸãƒ¼ã®ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã¨ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’å‰Šé™¤
     result = wglDeleteContext(dummy_opengl_context);
     if (result == FALSE) {
         assert(false);
@@ -244,23 +252,18 @@ DeviceHandle createContext(const temp::system::WindowHandle& window_handle) {
         assert(false);
     }
 
-	auto deviceHandle = pushHGLRCToTable(context);
+    auto deviceHandle = pushHGLRCToTable(context);
 
     return deviceHandle;
 }
 
-void deleteContext(HGLRC context) {
-}
+void deleteContext(HGLRC context) {}
 
-void makeCurrent(HGLRC context) {
-}
+void makeCurrent(HGLRC context) {}
 
-void swapBuffers(HGLRC context) {
-}
+void swapBuffers(HGLRC context) {}
 
-void* deviceHandleToNsOpenGlContext(const DeviceHandle& handle) {
-}
-
+void* deviceHandleToNsOpenGlContext(const DeviceHandle& handle) {}
 }
 }
 }

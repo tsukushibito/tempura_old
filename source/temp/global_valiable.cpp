@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * @file global_valiable.cpp
  * @brief global_valiables
  * @author tsukushibito
@@ -9,7 +9,7 @@
 #include "temp/global_valiable.h"
 
 namespace {
-char dummy;  // VisualStudio ‚Ì warning LNK4221 ‰ñ”ğ‚Ì‚½‚ß
+char dummy;  // VisualStudio ã® warning LNK4221 å›é¿ã®ãŸã‚
 }
 
 namespace temp {}

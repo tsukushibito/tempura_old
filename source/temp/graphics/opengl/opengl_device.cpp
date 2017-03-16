@@ -18,16 +18,16 @@ namespace temp {
 namespace graphics {
 namespace opengl {
 
-	DeviceHandle createContext(const temp::system::WindowHandle& window_handle) {
+DeviceHandle createContext(const temp::system::WindowHandle& window_handle) {
 #if defined(TEMP_PLATFORM_MAC)
-		return mac::createContext(window_handle);
+    return mac::createContext(window_handle);
 #elif defined(TEMP_PLATFORM_WINDOWS)
-		return windows::createContext(window_handle);
+    return windows::createContext(window_handle);
 #endif
-	}
+}
 
 OpenGlDevice::OpenGlDevice(const temp::system::WindowHandle& window_handle) {
-	device_handle_ = createContext(window_handle);
+    device_handle_ = createContext(window_handle);
 }
 }
 }
