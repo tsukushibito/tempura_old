@@ -31,17 +31,17 @@ public:
 
     DeviceHandle handle();
 
-    TextureSPtr createTexture(const TextureDesc& desc);
+    // TextureSPtr createTexture(const TextureDesc& desc);
 
-    VertexBufferSPtr createVertexBuffer(Size size, void* data);
+    // VertexBufferSPtr createVertexBuffer(Size size, void* data);
 
-    IndexBufferSPtr createIndexBuffer(Size size, void* data);
+    // IndexBufferSPtr createIndexBuffer(Size size, void* data);
 
-    VertexShaderSPtr createVertexShaderFromSource(Size size, void* sourceCode);
-    VertexShaderSPtr createVertexShaderFromBinary(Size size, void* binaryCode);
+    // VertexShaderSPtr createVertexShaderFromSource(Size size, void* sourceCode);
+    // VertexShaderSPtr createVertexShaderFromBinary(Size size, void* binaryCode);
 
-    PixelShaderSPtr createPixelShaderFromSource(Size size, void* sourceCode);
-    PixelShaderSPtr createPixelShaderFromBinary(Size size, void* binaryCode);
+    // PixelShaderSPtr createPixelShaderFromSource(Size size, void* sourceCode);
+    // PixelShaderSPtr createPixelShaderFromBinary(Size size, void* binaryCode);
 
 private:
     class Impl;

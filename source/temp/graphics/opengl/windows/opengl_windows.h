@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file opengl_windows.h
  * @brief OpenGL Windows依存部分
  * @author tsukushibito
@@ -29,7 +29,7 @@ void makeCurrent(HGLRC context);
 
 void swapBuffers(HGLRC context);
 
-void* deviceHandleToNsOpenGlContext(const DeviceHandle& handle);
+HGLRC* deviceHandleToHGLRC(const DeviceHandle& handle);
 }
 }
 }

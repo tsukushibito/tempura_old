@@ -3,6 +3,7 @@
 #include <Windows.h>
 
 #include "temp/system/window.h"
+#include "temp/system/windows/system_windows.h"
 
 namespace temp {
 namespace system {
@@ -63,18 +64,22 @@ public:
 
         ShowWindow(hWnd_, SW_SHOW); /* ウインドウを表示 */
         UpdateWindow(hWnd_);
+		window_handle_ = windows::pushHWNDToTable(hWnd_);
     }
 
     ~Impl() {
-        // DestroyWindow(hWnd_);
+		windows::removeNsWindowFromTable(hWnd_);
+        DestroyWindow(hWnd_);
+		window_handle_ = WindowHandle(-1);
     }
 
     WindowHandle windowHandle() const {
-		return WindowHandle(0);
+		return window_handle_;
     }
 
 private:
     HWND hWnd_;
+	WindowHandle window_handle_;
 };
 
 Window::Window(Size width, Size height)
@@ -82,6 +87,9 @@ Window::Window(Size width, Size height)
 
 Window::~Window() {}
 
+WindowHandle Window::windowHandle() const {
+	return impl_->windowHandle();
+}
 
 Window::SPtr Window::create(Size width, Size height) {
     struct Creator : public Window {

@@ -10,9 +10,10 @@
 #define GUARD_14869c01a77d44feb20adbb8ccb06cdb
 
 #include "temp/define.h"
-#ifdef TEMP_PLATFORM_MAC
+#ifdef TEMP_PLATFORM_WINDOWS
 
 #include <Windows.h>
+#include "temp/type.h"
 
 namespace temp {
 namespace system {

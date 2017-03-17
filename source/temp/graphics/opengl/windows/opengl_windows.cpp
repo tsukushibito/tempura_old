@@ -7,6 +7,7 @@
 
 #include "temp/container.h"
 #include "temp/system/logger.h"
+#include "temp/system/windows/system_windows.h"
 
 namespace temp {
 namespace graphics {
@@ -31,7 +32,7 @@ DeviceHandle pushHGLRCToTable(HGLRC context) {
     }
 
     g_handle_table.push_back(context);
-    return DeviceHandle(g_handle_table.size() - 1);
+    return DeviceHandle(static_cast<Int32>(g_handle_table.size()) - 1);
 }
 
 void removeNSOpenGLContextFromTable(HGLRC context) {
@@ -48,7 +49,11 @@ void removeNSOpenGLContextFromTable(HGLRC context) {
 
 HGLRC deviceHandleToHGLRC(const DeviceHandle& handle) {
     std::lock_guard<std::mutex> lock(g_handle_table_mutex);
-    return nullptr;
+    if(handle.value() >= g_handle_table.size()) {
+        std::cout << "DeviceHandle[" << handle.value() << "] is invalid." << std::endl;
+        return nullptr;
+    }
+    return g_handle_table[handle.value()];
 }
 
 
@@ -146,8 +151,12 @@ DeviceHandle createContext(const temp::system::WindowHandle& window_handle) {
     if (version != nullptr)
         ConsoleLogger::info("[OpenGL] version : {0}", version);
     auto extensions = glGetString(GL_EXTENSIONS);
-    if (extensions != nullptr)
-        ConsoleLogger::info("[OpenGL] extensions : {0}", extensions);
+	if (extensions != nullptr)
+	{
+		String extensionsStr = reinterpret_cast<const Char*>(extensions);
+		// std::replace(extensionsStr.begin(), extensionsStr.end(), ' ', '\n');
+		ConsoleLogger::info("[OpenGL] extensions : {0}", extensionsStr);
+	}
     String         version_string = reinterpret_cast<const char*>(version);
     StringStream   ss(version_string);
     Vector<String> num_strs;
@@ -196,7 +205,8 @@ DeviceHandle createContext(const temp::system::WindowHandle& window_handle) {
 
     int  pixelFormat = 0;
     UINT numFormats  = 0;
-    HDC  hdc         = GetDC(window_handle);
+	HWND hWnd = system::windows::windowHandleToHWND(window_handle);
+    HDC  hdc         = GetDC(hWnd);
 
     // ピクセルフォーマット選択
     BOOL isValid
@@ -257,13 +267,22 @@ DeviceHandle createContext(const temp::system::WindowHandle& window_handle) {
     return deviceHandle;
 }
 
-void deleteContext(HGLRC context) {}
+void deleteContext(HGLRC context) {
+	std::lock_guard<std::mutex> lock(g_handle_table_mutex);
+	auto iter = std::find(g_handle_table.begin(), g_handle_table.end(), context);
+	if (iter != g_handle_table.end()) *iter = nullptr;
+	wglDeleteContext(context);
+}
 
-void makeCurrent(HGLRC context) {}
+void makeCurrent(HGLRC context) {
+	auto hdc = wglGetCurrentDC();
+	wglMakeCurrent(hdc, context);
+}
 
-void swapBuffers(HGLRC context) {}
-
-void* deviceHandleToNsOpenGlContext(const DeviceHandle& handle) {}
+void swapBuffers(HGLRC context) {
+	auto hdc = wglGetCurrentDC();
+	SwapBuffers(hdc);
+}
 }
 }
 }

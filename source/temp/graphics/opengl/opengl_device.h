@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file opengl_device.h
  * @brief OpenGLデバイス
  * @author tsukushibito

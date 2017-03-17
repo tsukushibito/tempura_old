@@ -1,4 +1,4 @@
-#include <functional>
+﻿#include <functional>
 #include "temp/temp_assert.h"
 #include "temp/graphics/device.h"
 #include "temp/render/renderer.h"
