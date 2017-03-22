@@ -64,22 +64,20 @@ public:
 
         ShowWindow(hWnd_, SW_SHOW); /* ウインドウを表示 */
         UpdateWindow(hWnd_);
-		window_handle_ = windows::pushHWNDToTable(hWnd_);
+        window_handle_ = windows::pushHWNDToTable(hWnd_);
     }
 
     ~Impl() {
-		windows::removeNsWindowFromTable(hWnd_);
+        windows::removeNsWindowFromTable(hWnd_);
         DestroyWindow(hWnd_);
-		window_handle_ = WindowHandle(-1);
+        window_handle_ = WindowHandle(-1);
     }
 
-    WindowHandle windowHandle() const {
-		return window_handle_;
-    }
+    WindowHandle windowHandle() const { return window_handle_; }
 
 private:
-    HWND hWnd_;
-	WindowHandle window_handle_;
+    HWND         hWnd_;
+    WindowHandle window_handle_;
 };
 
 Window::Window(Size width, Size height)
@@ -87,17 +85,10 @@ Window::Window(Size width, Size height)
 
 Window::~Window() {}
 
-WindowHandle Window::windowHandle() const {
-	return impl_->windowHandle();
-}
+WindowHandle Window::windowHandle() const { return impl_->windowHandle(); }
 
 Window::SPtr Window::create(Size width, Size height) {
-    struct Creator : public Window {
-        Creator(Size width, Size height) : Window(width, height) {}
-    };
-
-    auto p = std::make_shared<Creator>(width, height);
-    return std::move(p);
+    return SmartPointerObject<Window>::makeShared(width, height);
 }
 }
 }

@@ -58,8 +58,8 @@ void Test::init() {
     ConsoleLogger::trace("Current directory : {}",
                          getCurrentDirectory().getAbsolute());
 
-    window_ = Window::create();
-    device_ = Device::create(window_->windowHandle());
+    window_ = Window::makeUnique();
+    device_ = Device::makeShared(window_->windowHandle());
 
     testMath();
 }

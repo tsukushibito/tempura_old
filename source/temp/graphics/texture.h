@@ -13,10 +13,21 @@
 namespace temp {
 namespace graphics {
 
+class Texture;
+using TextureHandle = Handle<Texture>;
+
 class Texture : public SmartPointerObject<Texture> {
+    friend class Device;
+
+private:
+    Texture(const TextureDesc& desc);
+
+public:
+    ~Texture();
+
+    TextureHandle handle() const { return handle_; }
 }
-    
 }
 }
 
-#endif // GUARD_70686145556f45efb5ba565866b86464
+#endif  // GUARD_70686145556f45efb5ba565866b86464

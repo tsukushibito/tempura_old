@@ -17,8 +17,9 @@ namespace resource {
 
 class VertexShaderResource : public ResourceBase<VertexShaderResource> {
     friend class ResourceBase<VertexShaderResource>;
+
 private:
-    VertexShaderResource(const system::Path &path);
+    VertexShaderResource(const system::Path& path);
 
 public:
     graphics_old::VertexShader::SPtr get() const { return vertex_shader_; }
@@ -28,8 +29,8 @@ private:
 
     graphics_old::VertexShader::SPtr vertex_shader_;
 };
-    
-} // namespace resource
-} // namespace temp
 
-#endif // GUARD_64bef9fa34394904a86f76b33d413d66
+}  // namespace resource
+}  // namespace temp
+
+#endif  // GUARD_64bef9fa34394904a86f76b33d413d66

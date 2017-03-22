@@ -9,31 +9,34 @@
 #ifndef GUARD_c63f349cadc54355a8cca8adfd97d484
 #define GUARD_c63f349cadc54355a8cca8adfd97d484
 
-#include "temp/graphics/opengl/opengl_define.h"
 #include "temp/type.h"
 
 #ifdef TEMP_GRAPHICS_OPENGL
-
 #include "temp/graphics/device.h"
-namespace temp {
-namespace system {
-class Window;
-using WindowHandle = Handle<Window>;
-}
-}
+#include "temp/graphics/opengl/opengl_define.h"
 
 namespace temp {
 namespace graphics {
 namespace opengl {
 
-class OpenGlDevice {
-public:
-    explicit OpenGlDevice(const temp::system::WindowHandle& window_handle);
+#if defined(TEMP_PLATFORM_MAC)
+using NativeHandle = void*;
+#elif defined(TEMP_PLATFORM_WINDOWS)
+using NativeHandle = HGLRC;
+#endif
 
-    const DeviceHandle& handle() const { return device_handle_; }
+class OpenGLDevice : public DeviceBase<OpenGLDevice, NativeHandle>,
+                     public SmartPointerObject<OpenGLDevice> {
+    friend class SmartPointerObject<OpenGLDevice>;
 
 private:
-    DeviceHandle device_handle_;
+    explicit OpenGLDevice(const temp::system::WindowHandle& window_handle);
+
+public:
+    NativeHandle nativeHandle() const { return context_; }
+
+private:
+    NativeHandle context_;
 };
 }
 }

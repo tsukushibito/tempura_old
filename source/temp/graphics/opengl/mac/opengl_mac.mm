@@ -16,46 +16,7 @@ namespace graphics {
 namespace opengl {
 namespace mac {
 
-namespace {
-    temp::Vector<NSOpenGLContext*> g_handle_table;
-    std::mutex g_handle_table_mutex;
-
-    DeviceHandle pushNSOpenGLContextToTable(NSOpenGLContext* context) {
-        std::lock_guard<std::mutex> lock(g_handle_table_mutex);
-        NSOpenGLContext* ns_context = (__bridge NSOpenGLContext*)context;
-        for (Int32 i = 0; i < g_handle_table.size(); ++i) {
-            if (g_handle_table[i] == ns_context) {
-                std::cout << "NSOpenGLContext[0x" << std::hex << ns_context << "] already exists in table!" << std::endl;
-                return DeviceHandle(i);
-            }
-            else if (g_handle_table[i] == nullptr) {
-                return DeviceHandle(i);
-            }
-        }
-
-        g_handle_table.push_back(ns_context);
-        return DeviceHandle(g_handle_table.size() - 1);
-    }
-
-    void removeNSOpenGLContextFromTable(NSOpenGLContext* context) {
-        std::lock_guard<std::mutex> lock(g_handle_table_mutex);
-        NSOpenGLContext* ns_context = (__bridge NSOpenGLContext*)context;
-        for (Int32 i = 0; i < g_handle_table.size(); ++i) {
-            if (g_handle_table[i] == ns_context) {
-                g_handle_table[i] = nullptr;
-                return;
-            }
-        }
-        std::cout << "NSOpenGLContext[0x" << std::hex << ns_context << "] is not found in table!" << std::endl;
-    }
-
-    NSOpenGLContext* deviceHandleToNSOpenGLContext(const DeviceHandle& handle) {
-        std::lock_guard<std::mutex> lock(g_handle_table_mutex);
-        return nullptr;
-    }
-}
-    
-DeviceHandle createContext(const temp::system::WindowHandle& window_handle) {
+NativeHandle createContext(const temp::system::WindowHandle& window_handle) {
     NSWindow* window = temp::system::mac::windowHandleToNSWindow(window_handle);
     // ピクセルフォーマット指定
     NSOpenGLPixelFormatAttribute att[] = {NSOpenGLPFAOpenGLProfile,
@@ -79,7 +40,7 @@ DeviceHandle createContext(const temp::system::WindowHandle& window_handle) {
     NSOpenGLPixelFormat* pixelFormat =
         [[NSOpenGLPixelFormat alloc] initWithAttributes:att];
     if (pixelFormat == nil) {
-        return DeviceHandle();  // TODO: バージョンを下げた設定で作成し直す
+        return nullptr;  // TODO: バージョンを下げた設定で作成し直す
     }
 
     // コンテキストの作成
@@ -106,14 +67,15 @@ DeviceHandle createContext(const temp::system::WindowHandle& window_handle) {
 
     [NSOpenGLContext clearCurrentContext];
 
-    return pushNSOpenGLContextToTable(context);
+    return context;
 }
 
-void deleteContext(void* context) {
-    removeNSOpenGLContextFromTable((__bridge NSOpenGLContext*)context);
+void deleteContext(NativeHandle context) {
+    NSOpenGLContext* ns_context = (__bridge NSOpenGLContext*)context;
+    ns_context = nil;
 }
 
-void makeCurrent(void* context) {
+void makeCurrent(NativeHandle context) {
     NSOpenGLContext *ns_context = (__bridge NSOpenGLContext*)context;
 
     if (ns_context == nullptr) {
@@ -123,14 +85,10 @@ void makeCurrent(void* context) {
     }
 }
 
-void swapBuffers(void* context) {
+void swapBuffers(NativeHandle context) {
     NSOpenGLContext *ns_context = (__bridge NSOpenGLContext*)context;
 
     [ns_context flushBuffer];
-}
-    
-void* deviceHandleToNsOpenGlContext(const DeviceHandle& handle) {
-    return deviceHandleToNSOpenGLContext(handle);
 }
 
     

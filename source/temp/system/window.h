@@ -18,6 +18,8 @@ class Window;
 using WindowHandle = temp::Handle<Window>;
 
 class Window : public SmartPointerObject<Window> {
+    friend SmartPointerObject<Window>;
+
 private:
     Window(Size width = 1280, Size height = 720);
 
@@ -25,9 +27,7 @@ public:
     ~Window();
 
 public:
-    static SPtr create(Size width = 1280, Size height = 720);
-
-	WindowHandle windowHandle() const;
+    WindowHandle windowHandle() const;
     Size         width() const { return width_; }
     Size         height() const { return height_; }
 
@@ -35,10 +35,9 @@ private:
     class Impl;
     std::unique_ptr<Impl> impl_;
 
-    Size         width_;
-    Size         height_;
+    Size width_;
+    Size height_;
 };
-
 }
 }
 

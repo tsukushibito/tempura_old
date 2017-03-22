@@ -70,8 +70,26 @@ public:
     using SPtr = std::shared_ptr<T>;
     using WPtr = std::weak_ptr<T>;
 
+    template <typename... Args>
+    static SPtr makeShared(Args... args) {
+        struct Creator : public T {
+            Creator(Args... args) : T(args...) {}
+        };
+
+        return std::make_shared<Creator>(args...);
+    }
+
+    template <typename... Args>
+    static UPtr makeUnique(Args... args) {
+        struct Creator : public T {
+            Creator(Args... args) : T(args...) {}
+        };
+
+        return std::move(std::unique_ptr<Creator>(new Creator(args...)));
+    }
+
 protected:
-    SmartPointerObject() {}
+    SmartPointerObject() = default;
 };
 
 template <typename T>
@@ -113,7 +131,7 @@ public:
 
     bool operator==(const Handle& rhs) const { return value_ == rhs.value_; }
     bool operator!=(const Handle& rhs) const { return !(*this == rhs); }
-    
+
     Int32 value() const { return value_; }
 
 private:

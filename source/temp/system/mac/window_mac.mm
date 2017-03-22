@@ -62,19 +62,11 @@ private:
 };
 
 Window::Window(Size width, Size height) : impl_(new Impl(width, height)) {
-    handle_ = impl_->handle();
     }
 
 Window::~Window() {}
 
-Window::SPtr Window::create(Size width, Size height) {
-    struct Creator : public Window {
-        Creator(Size width, Size height) : Window(width, height) {}
-    };
-
-    auto p = std::make_shared< Creator >(width, height);
-    return std::move(p);
-}
+WindowHandle Window::windowHandle() const { return impl_->handle(); }
 
 }
 }

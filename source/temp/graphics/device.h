@@ -10,26 +10,18 @@
 #define GUARD_fd7eefec960241e28c2cf1c986bf4ebf
 
 #include <memory>
+#include <mutex>
+#include <vector>
 #include "temp/system/window.h"
 #include "temp/type.h"
 
 namespace temp {
 namespace graphics {
 
-class Device;
-using DeviceHandle = temp::Handle<Device>;
-
-class Device : public SmartPointerObject<Device> {
+template <typename T, typename NativeHandle>
+class DeviceBase {
 public:
-    static SPtr create(const temp::system::WindowHandle& window_handle);
-
-private:
-    explicit Device(const temp::system::WindowHandle& window_handle);
-
-public:
-    ~Device();
-
-    DeviceHandle handle();
+    NativeHandle nativeHandle() const { return derived()->nativeHandle(); }
 
     // TextureSPtr createTexture(const TextureDesc& desc);
 
@@ -37,15 +29,16 @@ public:
 
     // IndexBufferSPtr createIndexBuffer(Size size, void* data);
 
-    // VertexShaderSPtr createVertexShaderFromSource(Size size, void* sourceCode);
-    // VertexShaderSPtr createVertexShaderFromBinary(Size size, void* binaryCode);
+    // VertexShaderSPtr createVertexShaderFromSource(Size size, void*
+    // sourceCode);
+    // VertexShaderSPtr createVertexShaderFromBinary(Size size, void*
+    // binaryCode);
 
     // PixelShaderSPtr createPixelShaderFromSource(Size size, void* sourceCode);
     // PixelShaderSPtr createPixelShaderFromBinary(Size size, void* binaryCode);
 
 private:
-    class Impl;
-    std::unique_ptr<Impl> impl_;
+    T* derived() const { return static_cast<T*>(this); }
 };
 }
 }
