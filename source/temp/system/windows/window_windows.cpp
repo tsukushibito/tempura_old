@@ -64,20 +64,16 @@ public:
 
         ShowWindow(hWnd_, SW_SHOW); /* ウインドウを表示 */
         UpdateWindow(hWnd_);
-        window_handle_ = windows::pushHWNDToTable(hWnd_);
     }
 
     ~Impl() {
-        windows::removeNsWindowFromTable(hWnd_);
         DestroyWindow(hWnd_);
-        window_handle_ = WindowHandle(-1);
     }
 
-    WindowHandle windowHandle() const { return window_handle_; }
+    HWND nativeHandle() const { return hWnd_; }
 
 private:
     HWND         hWnd_;
-    WindowHandle window_handle_;
 };
 
 Window::Window(Size width, Size height)
@@ -85,11 +81,8 @@ Window::Window(Size width, Size height)
 
 Window::~Window() {}
 
-WindowHandle Window::windowHandle() const { return impl_->windowHandle(); }
+Window::NativeHandle Window::nativeHandle() const { return impl_->nativeHandle(); }
 
-Window::SPtr Window::create(Size width, Size height) {
-    return SmartPointerObject<Window>::makeShared(width, height);
-}
 }
 }
 #endif  // TEMP_PLATFORM_WINDOWS

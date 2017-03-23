@@ -9,12 +9,32 @@
 #ifndef GUARD_70686145556f45efb5ba565866b86464
 #define GUARD_70686145556f45efb5ba565866b86464
 
-#include "temp/graphics/graphics.h"
+#include "temp/type.h"
+
 namespace temp {
 namespace graphics {
 
-class Texture;
-using TextureHandle = Handle<Texture>;
+enum class TextureFormat {
+    kDXT1,
+    kDXT5,
+    kRGB16,
+    kRGB24,
+    kAlpha8,
+    kRGBA16,
+    kRGBA32,
+};
+
+struct TextureDesc {
+    TextureFormat format;
+    Size          width;
+    Size          height;
+    Int32         mipLevel;
+
+    TextureDesc() {}
+    explicit TextureDesc(TextureFormat fmt, Size w, Size h, Int32 mipLv)
+        : format(fmt), width(w), height(h), mipLevel(mipLv) {}
+};
+
 
 class Texture : public SmartPointerObject<Texture> {
     friend class Device;
@@ -25,8 +45,8 @@ private:
 public:
     ~Texture();
 
-    TextureHandle handle() const { return handle_; }
-}
+};
+
 }
 }
 

@@ -25,23 +25,6 @@ using DeviceSPtr = std::shared_ptr<Device>;
 namespace temp {
 namespace render {
 
-class Camera;
-using CameraSPtr = std::shared_ptr<Camera>;
-using CameraWPtr = std::weak_ptr<Camera>;
-
-
-// 仮----------------------------
-class Camera : public SmartPointerObject<Camera> {
-public:
-    explicit Camera(const std::function<void(const Camera*)> &on_destroy) : on_destroy_(on_destroy) {}
-    ~Camera(){ 
-        on_destroy_(this);
-    }
-private:
-    std::function<void(const Camera*)> on_destroy_;
-};
-// ----------------------------
-
 class Renderer : public SmartPointerObject<Renderer> {
 private:
     Renderer(const graphics_old::DeviceSPtr &graphics_device);
@@ -49,19 +32,15 @@ private:
 public:
     static SPtr create(const graphics_old::DeviceSPtr &graphics_device);
 
-    CameraSPtr createCamera();
-
     void renderAllViews();
 
     void swapBackBuffers();
 
 private:
-    void removeCamera(const Camera *camera);
 
 private:
     graphics_old::DeviceSPtr device_;
     std::mutex camera_list_mutex_;
-    Vector<Camera*> camera_list_;
 
     resource::VertexShaderResource::SPtr clear_vs_res_;
     resource::PixelShaderResource::SPtr clear_ps_res_;

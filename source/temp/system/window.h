@@ -10,15 +10,22 @@
 #define GUARD_7436746b1e0349869c4b963feb8fcded
 
 #include "temp/type.h"
+#include "temp/define.h"
+#if defined(TEMP_PLATFORM_WINDOWS)
+#include <Windows.h>
+#endif
 
 namespace temp {
 namespace system {
 
-class Window;
-using WindowHandle = temp::Handle<Window>;
-
 class Window : public SmartPointerObject<Window> {
     friend SmartPointerObject<Window>;
+public:
+#if defined(TEMP_PLATFORM_MAC)
+	using NativeHandle = void*;
+#elif defined(TEMP_PLATFORM_WINDOWS)
+	using NativeHandle = HWND;
+#endif
 
 private:
     Window(Size width = 1280, Size height = 720);
@@ -27,7 +34,8 @@ public:
     ~Window();
 
 public:
-    WindowHandle windowHandle() const;
+	NativeHandle nativeHandle() const;
+
     Size         width() const { return width_; }
     Size         height() const { return height_; }
 

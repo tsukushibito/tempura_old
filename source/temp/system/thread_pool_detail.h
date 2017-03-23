@@ -47,18 +47,6 @@ inline ThreadPool::~ThreadPool() {
     }
 }
 
-inline ThreadPool::SPtr ThreadPool::create(const String& name,
-                                           Size          thread_count) {
-    struct Creator : public ThreadPool {
-        Creator(const String& name, Size thread_count)
-            : ThreadPool(name, thread_count) {}
-    };
-
-    // todo:ジョブ用プールアロケータを作成しallocate_sharedを使用する
-    auto p = std::make_shared<Creator>(name, thread_count);
-    return std::move(p);
-}
-
 template <typename F, typename... Args>
 auto ThreadPool::pushJob(F&& function, Args&&... args)
     -> std::future<typename std::result_of<F(Args...)>::type> {

@@ -35,9 +35,9 @@ Test::Test() {
     using temp::system::Application;
     using temp::system::ThreadPool;
 
-    load_thread_ = ThreadPool::create("Load", 1);
-    render_thread_ = ThreadPool::create("Render", 1);
-    worker_threads_ = ThreadPool::create("Worker", 3);
+    load_thread_ = ThreadPool::makeUnique("Load", 1);
+    render_thread_ = ThreadPool::makeUnique("Render", 1);
+    worker_threads_ = ThreadPool::makeUnique("Worker", 3);
 
     application_ = Application::create();
     application_->setInitializeFunction(std::bind(&Test::init, this));
@@ -59,7 +59,7 @@ void Test::init() {
                          getCurrentDirectory().getAbsolute());
 
     window_ = Window::makeUnique();
-    device_ = Device::makeShared(window_->windowHandle());
+    device_ = Device::makeShared(window_->nativeHandle());
 
     testMath();
 }

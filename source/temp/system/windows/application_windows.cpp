@@ -20,7 +20,7 @@ public:
         update_function_ = [](){};
         terminate_function_ = [](){};
         exit_flag_ = 0;
-		main_thread_ = ThreadPool::create("Main", 1);
+		main_thread_ = ThreadPool::makeUnique("Main", 1);
     }
 
     void setInitializeFunction(const std::function<void(void)> &func) { initialize_function_ = func; }

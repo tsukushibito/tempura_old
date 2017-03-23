@@ -21,7 +21,7 @@ namespace graphics {
 namespace opengl {
 namespace windows {
 
-DeviceHandle createContext(const temp::system::WindowHandle& window_handle);
+HGLRC createContext(HWND window_handle);
 
 void deleteContext(HGLRC context);
 
@@ -29,7 +29,6 @@ void makeCurrent(HGLRC context);
 
 void swapBuffers(HGLRC context);
 
-HGLRC* deviceHandleToHGLRC(const DeviceHandle& handle);
 }
 }
 }

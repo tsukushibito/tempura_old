@@ -24,17 +24,15 @@ namespace temp {
 namespace system {
 
 class ThreadPool : public SmartPointerObject<ThreadPool> {
+	friend class SmartPointerObject<ThreadPool>;
 public:
     using JobType = std::function<void(void)>;
 
 private:
     ThreadPool(const String& name, Size threadCount);
 
-protected:
-    ~ThreadPool();
-
 public:
-    static SPtr create(const String& name, Size threadCount);
+    ~ThreadPool();
 
     template <typename F, typename... Args>
     auto pushJob(F&& function, Args&&... args)

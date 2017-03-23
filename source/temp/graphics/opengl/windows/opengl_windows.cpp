@@ -15,47 +15,6 @@ namespace opengl {
 namespace windows {
 
 namespace {
-// ハンドル管理テーブル
-temp::Vector<HGLRC> g_handle_table;
-std::mutex          g_handle_table_mutex;
-
-DeviceHandle pushHGLRCToTable(HGLRC context) {
-    std::lock_guard<std::mutex> lock(g_handle_table_mutex);
-    for (Int32 i = 0; i < g_handle_table.size(); ++i) {
-        if (g_handle_table[i] == context) {
-            std::cout << "HGLRC[0x" << std::hex << context
-                      << "] already exists in table!" << std::endl;
-            return DeviceHandle(i);
-        } else if (g_handle_table[i] == nullptr) {
-            return DeviceHandle(i);
-        }
-    }
-
-    g_handle_table.push_back(context);
-    return DeviceHandle(static_cast<Int32>(g_handle_table.size()) - 1);
-}
-
-void removeNSOpenGLContextFromTable(HGLRC context) {
-    std::lock_guard<std::mutex> lock(g_handle_table_mutex);
-    for (Int32 i = 0; i < g_handle_table.size(); ++i) {
-        if (g_handle_table[i] == context) {
-            g_handle_table[i] = nullptr;
-            return;
-        }
-    }
-    std::cout << "HGLRC[0x" << std::hex << context << "] is not found in table!"
-              << std::endl;
-}
-
-HGLRC deviceHandleToHGLRC(const DeviceHandle& handle) {
-    std::lock_guard<std::mutex> lock(g_handle_table_mutex);
-    if(handle.value() >= g_handle_table.size()) {
-        std::cout << "DeviceHandle[" << handle.value() << "] is invalid." << std::endl;
-        return nullptr;
-    }
-    return g_handle_table[handle.value()];
-}
-
 
 // ダミーウィンドウ作成
 HWND createDummyWindow() {
@@ -119,7 +78,7 @@ void initializeOpenglExtension() {
 }
 }
 
-DeviceHandle createContext(const temp::system::WindowHandle& window_handle) {
+HGLRC createContext(HWND window_handle) {
     // OpeGL拡張機能初期化用のダミーウィンドウとコンテキストを作成
     auto dummy_window_handle  = createDummyWindow();
     auto dummy_device_context = GetDC(dummy_window_handle);
@@ -205,8 +164,7 @@ DeviceHandle createContext(const temp::system::WindowHandle& window_handle) {
 
     int  pixelFormat = 0;
     UINT numFormats  = 0;
-	HWND hWnd = system::windows::windowHandleToHWND(window_handle);
-    HDC  hdc         = GetDC(hWnd);
+    HDC  hdc         = GetDC(window_handle);
 
     // ピクセルフォーマット選択
     BOOL isValid
@@ -262,15 +220,10 @@ DeviceHandle createContext(const temp::system::WindowHandle& window_handle) {
         assert(false);
     }
 
-    auto deviceHandle = pushHGLRCToTable(context);
-
-    return deviceHandle;
+    return context;
 }
 
 void deleteContext(HGLRC context) {
-	std::lock_guard<std::mutex> lock(g_handle_table_mutex);
-	auto iter = std::find(g_handle_table.begin(), g_handle_table.end(), context);
-	if (iter != g_handle_table.end()) *iter = nullptr;
 	wglDeleteContext(context);
 }
 

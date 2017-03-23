@@ -12,6 +12,8 @@
 #include "temp/type.h"
 
 #ifdef TEMP_GRAPHICS_OPENGL
+#include "temp/system/thread_pool.h"
+
 #include "temp/graphics/device.h"
 #include "temp/graphics/opengl/opengl_define.h"
 
@@ -21,8 +23,10 @@ namespace opengl {
 
 #if defined(TEMP_PLATFORM_MAC)
 using NativeHandle = void*;
+using NativeWindowHandle = void*;
 #elif defined(TEMP_PLATFORM_WINDOWS)
 using NativeHandle = HGLRC;
+using NativeWindowHandle = HWND;
 #endif
 
 class OpenGLDevice : public DeviceBase<OpenGLDevice, NativeHandle>,
@@ -30,13 +34,14 @@ class OpenGLDevice : public DeviceBase<OpenGLDevice, NativeHandle>,
     friend class SmartPointerObject<OpenGLDevice>;
 
 private:
-    explicit OpenGLDevice(const temp::system::WindowHandle& window_handle);
+    explicit OpenGLDevice(NativeWindowHandle window_handle);
 
 public:
     NativeHandle nativeHandle() const { return context_; }
 
 private:
     NativeHandle context_;
+	temp::system::ThreadPool::UPtr resource_creation_thread_;
 };
 }
 }

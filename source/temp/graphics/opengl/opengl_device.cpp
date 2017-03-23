@@ -21,8 +21,13 @@ namespace temp {
 namespace graphics {
 namespace opengl {
 
-OpenGLDevice::OpenGLDevice(const temp::system::WindowHandle& window_handle) {
+OpenGLDevice::OpenGLDevice(NativeWindowHandle window_handle) 
+    : resource_creation_thread_(temp::system::ThreadPool::makeUnique("OpenGL resource create", 1)) {
+#if defined(TEMP_PLATFORM_MAC)
     context_ = mac::createContext(window_handle);
+#elif defined(TEMP_PLATFORM_WINDOWS)
+    context_ = windows::createContext(window_handle);
+#endif
 }
 }
 }

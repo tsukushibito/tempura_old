@@ -23,7 +23,7 @@ class DeviceBase {
 public:
     NativeHandle nativeHandle() const { return derived()->nativeHandle(); }
 
-    // TextureSPtr createTexture(const TextureDesc& desc);
+	// TextureSPtr createTexture(const TextureDesc& desc) { return derived()->createTexture(desc); }
 
     // VertexBufferSPtr createVertexBuffer(Size size, void* data);
 
