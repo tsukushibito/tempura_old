@@ -9,7 +9,7 @@
 #ifndef GUARD_c63f349cadc54355a8cca8adfd97d484
 #define GUARD_c63f349cadc54355a8cca8adfd97d484
 
-#include "temp/type.h"
+#include "temp/graphics/graphics_common.h"
 
 #ifdef TEMP_GRAPHICS_OPENGL
 #include "temp/system/thread_pool.h"
@@ -21,27 +21,24 @@ namespace temp {
 namespace graphics {
 namespace opengl {
 
-#if defined(TEMP_PLATFORM_MAC)
-using NativeHandle = void*;
-using NativeWindowHandle = void*;
-#elif defined(TEMP_PLATFORM_WINDOWS)
-using NativeHandle = HGLRC;
-using NativeWindowHandle = HWND;
-#endif
-
-class OpenGLDevice : public DeviceBase<OpenGLDevice, NativeHandle>,
-                     public SmartPointerObject<OpenGLDevice> {
+class OpenGLDevice : public DeviceBase<OpenGLDevice, OpenGLContextHandle> {
     friend class SmartPointerObject<OpenGLDevice>;
 
 private:
     explicit OpenGLDevice(NativeWindowHandle window_handle);
 
 public:
-    NativeHandle nativeHandle() const { return context_; }
+    TextureSPtr createTexture(const TextureDesc& desc);
+
+    PixelShaderSPtr createPixelShader(const ShaderCode& code);
+
+    VertexShaderSPtr createVertexShader(const ShaderCode& code);
 
 private:
-    NativeHandle context_;
-	temp::system::ThreadPool::UPtr resource_creation_thread_;
+    template <typename TaskType>
+    auto execInResourceCreationThread(TaskType& task) -> decltype(task());
+
+    temp::system::ThreadPool::UPtr resource_creation_thread_;
 };
 }
 }

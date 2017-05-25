@@ -33,7 +33,7 @@ GLuint createOpenglVertexShaderFromSource(const String& source) {
     if (size > 1) {
         Vector<char> log(size);
         glGetShaderInfoLog(vertex_shader, size, &len, &log[0]);
-        system::ConsoleLogger::trace("[OpenGL shader info log] \n{0}", &log[0]);
+        system::Logger::trace("[OpenGL shader info log] \n{0}", &log[0]);
     }
 
     return vertex_shader;
@@ -56,7 +56,7 @@ VertexShader::Impl::Impl(NativeHandle device, VertexShader& vertex_shader,
             = createOpenglVertexShaderFromSource(source);
     }
 
-    temp::system::ConsoleLogger::trace(
+    temp::system::Logger::trace(
         "OpenGL Vertex Shader has created! id = {0}",
         vertex_shader_.getNativeHandle().value);
 
@@ -67,7 +67,7 @@ VertexShader::Impl::~Impl() {
     using namespace opengl;
     GLuint vertex_shader = vertex_shader_.getNativeHandle().value;
     glCallWithErrorCheck(glDeleteShader, vertex_shader);
-    temp::system::ConsoleLogger::trace(
+    temp::system::Logger::trace(
         "OpenGL Vertex Shader has deleted! id = {0}", vertex_shader);
 }
 

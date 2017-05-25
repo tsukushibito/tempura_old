@@ -16,8 +16,8 @@ namespace graphics {
 namespace opengl {
 namespace mac {
 
-NativeHandle createContext(const temp::system::WindowHandle& window_handle) {
-    NSWindow* window = temp::system::mac::windowHandleToNSWindow(window_handle);
+OpenGLContextHandle createContext(void* ns_window) {
+    NSWindow* window = (__bridge NSWindow*)ns_window;
     // ピクセルフォーマット指定
     NSOpenGLPixelFormatAttribute att[] = {NSOpenGLPFAOpenGLProfile,
                                           NSOpenGLProfileVersion4_1Core,
@@ -70,12 +70,12 @@ NativeHandle createContext(const temp::system::WindowHandle& window_handle) {
     return context;
 }
 
-void deleteContext(NativeHandle context) {
+void deleteContext(OpenGLContextHandle context) {
     NSOpenGLContext* ns_context = (__bridge NSOpenGLContext*)context;
     ns_context = nil;
 }
 
-void makeCurrent(NativeHandle context) {
+void makeCurrent(OpenGLContextHandle context) {
     NSOpenGLContext *ns_context = (__bridge NSOpenGLContext*)context;
 
     if (ns_context == nullptr) {
@@ -85,7 +85,7 @@ void makeCurrent(NativeHandle context) {
     }
 }
 
-void swapBuffers(NativeHandle context) {
+void swapBuffers(OpenGLContextHandle context) {
     NSOpenGLContext *ns_context = (__bridge NSOpenGLContext*)context;
 
     [ns_context flushBuffer];

@@ -31,7 +31,7 @@ GLuint createOpenglPixelShaderFromSource(const String& source) {
     if (size > 1) {
         Vector<char> log(size);
         glGetShaderInfoLog(pixel_shader, size, &len, &log[0]);
-        system::ConsoleLogger::trace("[OpenGL shader info log] \n{0}", &log[0]);
+        system::Logger::trace("[OpenGL shader info log] \n{0}", &log[0]);
     }
 
     return pixel_shader;
@@ -51,7 +51,7 @@ PixelShader::Impl::Impl(NativeHandle device, PixelShader& pixel_shader,
         pixel_shader_.native_handle_.value
             = createOpenglPixelShaderFromSource(source);
     }
-    temp::system::ConsoleLogger::trace(
+    temp::system::Logger::trace(
         "OpenGL Fragment Shader has created! id = {0}",
         pixel_shader_.getNativeHandle().value);
 
@@ -62,7 +62,7 @@ PixelShader::Impl::~Impl() {
     using namespace opengl;
     GLuint pixel_shader = pixel_shader_.getNativeHandle().value;
     glCallWithErrorCheck(glDeleteShader, pixel_shader);
-    temp::system::ConsoleLogger::trace(
+    temp::system::Logger::trace(
         "OpenGL Fragmentx Shader has deleted! id = {0}", pixel_shader);
 }
 

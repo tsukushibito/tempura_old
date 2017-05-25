@@ -45,18 +45,14 @@ public:
         [window_ setCollectionBehavior:behavior];
         [window_ orderFrontRegardless];
 
-        handle_ = mac::pushNsWindowToTable(window_); 
     }
 
     ~Impl() {
-        NSWindow* window = mac::windowHandleToNSWindow(handle_);
-        mac::removeNsWindowFromTable(window);
     }
-
-    WindowHandle handle() const { return handle_; }
+    
+    void* nativeHandle() const { return window_; }
 
 private:
-    WindowHandle handle_;
     NSWindow *window_;
     WindowDelegate *delegate_;
 };
@@ -65,8 +61,10 @@ Window::Window(Size width, Size height) : impl_(new Impl(width, height)) {
     }
 
 Window::~Window() {}
-
-WindowHandle Window::windowHandle() const { return impl_->handle(); }
+    
+Window::NativeHandle Window::nativeHandle() const {
+    return impl_->nativeHandle();
+}
 
 }
 }

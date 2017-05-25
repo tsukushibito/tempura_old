@@ -7,10 +7,7 @@ namespace temp {
 namespace render {
 
 Renderer::Renderer(const graphics_old::DeviceSPtr &graphics_device) : device_(graphics_device) {
-    clear_vs_res_ = resource::VertexShaderResource::create("shader/glsl/clear_glsl.vert");
-    clear_vs_res_->load();
-    clear_ps_res_ = resource::PixelShaderResource::create("shader/glsl/clear_glsl.frag");
-    clear_ps_res_->load();
+
 }
 
 Renderer::SPtr Renderer::create(const graphics_old::DeviceSPtr &graphics_device) {
@@ -28,7 +25,7 @@ void Renderer::renderAllViews() {
 }
 
 void Renderer::swapBackBuffers() {
-    device_->present();
+
 }
 
 

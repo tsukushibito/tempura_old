@@ -41,4 +41,24 @@
 
 #endif  // defined(TEMP_PLATFORM_WINDOWS) || defined(TEMP_PLATFORM_LINUX)
 
+namespace temp {
+namespace graphics {
+
+#if defined(TEMP_PLATFORM_MAC)
+using NativeWindowHandle = void*;
+#elif defined(TEMP_PLATFORM_WINDOWS)
+using NativeWindowHandle  = HWND;
+#endif
+
+namespace opengl {
+#if defined(TEMP_PLATFORM_MAC)
+using OpenGLContextHandle = void*;
+#elif defined(TEMP_PLATFORM_WINDOWS)
+using OpenGLContextHandle = HGLRC;
+#endif
+}
+
+}  // namespace graphics
+}  // namespace temp
+
 #endif  // GUARD_898e50a45d9d46a08367e75b738422ff

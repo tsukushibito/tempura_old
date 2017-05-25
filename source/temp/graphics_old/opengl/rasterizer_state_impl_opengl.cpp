@@ -52,14 +52,14 @@ RasterizerState::Impl::Impl(NativeHandle     device,
 
 
     rasterizer_state_.native_handle_.pointer = &arg_;
-    temp::system::ConsoleLogger::trace("OpenGL Rasterizer State has created!");
+    temp::system::Logger::trace("OpenGL Rasterizer State has created!");
 
     (void)device;
 }
 
 RasterizerState::Impl::~Impl() {
     using namespace opengl;
-    temp::system::ConsoleLogger::trace("OpenGL Rasterizer State has deleted!");
+    temp::system::Logger::trace("OpenGL Rasterizer State has deleted!");
 }
 
 }  // namespace graphics

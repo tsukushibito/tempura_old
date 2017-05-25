@@ -46,14 +46,14 @@ BlendState::Impl::Impl(NativeHandle device, BlendState& blend_state,
         break;
     }
     blend_state_.native_handle_.pointer = &arg_;
-    temp::system::ConsoleLogger::trace("OpenGL Blend State has created!");
+    temp::system::Logger::trace("OpenGL Blend State has created!");
 
     (void)device;
 }
 
 BlendState::Impl::~Impl() {
     using namespace opengl;
-    temp::system::ConsoleLogger::trace("OpenGL Blend State has deleted!");
+    temp::system::Logger::trace("OpenGL Blend State has deleted!");
 }
 
 }  // namespace graphics

@@ -12,12 +12,14 @@
 #include "temp/define.h"
 #include "temp/type.h"
 
+#include "temp/graphics/graphics_common.h"
+#ifdef TEMP_GRAPHICS_OPENGL
 #include "temp/graphics/opengl/opengl_device.h"
+#include "temp/graphics/opengl/opengl_texture.h"
+#endif
 
 namespace temp {
-namespace graphics {
-using Device = opengl::OpenGLDevice;
-}
+namespace graphics {}
 }
 
 #endif  // GUARD_06ee30f321684357842780bfa43ecbf1

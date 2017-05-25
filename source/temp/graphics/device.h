@@ -12,33 +12,49 @@
 #include <memory>
 #include <mutex>
 #include <vector>
+
+#include "temp/graphics/graphics_common.h"
+
 #include "temp/system/window.h"
-#include "temp/type.h"
+
+#include "temp/graphics/index_buffer.h"
+#include "temp/graphics/pixel_shader.h"
+#include "temp/graphics/texture.h"
+#include "temp/graphics/vertex_buffer.h"
+#include "temp/graphics/vertex_shader.h"
 
 namespace temp {
 namespace graphics {
 
 template <typename T, typename NativeHandle>
-class DeviceBase {
+class DeviceBase : public SmartPointerObject<T> {
 public:
-    NativeHandle nativeHandle() const { return derived()->nativeHandle(); }
+    NativeHandle nativeHandle() const { return native_handle_; }
 
-	// TextureSPtr createTexture(const TextureDesc& desc) { return derived()->createTexture(desc); }
+    TextureSPtr createTexture(const TextureDesc& desc) {
+        return derived()->createTexture(desc);
+    }
 
     // VertexBufferSPtr createVertexBuffer(Size size, void* data);
 
     // IndexBufferSPtr createIndexBuffer(Size size, void* data);
 
-    // VertexShaderSPtr createVertexShaderFromSource(Size size, void*
-    // sourceCode);
-    // VertexShaderSPtr createVertexShaderFromBinary(Size size, void*
-    // binaryCode);
+    PixelShaderSPtr createPixelShader(const ShaderCode& code) {
+        return derived()->createPixelShader(code);
+    }
 
-    // PixelShaderSPtr createPixelShaderFromSource(Size size, void* sourceCode);
-    // PixelShaderSPtr createPixelShaderFromBinary(Size size, void* binaryCode);
+    VertexShaderSPtr createVertexShader(const ShaderCode& code) {
+        return derived()->createVertexShader(code);
+    }
+
+    NativeHandle nativeHandle() { return native_handle_; }
+
 
 private:
     T* derived() const { return static_cast<T*>(this); }
+
+protected:
+    NativeHandle native_handle_;
 };
 }
 }

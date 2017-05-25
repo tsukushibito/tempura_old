@@ -27,7 +27,7 @@ VertexBuffer::Impl::Impl(NativeHandle device, VertexBuffer& vertex_buffer,
 
     vertex_buffer_.native_handle_.value = vbo;
 
-    temp::system::ConsoleLogger::trace(
+    temp::system::Logger::trace(
         "OpenGL Vertex Buffer has created! id = {0}",
         vertex_buffer_.native_handle_.value);
 
@@ -39,7 +39,7 @@ VertexBuffer::Impl::~Impl() {
 
     glDeleteBuffers(1, (GLuint*)&vertex_buffer_.native_handle_.value);
 
-    temp::system::ConsoleLogger::trace(
+    temp::system::Logger::trace(
         "OpenGL Vertex Buffer has deleted! id = {0}",
         vertex_buffer_.native_handle_.value);
 }

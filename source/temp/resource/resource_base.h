@@ -20,14 +20,10 @@
 namespace temp {
 namespace resource {
 
-template <typename T>
-class ResourceBase : public SmartPointerObject<T> {
+template <typename Type>
+class ResourceBase : public SmartPointerObject<Type> {
 public:
-    using SmartPtrType = SmartPointerObject<T>;
-    using UPtr         = typename SmartPtrType::UPtr;
-    using SPtr         = typename SmartPtrType::SPtr;
-    using WPtr         = typename SmartPtrType::WPtr;
-
+    using Super = SmartPointerObject<Type>;
     /**
      * @brief loading state
      */
@@ -36,11 +32,10 @@ public:
         Loading,
         Loaded,
         Unloading,
-        Max,
     };
 
 private:
-    using ResourceTable     = std::unordered_map<Size, WPtr>;
+    using ResourceTable     = std::unordered_map<Size, typename Super::WPtr>;
     using ResourceTableUPtr = std::unique_ptr<ResourceTable>;
 
 protected:
@@ -49,20 +44,15 @@ protected:
     ~ResourceBase();
 
 public:
-    static SPtr create(const String& path);
-
-    static SPtr create(const system::Path& path);
-
-    static void initialize(const system::ThreadPool::SPtr&   load_thread,
-                           const graphics_old::Device::SPtr& graphics_device);
-
+    static typename Super::SPtr create(const system::Path& path);
+    
     static void terminate();
 
-    State getState() const;
+    State state() const;
 
-    const system::Path& getPath() const;
+    const system::Path& path() const;
 
-    const Size getHash() const;
+    const Size hash() const;
 
     void load();
 
@@ -71,10 +61,7 @@ public:
     void unload();
 
 protected:
-    String& getBuffer();
-
-    static graphics_old::Device::SPtr getGraphicsDevcie();
-    static system::ThreadPool::SPtr   getLoadThread();
+    Vector<UInt8>& buffer();
 
 private:
     void loadImpl(bool is_async = true);
@@ -82,17 +69,15 @@ private:
     void login();  // ロード用スレッドで実行される
 
 protected:
-    static system::ThreadPool::SPtr   s_load_thread;
-    static graphics_old::Device::SPtr s_graphics_device;
-    static ResourceTableUPtr          s_resource_table;
-    static std::mutex                 s_table_mutex;
+    static ResourceTable s_resource_table;
+    static std::mutex    s_table_mutex;
 
     const system::Path path_;
     const Size         hash_;
 
     mutable std::mutex mutex_;
     State              state_;
-    String             buffer_;
+    Vector<UInt8>      buffer_;
 };
 }
 }

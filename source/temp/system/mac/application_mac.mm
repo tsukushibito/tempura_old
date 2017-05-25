@@ -38,7 +38,7 @@ public:
         [app_ setDelegate:delegate_];
         [app_ setActivationPolicy:NSApplicationActivationPolicyRegular];
 
-        main_thread_ = ThreadPool::create("Main", 1);
+        main_thread_ = ThreadPool::makeUnique("Main", 1);
         exit_flag_ = 0;
     }
 

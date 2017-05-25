@@ -6,150 +6,142 @@
  * @date 2016-02-23
  */
 #include <fstream>
-#include "temp/temp_assert.h"
 #include "temp/system/logger.h"
+#include "temp/temp_assert.h"
+
+#include "temp/resource/graphics_device.h"
+#include "temp/resource/loading_thread.h"
 
 namespace temp {
 namespace resource {
 
-template < typename T >
-ResourceBase< T >::ResourceBase(const system::Path &path)
-    : path_(path)
-    , hash_(path.getHash())
-    , state_(State::NotLoaded) {}
+template <typename Type>
+ResourceBase<Type>::ResourceBase(const system::Path& path)
+    : path_(path), hash_(path.getHash()), state_(State::NotLoaded) {}
 
-template < typename T >
-ResourceBase< T >::~ResourceBase() {
+template <typename Type>
+ResourceBase<Type>::~ResourceBase() {
     // リソース解放
     unload();
 
-    std::unique_lock< std::mutex > lock(s_table_mutex);
-    TEMP_ASSERT(s_resource_table->find(hash_) != s_resource_table->end(),
+    std::unique_lock<std::mutex> lock(s_table_mutex);
+    TEMP_ASSERT(s_resource_table.find(hash_) != s_resource_table.end(),
                 "Not exist in the table. Management is out of resources.");
 
     // 管理テーブルから削除
-    s_resource_table->erase(hash_);
+    s_resource_table.erase(hash_);
 
-    temp::system::ConsoleLogger::trace("[resource] Deleted : path = {0} : hash = {1}", path_.getAbsolute().c_str(), hash_);
+    temp::system::Logger::trace(
+        "[resource] Deleted : path = {0} : hash = {1}",
+        path_.getAbsolute().c_str(), hash_);
 }
 
-template < typename T >
-typename ResourceBase< T >::SPtr ResourceBase< T >::create(const String &path) {
-    return create(system::Path(path));
-}
 
-template < typename T >
-typename ResourceBase< T >::SPtr ResourceBase< T >::create(const system::Path &path) {
-    std::unique_lock< std::mutex > lock(s_table_mutex);
+template <typename Type>
+    typename ResourceBase<Type>::Super::SPtr ResourceBase<Type>::create(
+    const system::Path& path) {
+    std::unique_lock<std::mutex> lock(s_table_mutex);
 
     // 管理テーブルに既に存在しているパスであれば、それを返す
     Size hash = path.getHash();
-    if (s_resource_table->find(hash) != s_resource_table->end()) {
+    if (s_resource_table.find(hash) != s_resource_table.end()) {
         return std::move((*s_resource_table)[hash].lock());
     }
 
     // リソース作成
-    struct Creator : public T {
-        explicit Creator(const system::Path &path)
-            : T(path) {}
+    struct Creator : public Type {
+        explicit Creator(const system::Path& path) : Type(path) {}
     };
-    auto p = std::make_shared< Creator >(path);
-    (*s_resource_table)[hash] = p;
-    temp::system::ConsoleLogger::trace("[resource] Created : path = {0} : hash = {1}", path.getAbsolute().c_str(), hash);
+    auto p                 = std::make_shared<Creator>(path);
+    s_resource_table[hash] = p;
+    temp::system::Logger::trace(
+        "[resource] Created : path = {0} : hash = {1}",
+        path.getAbsolute().c_str(), hash);
     return std::move(p);
 }
 
-template < typename T >
-void ResourceBase< T >::initialize(const system::ThreadPool::SPtr &load_thread,
-        const graphics_old::Device::SPtr &graphics_device) {
-    s_resource_table.reset(new ResourceTable);
-    s_load_thread = load_thread;
-    s_graphics_device = graphics_device;
-
-    // initializeSpecificPlatform();
+template <typename Type>
+void ResourceBase<Type>::terminate() {
+    std::lock_guard<std::mutex> lock(s_table_mutex);
+    for (auto&& key_value : s_resource_table) {
+        auto&& res_wptr = key_value.second;
+        auto&& res_sptr = res_wptr.lock();
+        if (res_sptr) {
+            temp::system::Logger::trace(
+                "[resource] {0} is not released!",
+                res_sptr->path().getAbsolute());
+        }
+    }
+    s_resource_table.clear();
+    ResourceTable().swap(s_resource_table);
 }
 
-template < typename T >
-void ResourceBase< T >::terminate() {
-    // terminateSpecificPlatform();
-
-    s_graphics_device = nullptr;
-    s_load_thread = nullptr;
-    TEMP_ASSERT(s_resource_table->empty(), "Exists not released resource.");
-    s_resource_table.release();
-}
-
-template < typename T >
-typename ResourceBase< T >::State ResourceBase< T >::getState() const {
-    std::unique_lock< std::mutex > lock(mutex_);
+template <typename Type>
+typename ResourceBase<Type>::State ResourceBase<Type>::state() const {
+    std::unique_lock<std::mutex> lock(mutex_);
     return state_;
 }
 
-template < typename T >
-const system::Path &ResourceBase< T >::getPath() const {
+template <typename Type>
+const system::Path& ResourceBase<Type>::path() const {
     return path_;
 }
 
-template < typename T >
-const Size ResourceBase< T >::getHash() const {
+template <typename Type>
+const Size ResourceBase<Type>::hash() const {
     return hash_;
 }
 
-template < typename T >
-void ResourceBase< T >::load() {
-    std::unique_lock< std::mutex > lock(mutex_);
+template <typename Type>
+void ResourceBase<Type>::load() {
+    std::unique_lock<std::mutex> lock(mutex_);
     if (state_ != State::NotLoaded) return;
     loadImpl(false);
     state_ = State::Loaded;
 }
 
-template < typename T >
-std::future<void> ResourceBase< T >::asyncLoad() {
-    std::unique_lock< std::mutex > lock(mutex_);
+template <typename Type>
+std::future<void> ResourceBase<Type>::asyncLoad() {
+    std::unique_lock<std::mutex> lock(mutex_);
     if (state_ != State::NotLoaded) return std::future<void>();
     state_ = State::Loading;
 
-    return s_load_thread->pushJob(std::bind(&T::loadImpl, this, true));
+    return LoadingThread::pushJob([this](){loadImpl(true);});
 }
 
-template < typename T >
-void ResourceBase< T >::unload() {
-    std::unique_lock< std::mutex > lock(mutex_);
+template <typename Type>
+void ResourceBase<Type>::unload() {
+    std::unique_lock<std::mutex> lock(mutex_);
     if (state_ == State::NotLoaded || state_ == State::Unloading) return;
-    temp::system::ConsoleLogger::trace("[resource] unloading : path = {0} : hash = {1}", path_.getAbsolute().c_str(), hash_);
+    temp::system::Logger::trace(
+        "[resource] unloading : path = {0} : hash = {1}",
+        path_.getAbsolute().c_str(), hash_);
     state_ = State::Unloading;
 
-    String().swap(buffer_); // メモリ解放
+    Vector<UInt8>().swap(buffer_);  // メモリ解放
 
     state_ = State::NotLoaded;
 }
 
-template < typename T >
-String &ResourceBase< T >::getBuffer() {
+template <typename Type>
+Vector<UInt8>& ResourceBase<Type>::buffer() {
     return buffer_;
 }
 
-template < typename T >
-graphics_old::Device::SPtr ResourceBase< T >::getGraphicsDevcie() {
-    return s_graphics_device;
-}
-
-template < typename T >
-system::ThreadPool::SPtr ResourceBase< T >::getLoadThread() {
-    return s_load_thread;
-}
-
-template < typename T >
-void ResourceBase< T >::loadImpl(bool isAsync) {
+template <typename Type>
+void ResourceBase<Type>::loadImpl(bool isAsync) {
     using namespace std;
-    temp::system::ConsoleLogger::trace("[resource] loading({2}) : path = {0} : hash = {1}", path_.getAbsolute().c_str(), hash_, isAsync ? "async" : "sync");
+    temp::system::Logger::trace(
+        "[resource] loading({2}) : path = {0} : hash = {1}",
+        path_.getAbsolute().c_str(), hash_, isAsync ? "async" : "sync");
+
     // 同期、非同期で排他処理の有無を分ける必要があるので、処理を一旦ラムダに持たせる
-    auto load_ = [this](){
+    auto load_ = [this]() {
 
         ifstream ifs(path_.getAbsolute().c_str());
 
-        istreambuf_iterator< char > begin(ifs);
-        istreambuf_iterator< char > end;
+        istreambuf_iterator<char> begin(ifs);
+        istreambuf_iterator<char> end;
         buffer_.assign(begin, end);
 
         ifs.close();
@@ -160,24 +152,23 @@ void ResourceBase< T >::loadImpl(bool isAsync) {
     };
 
     if (isAsync) {
-        lock_guard< mutex > lock(mutex_);
+        lock_guard<mutex> lock(mutex_);
+        load_();
+    } else {
         load_();
     }
-    else {
-        load_();
-    }
-    
-    ifstream ifs(path_.getAbsolute().c_str());
+
+    ifstream    ifs(path_.getAbsolute().c_str());
     std::string buf;
     ifs >> buf;
     auto is_good = ifs.good();
     std::cout << is_good << std::endl;
 }
 
-template < typename T >
-void ResourceBase< T >::login() {
+template <typename Type>
+void ResourceBase<Type>::login() {
     // 静的多態の場合
-    static_cast< T * >(this)->loginImpl();
+    static_cast<Type*>(this)->loginImpl();
 
     // 動的多態の場合
     // loginImpl();
@@ -193,17 +184,10 @@ void ResourceBase< T >::login() {
 //     // logoutImpl();
 // }
 
-template < typename T >
-system::ThreadPool::SPtr ResourceBase< T >::s_load_thread = nullptr;
+template <typename Type>
+typename ResourceBase<Type>::ResourceTable ResourceBase<Type>::s_resource_table;
 
-template < typename T >
-graphics_old::Device::SPtr ResourceBase< T >::s_graphics_device = nullptr;
-
-template < typename T >
-typename ResourceBase< T >::ResourceTableUPtr ResourceBase< T >::s_resource_table = nullptr;
-
-template < typename T >
-std::mutex ResourceBase< T >::s_table_mutex;
-
+template <typename Type>
+std::mutex ResourceBase<Type>::s_table_mutex;
 }
 }

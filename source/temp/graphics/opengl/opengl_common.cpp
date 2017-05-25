@@ -1,53 +1,12 @@
-﻿#include "temp/graphics_old/opengl/opengl_common.h"
+#include "temp/temp_assert.h"
 
-#if defined TEMP_PLATFORM_WINDOWS
-#define TEMP_OPENGL_EXTENSION_LINK(func, name) func name = nullptr;
-#include <gl_ext/temp_glext_link.inl>
-#include <gl_ext/temp_wglext_link.inl>
-#undef TEMP_OPENGL_EXTENSION_LINK
-#include "temp/graphics_old/opengl/windows/opengl_windows.h"
-#elif defined TEMP_PLATFORM_MAC
-#include "temp/graphics_old/opengl/mac/opengl_mac.h"
-#endif
+#include "temp/system/logger.h"
+
+#include "temp/graphics/opengl/opengl_common.h"
 
 namespace temp {
-namespace graphics_old {
+namespace graphics {
 namespace opengl {
-
-OpenglContexts createContexts(void* window_handle, Size worker_thread_count) {
-#if defined TEMP_PLATFORM_WINDOWS
-    return windows::createContexts(static_cast<HWND>(window_handle),
-                                   worker_thread_count);
-#elif defined TEMP_PLATFORM_MAC
-    return mac::createContexts(window_handle, worker_thread_count);
-#endif
-}
-
-void deleteContexts(const OpenglContexts& contexts) {
-#if defined TEMP_PLATFORM_WINDOWS
-    windows::deleteContexts(contexts);
-#elif defined TEMP_PLATFORM_MAC
-    mac::deleteContexts(contexts);
-#endif
-}
-
-void makeCurrent(void* window_handle, void* context) {
-#if defined TEMP_PLATFORM_WINDOWS
-    return windows::makeCurrent(static_cast<HWND>(window_handle),
-                                static_cast<HGLRC>(context));
-#elif defined TEMP_PLATFORM_MAC
-    return mac::makeCurrent(window_handle, context);
-#endif
-}
-
-void swapBuffers(void* window_handle, void* context) {
-#if defined TEMP_PLATFORM_WINDOWS
-    return windows::swapBuffers(static_cast<HWND>(window_handle),
-                                static_cast<HGLRC>(context));
-#elif defined TEMP_PLATFORM_MAC
-    return mac::swapBuffers(window_handle, context);
-#endif
-}
 
 void APIENTRY debugProc(GLenum source, GLenum type, GLuint id, GLenum severity,
                         GLsizei length, const GLchar* message,
@@ -101,7 +60,7 @@ void APIENTRY debugProc(GLenum source, GLenum type, GLuint id, GLenum severity,
     }
     ss << "---------------------opengl-callback-end--------------" << endl;
 
-    temp::system::ConsoleLogger::trace(ss.str().c_str());
+    temp::system::Logger::trace(ss.str().c_str());
 #endif
 }
 
@@ -134,8 +93,7 @@ void checkError() {
             break;
         }
 
-        system::Logger::error("OpenGL ERROR : 0x{0:x}'{1}'\n", errorCode,
-                                     msg);
+        system::Logger::error("OpenGL ERROR : 0x{0:x}'{1}'\n", errorCode, msg);
 
         errorCode = glGetError();
     } while (errorCode != GL_NO_ERROR);
@@ -159,8 +117,7 @@ void printShaderCompileInfoLog(GLuint shader) {
         /* シェーダのコンパイル時のログの内容を取得する */
         glGetShaderInfoLog(shader, bufSize, &length, &infoLog[0]);
         // debugLog("ShaderInfoLog:\n%s\n\n", infoLog.c_str());
-        system::Logger::error("ShaderInfoLog:\n{0}\n\n",
-                                     infoLog.c_str());
+        system::Logger::error("ShaderInfoLog:\n{0}\n\n", infoLog.c_str());
     }
 }
 
@@ -175,7 +132,6 @@ void printProgramInfoLog(GLuint program) {
                          (GLchar*)&infoLog[0]);
     system::Logger::info("ProgramInfoLog:\n{0}\n\n", infoLog.c_str());
 }
-
 }  // namespace opengl
 }  // namespace graphics
 }  // namespace temp

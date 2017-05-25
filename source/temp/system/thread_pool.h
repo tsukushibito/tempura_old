@@ -24,7 +24,8 @@ namespace temp {
 namespace system {
 
 class ThreadPool : public SmartPointerObject<ThreadPool> {
-	friend class SmartPointerObject<ThreadPool>;
+    friend class SmartPointerObject<ThreadPool>;
+
 public:
     using JobType = std::function<void(void)>;
 
@@ -46,19 +47,26 @@ public:
     JobType popJob();
     JobType popJobFromSpecificThreadQueue(Size threadIndex);
 
-    const String& getName() const { return name_; }
-    Size          getThreadCount() const { return worker_threads_.size(); }
-    Bool          isJobQueueEmpty() const { return job_queue_.empty(); }
-    Size          getJobCount() const { return job_queue_.size(); }
-    Bool isSpecificJobQueueEmpty(Size threadCount) const {
+    const String& name() const { return name_; }
+
+    Size threadCount() const { return worker_threads_.size(); }
+
+    Size jobCount() const { return job_queue_.size(); }
+    Bool jobEmpty() const { return job_queue_.empty(); }
+
+    Size specificJobCount() const { return specific_job_queues_.size(); }
+    Bool specificJobEmpty(Size threadCount) const {
         return specific_job_queues_[threadCount].empty();
     }
-    Size getSpecificJobCount() const { return specific_job_queues_.size(); }
+
+
+    const Vector<std::thread::id>& threadIdList() { return thread_id_list_; }
 
 private:
     String name_;
 
-    Vector<std::thread> worker_threads_;
+    Vector<std::thread>     worker_threads_;
+    Vector<std::thread::id> thread_id_list_;
 
     using JobContainerType = Deque<JobType>;
     using JobQueueType     = std::queue<JobType, JobContainerType>;

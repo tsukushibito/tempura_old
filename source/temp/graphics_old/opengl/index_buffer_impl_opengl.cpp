@@ -27,7 +27,7 @@ IndexBuffer::Impl::Impl(NativeHandle device, IndexBuffer& index_buffer,
 
     index_buffer_.native_handle_.value = ibo;
 
-    temp::system::ConsoleLogger::trace(
+    temp::system::Logger::trace(
         "OpenGL Index Buffer has created! id = {0}",
         index_buffer_.native_handle_.value);
 
@@ -39,7 +39,7 @@ IndexBuffer::Impl::~Impl() {
 
     glDeleteBuffers(1, (GLuint*)&index_buffer_.native_handle_.value);
 
-    temp::system::ConsoleLogger::trace(
+    temp::system::Logger::trace(
         "OpenGL Index Buffer has deleted! id = {0}",
         index_buffer_.native_handle_.value);
 }

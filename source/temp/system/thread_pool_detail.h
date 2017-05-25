@@ -33,6 +33,9 @@ inline ThreadPool::ThreadPool(const String& name, Size threadCount)
         };
         worker_threads_.emplace_back(worker_function);
     }
+    for (auto&& thread : worker_threads_) {
+        thread_id_list_.emplace_back(thread.get_id());
+    }
 }
 
 inline ThreadPool::~ThreadPool() {

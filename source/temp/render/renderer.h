@@ -12,8 +12,6 @@
 #include <mutex>
 #include "temp/type.h"
 #include "temp/container.h"
-#include "temp/resource/vertex_shader_resource.h"
-#include "temp/resource/pixel_shader_resource.h"
 
 namespace temp {
 namespace graphics_old {
@@ -42,8 +40,6 @@ private:
     graphics_old::DeviceSPtr device_;
     std::mutex camera_list_mutex_;
 
-    resource::VertexShaderResource::SPtr clear_vs_res_;
-    resource::PixelShaderResource::SPtr clear_ps_res_;
 };
     
 } // namespace render

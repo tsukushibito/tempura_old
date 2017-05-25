@@ -57,7 +57,7 @@ DepthStencileState::Impl::Impl(NativeHandle        device,
     arg_.stencile_func = depthStencileFuncToGLenum(stencile_func);
 
     depth_stencile_state.native_handle_.pointer = &arg_;
-    temp::system::ConsoleLogger::trace(
+    temp::system::Logger::trace(
         "OpenGL Depth Stencile State has created!");
 
     (void)device;
@@ -65,7 +65,7 @@ DepthStencileState::Impl::Impl(NativeHandle        device,
 
 DepthStencileState::Impl::~Impl() {
     using namespace opengl;
-    temp::system::ConsoleLogger::trace(
+    temp::system::Logger::trace(
         "OpenGL Depth Stencile State has deleted!");
 }
 
