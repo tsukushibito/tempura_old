@@ -35,9 +35,23 @@ ResourceBase<Type>::~ResourceBase() {
                                 path_.getAbsolute().c_str(), hash_);
 }
 
+template <typename Type>
+void ResourceBase<Type>::terminate() {
+    std::lock_guard<std::mutex> lock(s_table_mutex);
+    for (auto&& key_value : s_resource_table) {
+        auto&& res_wptr = key_value.second;
+        auto&& res_sptr = res_wptr.lock();
+        if (res_sptr) {
+            temp::system::Logger::trace("[resource] {0} is not released!",
+                                        res_sptr->path().getAbsolute());
+        }
+    }
+    s_resource_table.clear();
+    ResourceTable().swap(s_resource_table);
+}
 
 template <typename Type>
-typename ResourceBase<Type>::Super::SPtr ResourceBase<Type>::create(
+typename ResourceBase<Type>::ResourceSPtr ResourceBase<Type>::create(
     const system::Path& path) {
     std::unique_lock<std::mutex> lock(s_table_mutex);
 
@@ -57,21 +71,6 @@ typename ResourceBase<Type>::Super::SPtr ResourceBase<Type>::create(
     temp::system::Logger::trace("[resource] Created : path = {0} : hash = {1}",
                                 path.getAbsolute().c_str(), hash);
     return std::move(p);
-}
-
-template <typename Type>
-void ResourceBase<Type>::terminate() {
-    std::lock_guard<std::mutex> lock(s_table_mutex);
-    for (auto&& key_value : s_resource_table) {
-        auto&& res_wptr = key_value.second;
-        auto&& res_sptr = res_wptr.lock();
-        if (res_sptr) {
-            temp::system::Logger::trace("[resource] {0} is not released!",
-                                        res_sptr->path().getAbsolute());
-        }
-    }
-    s_resource_table.clear();
-    ResourceTable().swap(s_resource_table);
 }
 
 template <typename Type>

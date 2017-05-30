@@ -101,7 +101,7 @@ void APIENTRY debugProc(GLenum source, GLenum type, GLuint id, GLenum severity,
     }
     ss << "---------------------opengl-callback-end--------------" << endl;
 
-    temp::system::ConsoleLogger::trace(ss.str().c_str());
+    temp::system::Logger::trace(ss.str().c_str());
 #endif
 }
 

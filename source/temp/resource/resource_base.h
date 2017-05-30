@@ -23,7 +23,9 @@ namespace resource {
 template <typename Type>
 class ResourceBase : public SmartPointerObject<Type> {
 public:
-    using Super = SmartPointerObject<Type>;
+    using Super        = SmartPointerObject<Type>;
+    using ResourceSPtr = std::shared_ptr<Type>;
+
     /**
      * @brief loading state
      */
@@ -45,11 +47,11 @@ protected:
     ~ResourceBase();
 
 public:
-    static typename Super::SPtr create(const system::Path& path);
-
     static void initialize(const system::ThreadPoolSPtr& loading_thread);
 
     static void terminate();
+
+    static ResourceSPtr create(const system::Path& path);
 
     State state() const;
 

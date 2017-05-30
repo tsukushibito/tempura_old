@@ -39,7 +39,10 @@ OpenGLDevice::OpenGLDevice(NativeWindowHandle window_handle)
 #elif defined(TEMP_PLATFORM_WINDOWS)
     native_handle_ = windows::createContext(window_handle);
     resource_creation_thread_->pushJob(
-        [this]() { windows::makeCurrent(native_handle_); });
+        [this, window_handle]() { 
+		auto hdc = GetDC(window_handle);
+		wglMakeCurrent(hdc, native_handle_); 
+	});
 #endif
 }
 
@@ -53,7 +56,7 @@ OpenGLTexture::SPtr OpenGLDevice::createTexture(const TextureDesc& desc) {
     };
 
     GLuint id = execInResourceCreationThread(task);
-    Logger::trace("[OpenGL] texture has created. id: {0}", id);
+	Logger::trace("[OpenGL] texture has created. id: {0}", id);
 
     return Texture::makeShared(id, desc, [this](GLuint id) {
         auto task = [id]() { glCallWithErrorCheck(glDeleteTextures, 1, &id); };
