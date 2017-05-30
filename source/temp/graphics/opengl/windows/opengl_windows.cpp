@@ -70,7 +70,7 @@ HGLRC createDummyOpenglContext(HDC hdc) {
 void initializeOpenglExtension() {
 #define TEMP_OPENGL_EXTENSION_LINK(func, name)                        \
     if (name == nullptr) *(void**)(&name) = wglGetProcAddress(#name); \
-// if(name == nullptr) temp::system::ConsoleLogger::info("OpenGL extention : {0}
+// if(name == nullptr) temp::system::Logger::info("OpenGL extention : {0}
 // not supported.", #name);
 #include <gl_ext/temp_glext_link.inl>
 #include <gl_ext/temp_wglext_link.inl>
@@ -90,31 +90,31 @@ HGLRC createContext(HWND window_handle) {
     // glewの初期化
     error = glewInit();
     if (error != GLEW_OK) {
-        ConsoleLogger::error("glewInit failed!: {0}",
+        Logger::error("glewInit failed!: {0}",
                              glewGetErrorString(error));
     } else {
-        ConsoleLogger::info("glewInit version: {0}",
+        Logger::info("glewInit version: {0}",
                             glewGetString(GLEW_VERSION));
     }
 #else
     initializeOpenglExtension();
 #endif
     // OpenGL情報取得
-    using temp::system::ConsoleLogger;
+    using temp::system::Logger;
     auto vendor = glGetString(GL_VENDOR);
-    if (vendor != nullptr) ConsoleLogger::info("[OpenGL] vendor : {0}", vendor);
+    if (vendor != nullptr) Logger::info("[OpenGL] vendor : {0}", vendor);
     auto renderer = glGetString(GL_RENDER);
     if (renderer != nullptr)
-        ConsoleLogger::info("[OpenGL] renderer : {0}", renderer);
+        Logger::info("[OpenGL] renderer : {0}", renderer);
     auto version = glGetString(GL_VERSION);
     if (version != nullptr)
-        ConsoleLogger::info("[OpenGL] version : {0}", version);
+        Logger::info("[OpenGL] version : {0}", version);
     auto extensions = glGetString(GL_EXTENSIONS);
 	if (extensions != nullptr)
 	{
 		String extensionsStr = reinterpret_cast<const Char*>(extensions);
 		// std::replace(extensionsStr.begin(), extensionsStr.end(), ' ', '\n');
-		ConsoleLogger::info("[OpenGL] extensions : {0}", extensionsStr);
+		Logger::info("[OpenGL] extensions : {0}", extensionsStr);
 	}
     String         version_string = reinterpret_cast<const char*>(version);
     StringStream   ss(version_string);

@@ -38,7 +38,7 @@ ResourceBase<Type>::~ResourceBase() {
 
 
 template <typename Type>
-    typename ResourceBase<Type>::Super::SPtr ResourceBase<Type>::create(
+    typename ResourceBase<Type>::ResourceSPtr ResourceBase<Type>::create(
     const system::Path& path) {
     std::unique_lock<std::mutex> lock(s_table_mutex);
 

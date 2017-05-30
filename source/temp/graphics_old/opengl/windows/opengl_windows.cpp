@@ -56,7 +56,7 @@ HGLRC createDummyOpenglContext(HDC hdc) {
 void initializeOpenglExtension() {
 #define TEMP_OPENGL_EXTENSION_LINK(func, name) \
 	if(name == nullptr) *(void**)(&name) = wglGetProcAddress(#name);	\
-	// if(name == nullptr) temp::system::ConsoleLogger::info("OpenGL extention : {0} not supported.", #name);
+	// if(name == nullptr) temp::system::Logger::info("OpenGL extention : {0} not supported.", #name);
 #include <gl_ext/temp_glext_link.inl>
 #include <gl_ext/temp_wglext_link.inl>
 #undef TEMP_OPENGL_EXTENSION_LINK
@@ -70,7 +70,7 @@ namespace opengl {
 namespace windows {
 
 OpenglContexts createContexts(HWND window_handle, Size worker_thread_count) {
-	using temp::system::ConsoleLogger;
+	using temp::system::Logger;
 
     // OpeGL拡張機能初期化用のダミーウィンドウとコンテキストを作成
     auto dummy_window_handle = createDummyWindow();
@@ -84,24 +84,24 @@ OpenglContexts createContexts(HWND window_handle, Size worker_thread_count) {
 	error = glewInit();
 	if (error != GLEW_OK)
 	{
-		ConsoleLogger::error("glewInit failed!: {0}", glewGetErrorString(error));
+		Logger::error("glewInit failed!: {0}", glewGetErrorString(error));
 	}
 	else
 	{
-		ConsoleLogger::info("glewInit version: {0}", glewGetString(GLEW_VERSION));
+		Logger::info("glewInit version: {0}", glewGetString(GLEW_VERSION));
 	}
 #else
 	initializeOpenglExtension();
 #endif
 	// OpenGL情報取得
 	auto vendor = glGetString(GL_VENDOR);
-	if (vendor != nullptr) ConsoleLogger::info("[OpenGL] vendor : {0}", vendor);
+	if (vendor != nullptr) Logger::info("[OpenGL] vendor : {0}", vendor);
 	// auto renderer = glGetString(GL_RENDER);
-	// if (renderer != nullptr) ConsoleLogger::info("[OpenGL] renderer : {0}", renderer);
+	// if (renderer != nullptr) Logger::info("[OpenGL] renderer : {0}", renderer);
 	auto version = glGetString(GL_VERSION);
-	if (version != nullptr) ConsoleLogger::info("[OpenGL] version : {0}", version);
+	if (version != nullptr) Logger::info("[OpenGL] version : {0}", version);
 	// auto extensions = glGetString(GL_EXTENSIONS);
-	// if ( extensions != nullptr) ConsoleLogger::info("[OpenGL] extensions : {0}", extensions);
+	// if ( extensions != nullptr) Logger::info("[OpenGL] extensions : {0}", extensions);
 	String version_string = reinterpret_cast<const char*>(version);
 	StringStream ss(version_string);
 	Vector<String> num_strs;
