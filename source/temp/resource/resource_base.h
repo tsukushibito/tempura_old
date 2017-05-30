@@ -47,7 +47,7 @@ protected:
     ~ResourceBase();
 
 public:
-    static void initialize(const system::ThreadPoolSPtr& loading_thread);
+    static void initialize(const system::ThreadPool::SPtr& loading_thread);
 
     static void terminate();
 
@@ -74,9 +74,9 @@ private:
     void login();  // ロード用スレッドで実行される
 
 protected:
-    static ResourceTable          s_resource_table;
-    static std::mutex             s_table_mutex;
-    static system::ThreadPoolSPtr s_loading_thread;
+    static ResourceTable            s_resource_table;
+    static std::mutex               s_table_mutex;
+    static system::ThreadPool::SPtr s_loading_thread;
 
     const system::Path path_;
     const Size         hash_;

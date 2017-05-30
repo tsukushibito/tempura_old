@@ -9,11 +9,9 @@
 #include "temp/system/logger.h"
 #include "temp/temp_assert.h"
 
-#include "temp/resource/graphics_device.h"
-#include "temp/resource/loading_thread.h"
-
 namespace temp {
 namespace resource {
+
 
 template <typename Type>
 ResourceBase<Type>::ResourceBase(const system::Path& path)
@@ -103,7 +101,7 @@ std::future<void> ResourceBase<Type>::asyncLoad() {
     if (state_ != State::NotLoaded) return std::future<void>();
     state_ = State::Loading;
 
-    return LoadingThread::pushJob([this]() { loadImpl(true); });
+    return s_loading_thread->pushJob([this]() { loadImpl(true); });
 }
 
 template <typename Type>
@@ -121,7 +119,7 @@ void ResourceBase<Type>::unload() {
 }
 
 template <typename Type>
-ByteData& ResourceBase<Type>::byteData() {
+typename ResourceBase<Type>::ByteData& ResourceBase<Type>::byteData() {
     return byte_data_;
 }
 
@@ -139,7 +137,7 @@ void ResourceBase<Type>::loadImpl(bool isAsync) {
 
         istreambuf_iterator<char> begin(ifs);
         istreambuf_iterator<char> end;
-        buffer_.assign(begin, end);
+        byte_data_.assign(begin, end);
 
         ifs.close();
 
@@ -182,6 +180,6 @@ template <typename Type>
 std::mutex ResourceBase<Type>::s_table_mutex;
 
 template <typename Type>
-std::mutex ResourceBase<Type>::s_loading_thread;
+system::ThreadPool::SPtr ResourceBase<Type>::s_loading_thread;
 }
 }

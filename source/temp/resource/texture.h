@@ -11,7 +11,8 @@
 
 #include "temp/resource/resource_base.h"
 
-#include "temp/graphics/graphics_device.h"
+#include "temp/graphics/device.h"
+#include "temp/graphics/texture.h"
 
 namespace temp {
 namespace resource {

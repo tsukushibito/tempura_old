@@ -6,7 +6,6 @@
  * @date 2017-04-21
  */
 #include "temp/resource/texture.h"
-#include "temp/resource/graphics_device.h"
 
 namespace temp {
 namespace resource {
@@ -26,7 +25,7 @@ Texture::Texture(const system::Path& path) : ResourceBase<Texture>(path) {}
 
 void Texture::loginImpl() {
     auto&& byte_data = byteData();
-    g_graphics_device->createTexture();
+    // g_graphics_device->createTexture();
 }
 }
 }
