@@ -31,14 +31,13 @@ ResourceBase<Type>::~ResourceBase() {
     // 管理テーブルから削除
     s_resource_table.erase(hash_);
 
-    temp::system::Logger::trace(
-        "[resource] Deleted : path = {0} : hash = {1}",
-        path_.getAbsolute().c_str(), hash_);
+    temp::system::Logger::trace("[resource] Deleted : path = {0} : hash = {1}",
+                                path_.getAbsolute().c_str(), hash_);
 }
 
 
 template <typename Type>
-    typename ResourceBase<Type>::Super::SPtr ResourceBase<Type>::create(
+typename ResourceBase<Type>::Super::SPtr ResourceBase<Type>::create(
     const system::Path& path) {
     std::unique_lock<std::mutex> lock(s_table_mutex);
 
@@ -52,11 +51,11 @@ template <typename Type>
     struct Creator : public Type {
         explicit Creator(const system::Path& path) : Type(path) {}
     };
-    auto p                 = std::make_shared<Creator>(path);
+    auto p = std::make_shared<Creator>(path);
+
     s_resource_table[hash] = p;
-    temp::system::Logger::trace(
-        "[resource] Created : path = {0} : hash = {1}",
-        path.getAbsolute().c_str(), hash);
+    temp::system::Logger::trace("[resource] Created : path = {0} : hash = {1}",
+                                path.getAbsolute().c_str(), hash);
     return std::move(p);
 }
 
@@ -67,9 +66,8 @@ void ResourceBase<Type>::terminate() {
         auto&& res_wptr = key_value.second;
         auto&& res_sptr = res_wptr.lock();
         if (res_sptr) {
-            temp::system::Logger::trace(
-                "[resource] {0} is not released!",
-                res_sptr->path().getAbsolute());
+            temp::system::Logger::trace("[resource] {0} is not released!",
+                                        res_sptr->path().getAbsolute());
         }
     }
     s_resource_table.clear();
@@ -106,7 +104,7 @@ std::future<void> ResourceBase<Type>::asyncLoad() {
     if (state_ != State::NotLoaded) return std::future<void>();
     state_ = State::Loading;
 
-    return LoadingThread::pushJob([this](){loadImpl(true);});
+    return LoadingThread::pushJob([this]() { loadImpl(true); });
 }
 
 template <typename Type>
@@ -118,14 +116,14 @@ void ResourceBase<Type>::unload() {
         path_.getAbsolute().c_str(), hash_);
     state_ = State::Unloading;
 
-    Vector<UInt8>().swap(buffer_);  // メモリ解放
+    ByteData().swap(byte_data_);  // メモリ解放
 
     state_ = State::NotLoaded;
 }
 
 template <typename Type>
-Vector<UInt8>& ResourceBase<Type>::buffer() {
-    return buffer_;
+ByteData& ResourceBase<Type>::byteData() {
+    return byte_data_;
 }
 
 template <typename Type>
@@ -136,7 +134,7 @@ void ResourceBase<Type>::loadImpl(bool isAsync) {
         path_.getAbsolute().c_str(), hash_, isAsync ? "async" : "sync");
 
     // 同期、非同期で排他処理の有無を分ける必要があるので、処理を一旦ラムダに持たせる
-    auto load_ = [this]() {
+    auto load_task = [this]() {
 
         ifstream ifs(path_.getAbsolute().c_str());
 
@@ -153,16 +151,10 @@ void ResourceBase<Type>::loadImpl(bool isAsync) {
 
     if (isAsync) {
         lock_guard<mutex> lock(mutex_);
-        load_();
+        load_task();
     } else {
-        load_();
+        load_task();
     }
-
-    ifstream    ifs(path_.getAbsolute().c_str());
-    std::string buf;
-    ifs >> buf;
-    auto is_good = ifs.good();
-    std::cout << is_good << std::endl;
 }
 
 template <typename Type>
@@ -189,5 +181,8 @@ typename ResourceBase<Type>::ResourceTable ResourceBase<Type>::s_resource_table;
 
 template <typename Type>
 std::mutex ResourceBase<Type>::s_table_mutex;
+
+template <typename Type>
+std::mutex ResourceBase<Type>::s_loading_thread;
 }
 }

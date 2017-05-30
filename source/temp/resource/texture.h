@@ -11,16 +11,24 @@
 
 #include "temp/resource/resource_base.h"
 
+#include "temp/graphics/graphics_device.h"
+
 namespace temp {
 namespace resource {
 
 class Texture : public ResourceBase<Texture> {
     friend class ResourceBase<Texture>;
 
+    using Super = ResourceBase<Texture>;
+
+public:
+    static void initialize(const graphics::DeviceSPtr& device);
+
+    static void terminate();
+
 private:
     Texture(const system::Path& path);
 
-protected:
     void loginImpl();
 };
 }

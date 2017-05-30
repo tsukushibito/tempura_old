@@ -37,6 +37,7 @@ public:
 private:
     using ResourceTable     = std::unordered_map<Size, typename Super::WPtr>;
     using ResourceTableUPtr = std::unique_ptr<ResourceTable>;
+    using ByteData          = Vector<Int8>;
 
 protected:
     explicit ResourceBase(const system::Path& path);
@@ -45,7 +46,9 @@ protected:
 
 public:
     static typename Super::SPtr create(const system::Path& path);
-    
+
+    static void initialize(const system::ThreadPoolSPtr& loading_thread);
+
     static void terminate();
 
     State state() const;
@@ -61,7 +64,7 @@ public:
     void unload();
 
 protected:
-    Vector<UInt8>& buffer();
+    ByteData& byteData();
 
 private:
     void loadImpl(bool is_async = true);
@@ -69,15 +72,16 @@ private:
     void login();  // ロード用スレッドで実行される
 
 protected:
-    static ResourceTable s_resource_table;
-    static std::mutex    s_table_mutex;
+    static ResourceTable          s_resource_table;
+    static std::mutex             s_table_mutex;
+    static system::ThreadPoolSPtr s_loading_thread;
 
     const system::Path path_;
     const Size         hash_;
 
     mutable std::mutex mutex_;
     State              state_;
-    Vector<UInt8>      buffer_;
+    ByteData           byte_data_;
 };
 }
 }
