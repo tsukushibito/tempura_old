@@ -23,9 +23,13 @@ class Texture : public ResourceBase<Texture> {
     using Super = ResourceBase<Texture>;
 
 public:
-    static void initialize(const graphics::DeviceSPtr& device);
+    static void initialize(const system::ThreadPool::SPtr& loading_thread,
+                           const graphics::DeviceSPtr&     device);
 
     static void terminate();
+
+private:
+    static temp::graphics::DeviceSPtr s_graphics_device;
 
 private:
     Texture(const system::Path& path);

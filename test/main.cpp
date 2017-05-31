@@ -22,6 +22,7 @@ class Test {
 
     void run();
 
+    void testResource();
     void testMath();
 
    private:
@@ -88,6 +89,8 @@ void Test::init() {
         auto pshader = device_->createPixelShader(pscode);
     }
 
+    testResource();
+
     testMath();
 }
 
@@ -115,6 +118,18 @@ void Test::update() {
 void Test::run() {
     using temp::system::Application;
     application_->run();
+}
+
+void Test::testResource() {
+    using temp::resource::Texture;
+
+    Texture::initialize(load_thread_, device_);
+    {
+        auto texture =
+            Texture::create(temp::system::Path("shader/glsl/clear_glsl.flag"));
+        texture->load();
+    }
+    Texture::terminate();
 }
 
 void Test::testMath() {

@@ -10,18 +10,20 @@
 namespace temp {
 namespace resource {
 
-graphics::DeviceSPtr g_graphics_device;
+temp::graphics::DeviceSPtr Texture::s_graphics_device;
 
-void Texture::initialize(const graphics::DeviceSPtr& device) {
-    g_graphics_device = device;
+void Texture::initialize(const system::ThreadPool::SPtr& loading_thread,
+                         const graphics::DeviceSPtr&     device) {
+    Super::initialize(loading_thread);
+    s_graphics_device = device;
 }
 
 void Texture::terminate() {
     Super::terminate();
-    g_graphics_device = nullptr;
+    s_graphics_device = nullptr;
 }
 
-Texture::Texture(const system::Path& path) : ResourceBase<Texture>(path) {}
+Texture::Texture(const system::Path& path) : Super(path) {}
 
 void Texture::loginImpl() {
     auto&& byte_data = byteData();

@@ -34,6 +34,12 @@ ResourceBase<Type>::~ResourceBase() {
 }
 
 template <typename Type>
+void ResourceBase<Type>::initialize(
+    const system::ThreadPool::SPtr& loading_thread) {
+    s_loading_thread = loading_thread;
+}
+
+template <typename Type>
 void ResourceBase<Type>::terminate() {
     std::lock_guard<std::mutex> lock(s_table_mutex);
     for (auto&& key_value : s_resource_table) {
@@ -56,7 +62,7 @@ typename ResourceBase<Type>::ResourceSPtr ResourceBase<Type>::create(
     // 管理テーブルに既に存在しているパスであれば、それを返す
     Size hash = path.getHash();
     if (s_resource_table.find(hash) != s_resource_table.end()) {
-        return std::move((*s_resource_table)[hash].lock());
+        return std::move(s_resource_table[hash].lock());
     }
 
     // リソース作成
