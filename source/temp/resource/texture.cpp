@@ -10,7 +10,9 @@
 namespace temp {
 namespace resource {
 
-temp::graphics::DeviceSPtr Texture::s_graphics_device;
+temp::graphics::Device::SPtr Texture::s_graphics_device;
+
+const temp::String Texture::kTypeName = "Texture";
 
 void Texture::initialize(const system::ThreadPool::SPtr& loading_thread,
                          const graphics::DeviceSPtr&     device) {

@@ -1,4 +1,4 @@
-#include "temp/graphics/mesh.h"
+#include "temp/resource/mesh.h"
 
 namespace temp {
 namespace resource {
@@ -23,10 +23,12 @@ struct IndexHeader {
 };
 }
 
-temp::graphics::DeviceSPtr Mesh::s_graphics_device;
+temp::graphics::Device::SPtr Mesh::s_graphics_device;
+
+const temp::String Mesh::kTypeName = "Mesh";
 
 void Mesh::initialize(const system::ThreadPool::SPtr& loading_thread,
-                      const graphics::DeviceSPtr&     device) {
+                      const graphics::Device::SPtr&     device) {
     Super::initialize(loading_thread);
     s_graphics_device = device;
 }

@@ -11,8 +11,7 @@
 
 #include "temp/resource/resource_base.h"
 
-#include "temp/graphics/device.h"
-#include "temp/graphics/texture.h"
+#include "temp/graphics/graphics.h"
 
 namespace temp {
 namespace resource {
@@ -24,12 +23,14 @@ class Texture : public ResourceBase<Texture> {
 
 public:
     static void initialize(const system::ThreadPool::SPtr& loading_thread,
-                           const graphics::DeviceSPtr&     device);
+                           const graphics::Device::SPtr&     device);
 
     static void terminate();
 
 private:
-    static temp::graphics::DeviceSPtr s_graphics_device;
+    static temp::graphics::Device::SPtr s_graphics_device;
+
+	static const String kTypeName;
 
 private:
     Texture(const system::Path& path);

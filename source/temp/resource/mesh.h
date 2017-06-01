@@ -11,9 +11,7 @@
 
 #include "temp/resource/resource_base.h"
 
-#include "temp/graphics/device.h"
-#include "temp/graphics/index_buffer.h"
-#include "temp/graphics/vertex_buffer.h"
+#include "temp/graphics/graphics.h"
 
 namespace temp {
 namespace resource {
@@ -25,19 +23,21 @@ class Mesh : public ResourceBase<Mesh> {
 
 public:
     static void initialize(const system::ThreadPool::SPtr& loading_thread,
-                           const graphics::DeviceSPtr&     device);
+                           const graphics::Device::SPtr&     device);
 
     static void terminate();
 
 private:
-    static temp::graphics::DeviceSPtr s_graphics_device;
+    static temp::graphics::Device::SPtr s_graphics_device;
+
+	static const temp::String kTypeName;
 
 private:
     Mesh(const system::Path& path);
 
     void loginImpl();
 
-    temp::graphics::IntexBuffer::SPtr  index_buffer_;
+    temp::graphics::IndexBuffer::SPtr  index_buffer_;
     temp::graphics::VertexBuffer::SPtr vertex_buffer_;
 };
 }

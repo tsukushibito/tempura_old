@@ -16,6 +16,8 @@
 #ifdef TEMP_GRAPHICS_OPENGL
 #include "temp/graphics/opengl/opengl_device.h"
 #include "temp/graphics/opengl/opengl_texture.h"
+#include "temp/graphics/opengl/opengl_index_buffer.h"
+#include "temp/graphics/opengl/opengl_vertex_buffer.h"
 #endif
 
 namespace temp {
