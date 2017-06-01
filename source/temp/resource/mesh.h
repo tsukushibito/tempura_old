@@ -16,6 +16,13 @@
 namespace temp {
 namespace resource {
 
+enum class VertexFormat
+{
+    kSimple,
+    kStatic,
+    kSkinning,
+};
+
 class Mesh : public ResourceBase<Mesh> {
     friend class ResourceBase<Mesh>;
 
@@ -30,7 +37,7 @@ public:
 private:
     static temp::graphics::Device::SPtr s_graphics_device;
 
-	static const temp::String kTypeName;
+    static const temp::String kTypeName;
 
 private:
     Mesh(const system::Path& path);
