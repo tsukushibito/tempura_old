@@ -10,6 +10,7 @@
 #define GUARD_36db4a3c442d4852b700c9f980eef17b
 
 #include "temp/resource/texture.h"
+#include "temp/resource/mesh.h"
 
 namespace temp {
 namespace resource {}  // namespace resource

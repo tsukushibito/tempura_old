@@ -11,6 +11,7 @@
 
 #include "temp/define.h"
 #include "temp/type.h"
+#include "temp/container.h"
 
 #include "temp/system/file_system.h"
 #include "temp/system/thread_pool.h"
@@ -37,9 +38,8 @@ public:
     };
 
 private:
-    using ResourceTable     = std::unordered_map<Size, typename Super::WPtr>;
+    using ResourceTable     = HashMap<Size, typename Super::WPtr>;
     using ResourceTableUPtr = std::unique_ptr<ResourceTable>;
-    using ByteData          = Vector<Int8>;
 
 protected:
     explicit ResourceBase(const system::Path& path);

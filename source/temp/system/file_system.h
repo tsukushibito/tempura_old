@@ -44,18 +44,18 @@ public:
         return *this;
     }
 
-    String getAbsolute() const;
-    String getRootName() const;
-    String getRoot() const;
-    String getParent() const;
-    String getFileName() const;
-    String getStem() const;
-    String getExtension() const;
-    String getRelative(const Path &base = Path(".")) const;
+    String absolute() const;
+    String rootName() const;
+    String root() const;
+    String parent() const;
+    String fileName() const;
+    String stem() const;
+    String extension() const;
+    String relative(const Path &base = Path(".")) const;
 
-    Bool isEmpty() const;
+    Bool empty() const;
 
-    Size getHash() const { return hash_; }
+    Size hash() const { return hash_; }
 
 private:
     void convertToAbsolutePath(String &string);

@@ -9,6 +9,8 @@
 #ifndef GUARD_2e19dbe90cc14d92a0fd35ad3917ece0
 #define GUARD_2e19dbe90cc14d92a0fd35ad3917ece0
 
+#include "temp/system/thread_pool.h"
+
 #include "temp/graphics/graphics_common.h"
 #include "temp/graphics/index_buffer.h"
 
@@ -22,9 +24,17 @@ class OpenGLIndexBuffer : public IndexBufferBase<OpenGLIndexBuffer, GLuint> {
     friend Device;
 
 private:
-    OpenGLIndexBuffer(GLuint native_handle, const ByteData& data,
-                      const std::function<void(GLuint)> on_destroy)
-        : IndexBufferBase(native_handle, data, on_destroy) {}
+    OpenGLIndexBuffer(GLuint native_handle, const IndexBufferDesc& desc,
+                      const std::function<void(GLuint)>     on_destroy,
+                      const temp::system::ThreadPool::SPtr& device_thread)
+        : IndexBufferBase(native_handle, desc, on_destroy)
+        , device_thread_(device_thread) {}
+
+public:
+    const ByteData data() const;
+
+private:
+    temp::system::ThreadPool::SPtr device_thread_;
 };
 }
 }

@@ -18,19 +18,20 @@ class IndexBufferBase : public SmartPointerObject<T> {
     friend Device;
 
 protected:
-    IndexBufferBase(NativeHandle native_handle, const ByteData& data,
+    IndexBufferBase(NativeHandle native_handle, const IndexBufferDesc& desc,
                     const std::function<void(NativeHandle)> on_destroy)
-        : native_handle_(native_handle), data_(data), on_destroy_(on_destroy) {}
+        : native_handle_(native_handle), desc_(desc), on_destroy_(on_destroy) {}
 
 public:
     ~IndexBufferBase() { on_destroy_(native_handle_); }
 
-    NativeHandle    nativeHandle() const { return native_handle_; }
-    const ByteData& data() const { return data_; }
+    NativeHandle           nativeHandle() const { return native_handle_; }
+    const IndexBufferDesc& desc() const { return desc_; }
+    const ByteData data() const { return static_cast<T*>(this)->data(); }
 
 private:
     NativeHandle                      native_handle_;
-    ByteData                          data_;
+    IndexBufferDesc                   desc_;
     std::function<void(NativeHandle)> on_destroy_;
 };
 }

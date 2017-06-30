@@ -38,11 +38,10 @@ OpenGLDevice::OpenGLDevice(NativeWindowHandle window_handle)
         [this]() { mac::makeCurrent(native_handle_); });
 #elif defined(TEMP_PLATFORM_WINDOWS)
     native_handle_ = windows::createContext(window_handle);
-    resource_creation_thread_->pushJob(
-        [this, window_handle]() { 
-		auto hdc = GetDC(window_handle);
-		wglMakeCurrent(hdc, native_handle_); 
-	});
+    resource_creation_thread_->pushJob([this, window_handle]() {
+        auto hdc = GetDC(window_handle);
+        wglMakeCurrent(hdc, native_handle_);
+    });
 #endif
 }
 
@@ -56,13 +55,71 @@ OpenGLTexture::SPtr OpenGLDevice::createTexture(const TextureDesc& desc) {
     };
 
     GLuint id = execInResourceCreationThread(task);
-	Logger::trace("[OpenGL] texture has created. id: {0}", id);
+    Logger::trace("[OpenGL] texture has created. id: {0}", id);
 
     return Texture::makeShared(id, desc, [this](GLuint id) {
         auto task = [id]() { glCallWithErrorCheck(glDeleteTextures, 1, &id); };
         execInResourceCreationThread(task);
         Logger::trace("[OpenGL] texture has deleted. id: {0}", id);
     });
+}
+
+OpenGLVertexBuffer::SPtr OpenGLDevice::createVertexBuffer(
+    const VertexBufferDesc& desc, const ByteData& data) {
+    using temp::system::Logger;
+
+    auto task = [this, &data]() {
+        GLuint id;
+        glCallWithErrorCheck(glGenBuffers, 1, &id);
+        glCallWithErrorCheck(glBindBuffer, GL_ARRAY_BUFFER, id);
+        glCallWithErrorCheck(glBufferData, GL_ARRAY_BUFFER,
+                             static_cast<GLsizei>(data.size()), &data[0],
+                             GL_STATIC_DRAW);
+        glCallWithErrorCheck(glBindBuffer, GL_ARRAY_BUFFER, 0);
+        return id;
+    };
+
+    GLuint id = execInResourceCreationThread(task);
+    Logger::trace("[OpenGL] vertex buffer has created. id: {0}", id);
+
+    return VertexBuffer::makeShared(
+        id, desc,
+        [this](GLuint id) {
+            auto task
+                = [id]() { glCallWithErrorCheck(glDeleteBuffers, 1, &id); };
+            execInResourceCreationThread(task);
+            Logger::trace("[OpenGL] vertex buffer has deleted. id: {0}", id);
+        },
+        resource_creation_thread_);
+}
+
+OpenGLIndexBuffer::SPtr OpenGLDevice::createIndexBuffer(
+    const IndexBufferDesc& desc, const ByteData& data) {
+    using temp::system::Logger;
+
+    auto task = [this, &data]() {
+        GLuint id;
+        glCallWithErrorCheck(glGenBuffers, 1, &id);
+        glCallWithErrorCheck(glBindBuffer, GL_ELEMENT_ARRAY_BUFFER, id);
+        glCallWithErrorCheck(glBufferData, GL_ELEMENT_ARRAY_BUFFER,
+                             static_cast<GLsizei>(data.size()), &data[0],
+                             GL_STATIC_DRAW);
+        glCallWithErrorCheck(glBindBuffer, GL_ELEMENT_ARRAY_BUFFER, 0);
+        return id;
+    };
+
+    GLuint id = execInResourceCreationThread(task);
+    Logger::trace("[OpenGL] index buffer has created. id: {0}", id);
+
+    return IndexBuffer::makeShared(
+        id, desc,
+        [this](GLuint id) {
+            auto task
+                = [id]() { glCallWithErrorCheck(glDeleteBuffers, 1, &id); };
+            execInResourceCreationThread(task);
+            Logger::trace("[OpenGL] index buffer has deleted. id: {0}", id);
+        },
+        resource_creation_thread_);
 }
 
 OpenGLPixelShader::SPtr OpenGLDevice::createPixelShader(

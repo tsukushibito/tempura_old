@@ -59,11 +59,11 @@ void Test::init() {
 
     setCurrentDirectory("../../");
     Logger::trace("Current directory : {}",
-                  getCurrentDirectory().getAbsolute());
+                  getCurrentDirectory().absolute());
 
     window_ = Window::makeUnique();
     device_ = Device::makeShared(window_->nativeHandle());
-    TextureDesc texDesc(TextureFormat::RGBA32, 128, 128, 0);
+    TextureDesc texDesc(TextureFormat::kRGBA32, 128, 128, 0);
 
     ShaderCode vscode;
     {
@@ -75,7 +75,7 @@ void Test::init() {
 
     ShaderCode pscode;
     {
-        std::ifstream ifs("shader/glsl/clear_glsl.flag");
+        std::ifstream ifs("shader/glsl/clear_glsl.frag");
         std::istreambuf_iterator<Char> it(ifs);
         std::istreambuf_iterator<Char> last;
         pscode.code_ = String(it, last);
@@ -122,14 +122,22 @@ void Test::run() {
 
 void Test::testResource() {
     using temp::resource::Texture;
+    using temp::resource::Mesh;
+    using temp::system::Path;
 
     Texture::initialize(load_thread_, device_);
+    Mesh::initialize(load_thread_, device_);
     {
         auto texture =
-            Texture::create(temp::system::Path("shader/glsl/clear_glsl.flag"));
+            Texture::create(Path("shader/glsl/clear_glsl.frag"));
         texture->load();
+
+        auto mesh =
+            Mesh::create(Path("shader/glsl/clear_glsl.frag"));
+        mesh->load();
     }
     Texture::terminate();
+    Mesh::terminate();
 }
 
 void Test::testMath() {

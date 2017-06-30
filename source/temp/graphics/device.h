@@ -35,9 +35,15 @@ public:
         return derived()->createTexture(desc);
     }
 
-    // VertexBufferSPtr createVertexBuffer(Size size, void* data);
+    VertexBufferSPtr createVertexBuffer(const VertexBufferDesc& desc,
+                                        const ByteData&         data) {
+        return derived()->createVertexBuffer();
+    }
 
-    // IndexBufferSPtr createIndexBuffer(Size size, void* data);
+    IndexBufferSPtr createIndexBuffer(const IndexBufferDesc& desc,
+                                      const ByteData&        data) {
+        return derived()->createIndexBuffer(desc, data);
+    }
 
     PixelShaderSPtr createPixelShader(const ShaderCode& code) {
         return derived()->createPixelShader(code);

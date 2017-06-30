@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file texture.h
  * @brief テクスチャGPUリソース
  * @author tsukushibito

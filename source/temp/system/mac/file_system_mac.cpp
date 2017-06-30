@@ -20,7 +20,7 @@ namespace system {
 namespace mac {
 
 void setCurrentDirectoryImpl(const Path &path) {
-    if (chdir(path.getAbsolute().c_str())) {
+    if (chdir(path.absolute().c_str())) {
     } else {
     }
 }

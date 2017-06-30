@@ -19,19 +19,20 @@ class VertexBufferBase : public SmartPointerObject<T> {
     friend Device;
 
 protected:
-    VertexBufferBase(NativeHandle native_handle, const ByteData& data,
+    VertexBufferBase(NativeHandle native_handle, const VertexBufferDesc& desc,
                      const std::function<void(NativeHandle)> on_destroy)
-        : native_handle_(native_handle), data_(data), on_destroy_(on_destroy) {}
+        : native_handle_(native_handle), desc_(desc), on_destroy_(on_destroy) {}
 
 public:
     ~VertexBufferBase() { on_destroy_(native_handle_); }
 
-    NativeHandle    nativeHandle() const { return native_handle_; }
-    const ByteData& data() const { return data_; }
+    NativeHandle            nativeHandle() const { return native_handle_; }
+    const VertexBufferDesc& desc() const { return desc_; }
+    const ByteData data() const { return static_cast<T*>(this)->data(); }
 
 private:
     NativeHandle                      native_handle_;
-    ByteData                          data_;
+    VertexBufferDesc                  desc_;
     std::function<void(NativeHandle)> on_destroy_;
 };
 }

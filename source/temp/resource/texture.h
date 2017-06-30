@@ -30,7 +30,7 @@ public:
 private:
     static temp::graphics::Device::SPtr s_graphics_device;
 
-	static const String kTypeName;
+    static const String kTypeName;
 
 private:
     Texture(const system::Path& path);

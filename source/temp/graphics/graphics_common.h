@@ -45,16 +45,14 @@ using PixelShaderSPtr  = std::shared_ptr<PixelShader>;
 using VertexBufferSPtr = std::shared_ptr<VertexBuffer>;
 using IndexBufferSPtr  = std::shared_ptr<IndexBuffer>;
 
-using ByteData = Vector<Int8>;
-
 enum class TextureFormat {
-    DXT1,
-    DXT5,
-    RGB16,
-    RGB24,
-    Alpha8,
-    RGBA16,
-    RGBA32,
+    kDXT1,
+    kDXT5,
+    kRGB16,
+    kRGB24,
+    kAlpha8,
+    kRGBA16,
+    kRGBA32,
 };
 
 struct TextureDesc {
@@ -67,6 +65,54 @@ struct TextureDesc {
     explicit TextureDesc(TextureFormat fmt, Size w, Size h, Int32 mipLv)
         : format(fmt), width(w), height(h), mipLevel(mipLv) {}
 };
+
+enum class IndexBufferFormat {
+    kUInt16,
+    kUInt32,
+};
+
+
+struct IndexBufferDesc {
+    IndexBufferFormat format;
+    Size              size;
+};
+
+enum class VertexBufferFormat {
+    kUInt8x4,
+    kFloat16x2,
+    kFloat16x4,
+    kFloat32x2,
+    kFloat32x4,
+};
+
+struct VertexBufferDesc {
+    VertexBufferFormat format;
+    Size               size;
+};
+
+template<typename T = VertexBufferFormat>
+Size vertexBufferFormatSize(VertexBufferFormat format) {
+    switch (format) {
+    case VertexBufferFormat::kUInt8x4:
+        return 2;
+    case VertexBufferFormat::kFloat16x2:
+        return 4;
+    case VertexBufferFormat::kFloat16x4:
+        return 8;
+    case VertexBufferFormat::kFloat32x2:
+        return 8;
+    case VertexBufferFormat::kFloat32x4:
+        return 16;
+    default:
+        return 0;
+    }
+}
+
+enum class PrimitiveType {
+    kTriangleList,
+    kTriangleStrip,
+};
+
 
 struct ShaderCode {
     String code_;

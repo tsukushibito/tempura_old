@@ -9,6 +9,8 @@
 #ifndef GUARD_73bbae09484f4d1cbc6f2ed172d0e3e4
 #define GUARD_73bbae09484f4d1cbc6f2ed172d0e3e4
 
+#include "temp/system/thread_pool.h"
+
 #include "temp/graphics/graphics_common.h"
 #include "temp/graphics/vertex_buffer.h"
 
@@ -22,9 +24,17 @@ class OpenGLVertexBuffer : public VertexBufferBase<OpenGLVertexBuffer, GLuint> {
     friend Device;
 
 private:
-    OpenGLVertexBuffer(GLuint native_handle, const ByteData& data,
-                       const std::function<void(GLuint)> on_destroy)
-        : VertexBufferBase(native_handle, data, on_destroy) {}
+    OpenGLVertexBuffer(GLuint native_handle, const VertexBufferDesc& desc,
+                       const std::function<void(GLuint)>     on_destroy,
+                       const temp::system::ThreadPool::SPtr& device_thread)
+        : VertexBufferBase(native_handle, desc, on_destroy)
+        , device_thread_(device_thread) {}
+
+public:
+    const ByteData data() const;
+
+private:
+    temp::system::ThreadPool::SPtr device_thread_;
 };
 }
 }

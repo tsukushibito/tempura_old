@@ -18,6 +18,8 @@
 #include <unordered_set>
 #include <vector>
 
+#include "temp/type.h"
+
 namespace temp {
 
 #ifdef TEMP_USE_STL_ALLOCATOR
@@ -69,6 +71,8 @@ using Map = std::map<Key, Type, Compare>;
 template <typename Key, typename Type, typename Hash = std::hash<Key>,
           typename Pred = std::equal_to<Key>>
 using HashMap           = std::unordered_map<Key, Type, Hash, Pred>;
+    
+using ByteData = Vector<Int8>;
 
 #endif
 }

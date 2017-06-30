@@ -30,6 +30,12 @@ private:
 public:
     TextureSPtr createTexture(const TextureDesc& desc);
 
+    VertexBufferSPtr createVertexBuffer(const VertexBufferDesc& desc,
+                                        const ByteData&         data);
+
+    IndexBufferSPtr createIndexBuffer(const IndexBufferDesc& desc,
+                                      const ByteData&        data);
+
     PixelShaderSPtr createPixelShader(const ShaderCode& code);
 
     VertexShaderSPtr createVertexShader(const ShaderCode& code);
@@ -38,7 +44,7 @@ private:
     template <typename TaskType>
     auto execInResourceCreationThread(TaskType& task) -> decltype(task());
 
-    temp::system::ThreadPool::UPtr resource_creation_thread_;
+    temp::system::ThreadPool::SPtr resource_creation_thread_;
 };
 }
 }

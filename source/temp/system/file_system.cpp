@@ -73,9 +73,9 @@ Path::Path(const String &string) : absolute_path_string_(string) {
     element_names_ = std::move(decomposed.element_names_);
 }
 
-String Path::getAbsolute() const { return absolute_path_string_; }
+String Path::absolute() const { return absolute_path_string_; }
 
-String Path::getRootName() const {
+String Path::rootName() const {
     // TODO: URL用の実装
     using namespace std;
     size_t pos = root_.find_first_of(":");
@@ -85,10 +85,10 @@ String Path::getRootName() const {
     return root_.substr(0, pos + 1);
 }
 
-String Path::getRoot() const { return root_; }
+String Path::root() const { return root_; }
 
-String Path::getParent() const {
-    String parent = getRootName();
+String Path::parent() const {
+    String parent = rootName();
     if (element_names_.size() >= 1) {
         for (UInt32 i = 0; i < element_names_.size() - 1; ++i) {
             parent += "/" + element_names_[i];
@@ -98,7 +98,7 @@ String Path::getParent() const {
     return parent;
 }
 
-String Path::getRelative(const Path &base) const {
+String Path::relative(const Path &base) const {
     if (root_ != base.root_) {
         return absolute_path_string_;
     }
@@ -127,7 +127,7 @@ String Path::getRelative(const Path &base) const {
     return relative;
 }
 
-String Path::getFileName() const {
+String Path::fileName() const {
     String fileName;
     if (element_names_.size() >= 1) {
         fileName = element_names_[element_names_.size() - 1];
@@ -136,8 +136,8 @@ String Path::getFileName() const {
     return fileName;
 }
 
-String Path::getStem() const {
-    String stem = getFileName();
+String Path::stem() const {
+    String stem = fileName();
     size_t pos = stem.find_last_of('.');
     if (pos != String::npos) {
         stem = stem.substr(0, pos);
@@ -145,18 +145,18 @@ String Path::getStem() const {
     return stem;
 }
 
-String Path::getExtension() const {
+String Path::extension() const {
     String extension;
-    String fileName = getFileName();
-    size_t pos = fileName.find_last_of('.');
-    if (pos != String::npos && pos < fileName.size() - 1) {
-        extension = fileName.substr(pos);
+    String file_name = fileName();
+    size_t pos = file_name.find_last_of('.');
+    if (pos != String::npos && pos < file_name.size() - 1) {
+        extension = file_name.substr(pos);
     }
 
     return extension;
 }
 
-Bool Path::isEmpty() const { return absolute_path_string_.empty(); }
+Bool Path::empty() const { return absolute_path_string_.empty(); }
 
 void setCurrentDirectory(const String &path) { setCurrentDirectory(Path(path)); }
 
