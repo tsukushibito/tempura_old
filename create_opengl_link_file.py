@@ -13,7 +13,7 @@ def download_extension_files():
 
 def create_opengl_link_file():
     # ファイルに応じたパターンを作成
-    gl_pattern = re.compile(r'^GLAPI\s+\w+\s+APIENTRY\s+(\w+)\s+\(')
+    gl_pattern = re.compile(r'^GLAPI\s+\w+\s+\*?APIENTRY\s+(\w+)\s+\(')
     glx_pattern = re.compile(r'^\w+\s+\**(glX\w+)\s+\(')
     wgl_pattern = re.compile(r'^\w+\s+WINAPI\s+(\w+)\s+\(')
     pattern_list = [gl_pattern, gl_pattern, glx_pattern, wgl_pattern]

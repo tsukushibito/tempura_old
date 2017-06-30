@@ -29,8 +29,6 @@ struct TmshHeader {
     UInt32 version;
     UInt32 vertex_chunk_count;
     UInt32 data_size;
-
-    TmshHeader& operator=(const TmshHeader& rhs);
 };
 
 struct TmshVertexHeader {
@@ -39,8 +37,6 @@ struct TmshVertexHeader {
     graphics::VertexBufferFormat format;
     UInt32                       vertex_count;
     UInt32                       data_size;
-
-    TmshVertexHeader& operator=(const TmshVertexHeader& rhs);
 };
 
 struct TmshIndexHeader {
@@ -49,8 +45,6 @@ struct TmshIndexHeader {
     graphics::PrimitiveType     primitive_type;
     UInt32                      index_count;
     UInt32                      data_size;
-
-    TmshIndexHeader& operator=(const TmshIndexHeader& rhs);
 };
 
 
@@ -68,6 +62,7 @@ public:
     };
 
     explicit Tmsh(const ByteData& data);
+	explicit Tmsh(const Mesh::VertexBufferTable& vertex_buffer_table, const Mesh::IndexBufferSPtr& index_buffer);
 
     const Bool valid() const { return valid_; }
 

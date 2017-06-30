@@ -16,7 +16,7 @@ namespace system {
 namespace windows {
 
 void setCurrentDirectoryImpl(const Path &path) {
-    if (SetCurrentDirectoryA(path.getAbsolute().c_str())) {
+    if (SetCurrentDirectoryA(path.absolute().c_str())) {
     } else {
     }
 }

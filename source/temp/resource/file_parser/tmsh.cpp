@@ -1,4 +1,4 @@
-#include <cstring>
+﻿#include <cstring>
 
 #include "temp/resource/file_parser/tmsh.h"
 #include "temp/system/logger.h"
@@ -11,36 +11,12 @@ const Char* kTmshSignature       = "TMSH";
 const Char* kTmshVertexSignature = "TVRT";
 const Char* kTmshIndexSignature  = "TIDX";
 
-TmshHeader& TmshHeader::operator=(const TmshHeader& rhs) {
-    std::strncpy(signature, rhs.signature, kSignatureLength);
-    version            = rhs.version;
-    vertex_chunk_count = rhs.vertex_chunk_count;
-    data_size          = rhs.data_size;
-
-    return *this;
-}
-
-TmshVertexHeader& TmshVertexHeader::operator=(const TmshVertexHeader& rhs) {
-    std::strncpy(signature, rhs.signature, kSignatureLength);
-    std::strncpy(attribute, rhs.attribute, kVertexAttributeLength);
-    format       = rhs.format;
-    vertex_count = rhs.vertex_count;
-    data_size    = rhs.data_size;
-
-    return *this;
-}
-
-TmshIndexHeader& TmshIndexHeader::operator=(const TmshIndexHeader& rhs) {
-    std::strncpy(signature, rhs.signature, kSignatureLength);
-    format         = rhs.format;
-    primitive_type = rhs.primitive_type;
-    index_count    = rhs.index_count;
-    data_size      = rhs.data_size;
-
-    return *this;
-}
-
 Tmsh::Tmsh(const ByteData& data) : byte_data_(data) {
+	if (byte_data_.size() < sizeof(TmshHeader)) {
+		valid_ = false;
+		return;
+	}
+
     Size index = 0;
 
     // ファイルヘッダ読み込み
@@ -56,12 +32,12 @@ Tmsh::Tmsh(const ByteData& data) : byte_data_(data) {
 
     // 頂点データ読み込み
     index += sizeof(TmshHeader);
-    for (Int32 i = 0; i < header_->vertex_chunk_count; ++i) {
+    for (UInt32 i = 0; i < header_->vertex_chunk_count; ++i) {
         // ヘッダ読み込み
         auto vertex_data = reinterpret_cast<VertexData*>(&byte_data_[index]);
 
         // シグネチャチェック
-        String sig(vertex_data->header.signature, 4);
+        sig = String(vertex_data->header.signature, 4);
         if (sig != kTmshVertexSignature) {
             system::Logger::error("Not TMSH vertex data!");
             return;
@@ -86,7 +62,7 @@ Tmsh::Tmsh(const ByteData& data) : byte_data_(data) {
         auto index_data = reinterpret_cast<IndexData*>(&byte_data_[index]);
 
         // シグネチャチェック
-        String sig(index_data->header.signature, 4);
+        sig = String(index_data->header.signature, 4);
         if (sig != kTmshIndexSignature) {
             system::Logger::error("Not TMSH index data!");
             return;
@@ -102,6 +78,11 @@ Tmsh::Tmsh(const ByteData& data) : byte_data_(data) {
 
     valid_ = true;
 }
+
+
+Tmsh::Tmsh(const Mesh::VertexBufferTable& vertex_buffer_table, const Mesh::IndexBufferSPtr& index_buffer) {
+}
+
 }
 }
 }
