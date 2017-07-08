@@ -12,6 +12,8 @@
 #include "temp/resource/texture.h"
 #include "temp/resource/mesh.h"
 
+#include "temp/resource/file_parser/tmsh.h"
+
 namespace temp {
 namespace resource {}  // namespace resource
 }  // namespace temp

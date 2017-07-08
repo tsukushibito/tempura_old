@@ -30,7 +30,7 @@ void Mesh::loginImpl() {
 
 Mesh::IndexBufferSPtr Mesh::indexBuffer() const { return index_buffer_; }
 
-Mesh::VertexBufferSPtr Mesh::vertexBuffer(VertexAttribute attribute) const {
+Mesh::VertexBufferSPtr Mesh::vertexBuffer(graphics::VertexAttribute attribute) const {
     auto iter = vertex_buffer_table_.find(attribute);
     if (iter == vertex_buffer_table_.end()) {
         return nullptr;
@@ -40,46 +40,6 @@ Mesh::VertexBufferSPtr Mesh::vertexBuffer(VertexAttribute attribute) const {
 
 const Mesh::VertexBufferTable& Mesh::vertexBufferTable() const {
     return vertex_buffer_table_;
-}
-
-String vertexAttributeString(Mesh::VertexAttribute attribute) {
-    switch (attribute) {
-    case Mesh::VertexAttribute::kPosition:
-        return "POSITION";
-        break;
-    case Mesh::VertexAttribute::kNormal:
-        return "NORMAL";
-        break;
-    case Mesh::VertexAttribute::kTangent:
-        return "TANGENT";
-        break;
-    case Mesh::VertexAttribute::kBinormal:
-        return "BINORMAL";
-        break;
-    case Mesh::VertexAttribute::kColor:
-        return "COLOR";
-        break;
-    case Mesh::VertexAttribute::kBlendIndices:
-        return "BLENDINDICES";
-        break;
-    case Mesh::VertexAttribute::kBlendWight:
-        return "BLENDWIGHT";
-        break;
-    case Mesh::VertexAttribute::kTexCoord0:
-        return "TEXCOORD0";
-        break;
-    case Mesh::VertexAttribute::kTexCoord1:
-        return "TEXCOORD1";
-        break;
-    case Mesh::VertexAttribute::kTexCoord2:
-        return "TEXCOORD2";
-        break;
-    case Mesh::VertexAttribute::kTexCoord3:
-        return "TEXCOORD3";
-        break;
-    }
-
-    return "";
 }
 }
 }

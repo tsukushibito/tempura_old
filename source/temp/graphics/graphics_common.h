@@ -71,11 +71,28 @@ enum class IndexBufferFormat {
     kUInt32,
 };
 
+enum class PrimitiveType {
+    kTriangleList,
+    kTriangleStrip,
+};
 
 struct IndexBufferDesc {
     IndexBufferFormat format;
     Size              size;
+    PrimitiveType     primitive_type;
 };
+
+template <typename T = IndexBufferFormat>
+Size indexBufferFormatSize(IndexBufferFormat format) {
+    switch (format) {
+    case IndexBufferFormat::kUInt16:
+        return 2;
+    case IndexBufferFormat::kUInt32:
+        return 4;
+    default:
+        return 0;
+    }
+}
 
 enum class VertexBufferFormat {
     kUInt8x4,
@@ -85,12 +102,34 @@ enum class VertexBufferFormat {
     kFloat32x4,
 };
 
+enum class VertexAttribute {
+    kPosition,
+    kNormal,
+    kTangent,
+    kBinormal,
+    kColor,
+    kBlendIndices,
+    kBlendWight,
+    kTexCoord0,
+    kTexCoord1,
+    kTexCoord2,
+    kTexCoord3,
+};
+
+struct VertexAttributeHash {
+    std::size_t operator()(const VertexAttribute& x) const {
+        using Underlying = typename std::underlying_type<VertexAttribute>::type;
+        return std::hash<Underlying>()(static_cast<Underlying>(x));
+    }
+};
+
 struct VertexBufferDesc {
     VertexBufferFormat format;
+    VertexAttribute    attribute;
     Size               size;
 };
 
-template<typename T = VertexBufferFormat>
+template <typename T = VertexBufferFormat>
 Size vertexBufferFormatSize(VertexBufferFormat format) {
     switch (format) {
     case VertexBufferFormat::kUInt8x4:
@@ -108,10 +147,46 @@ Size vertexBufferFormatSize(VertexBufferFormat format) {
     }
 }
 
-enum class PrimitiveType {
-    kTriangleList,
-    kTriangleStrip,
-};
+template <typename T = VertexAttribute>
+String vertexAttributeString(VertexAttribute attribute) {
+    switch (attribute) {
+    case graphics::VertexAttribute::kPosition:
+        return "POSITION";
+        break;
+    case graphics::VertexAttribute::kNormal:
+        return "NORMAL";
+        break;
+    case graphics::VertexAttribute::kTangent:
+        return "TANGENT";
+        break;
+    case graphics::VertexAttribute::kBinormal:
+        return "BINORMAL";
+        break;
+    case graphics::VertexAttribute::kColor:
+        return "COLOR";
+        break;
+    case graphics::VertexAttribute::kBlendIndices:
+        return "BLENDINDICES";
+        break;
+    case graphics::VertexAttribute::kBlendWight:
+        return "BLENDWIGHT";
+        break;
+    case graphics::VertexAttribute::kTexCoord0:
+        return "TEXCOORD0";
+        break;
+    case graphics::VertexAttribute::kTexCoord1:
+        return "TEXCOORD1";
+        break;
+    case graphics::VertexAttribute::kTexCoord2:
+        return "TEXCOORD2";
+        break;
+    case graphics::VertexAttribute::kTexCoord3:
+        return "TEXCOORD3";
+        break;
+    }
+
+    return "";
+}
 
 
 struct ShaderCode {

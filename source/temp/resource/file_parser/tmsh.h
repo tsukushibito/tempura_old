@@ -62,7 +62,8 @@ public:
     };
 
     explicit Tmsh(const ByteData& data);
-	explicit Tmsh(const Mesh::VertexBufferTable& vertex_buffer_table, const Mesh::IndexBufferSPtr& index_buffer);
+    explicit Tmsh(const Mesh::VertexBufferTable& vertex_buffer_table,
+                  const Mesh::IndexBufferSPtr&   index_buffer);
 
     const Bool valid() const { return valid_; }
 

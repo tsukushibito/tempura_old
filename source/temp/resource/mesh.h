@@ -36,28 +36,6 @@ private:
     static const temp::String kTypeName;
 
 public:
-    enum class VertexAttribute {
-        kPosition,
-        kNormal,
-        kTangent,
-        kBinormal,
-        kColor,
-        kBlendIndices,
-        kBlendWight,
-        kTexCoord0,
-        kTexCoord1,
-        kTexCoord2,
-        kTexCoord3,
-    };
-
-    struct VertexAttributeHash {
-        std::size_t operator()(const VertexAttribute& x) const {
-            using Underlying =
-                typename std::underlying_type<VertexAttribute>::type;
-            return std::hash<Underlying>()(static_cast<Underlying>(x));
-        }
-    };
-
     using Vector3F32   = math::Vector3;
     using Vector4UInt8 = math::Vector4Base<UInt8>;
     using Vector2F32   = math::Vector2;
@@ -66,7 +44,7 @@ public:
     using VertexBufferSPtr = temp::graphics::VertexBuffer::SPtr;
 
     using VertexBufferTable
-        = HashMap<VertexAttribute, VertexBufferSPtr, VertexAttributeHash>;
+    = HashMap<graphics::VertexAttribute, VertexBufferSPtr, graphics::VertexAttributeHash>;
 
     Bool intereaved() const { return intereaved_; }
 
@@ -77,7 +55,7 @@ private:
 
 public:
     IndexBufferSPtr  indexBuffer() const;
-    VertexBufferSPtr vertexBuffer(VertexAttribute attribute) const;
+    VertexBufferSPtr vertexBuffer(graphics::VertexAttribute attribute) const;
     const VertexBufferTable& vertexBufferTable() const;
 
 private:
@@ -87,7 +65,7 @@ private:
     VertexBufferTable vertex_buffer_table_;
 };
 
-String vertexAttributeString(Mesh::VertexAttribute attribute);
+String vertexAttributeString(graphics::VertexAttribute attribute);
 }
 }
 

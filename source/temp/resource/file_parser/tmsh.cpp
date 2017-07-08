@@ -12,10 +12,10 @@ const Char* kTmshVertexSignature = "TVRT";
 const Char* kTmshIndexSignature  = "TIDX";
 
 Tmsh::Tmsh(const ByteData& data) : byte_data_(data) {
-	if (byte_data_.size() < sizeof(TmshHeader)) {
-		valid_ = false;
-		return;
-	}
+    if (byte_data_.size() < sizeof(TmshHeader)) {
+        valid_ = false;
+        return;
+    }
 
     Size index = 0;
 
@@ -80,9 +80,82 @@ Tmsh::Tmsh(const ByteData& data) : byte_data_(data) {
 }
 
 
-Tmsh::Tmsh(const Mesh::VertexBufferTable& vertex_buffer_table, const Mesh::IndexBufferSPtr& index_buffer) {
-}
+Tmsh::Tmsh(const Mesh::VertexBufferTable& vertex_buffer_table,
+           const Mesh::IndexBufferSPtr&   index_buffer) {
 
+    // バッファデータからヘッダを含めたサイズを求める
+    Size header_size = sizeof(TmshHeader);
+
+    Size vertex_data_size = 0;
+    for (auto&& key_value : vertex_buffer_table) {
+        auto&& vb = key_value.second;
+        vertex_data_size += sizeof(TmshVertexHeader);
+        vertex_data_size += vb->data().size();
+    }
+
+    Size index_data_size
+        = sizeof(TmshIndexHeader) + index_buffer->data().size();
+
+    auto&& data_size = header_size + vertex_data_size + index_data_size;
+
+    // 必要なサイズのバッファを確保
+    byte_data_.resize(data_size);
+
+
+    // バッファに必要なデータを書き込む
+    Size index = 0; // 書き込み先バイトインデックス
+
+    // ファイルヘッダ
+    auto header = reinterpret_cast<TmshHeader*>(&byte_data_[index]);
+    memcpy(header->signature, kTmshSignature, kSignatureLength);
+    header->version            = kVersion;
+    header->vertex_chunk_count = vertex_buffer_table.size();
+    header->data_size          = data_size;
+
+    index += sizeof(TmshHeader);
+
+
+    // 頂点データ書き込み
+    for (auto&& key_value : vertex_buffer_table) {
+        auto&& vb      = key_value.second;
+        auto&& vb_desc = vb->desc();
+        // ヘッダ
+        auto   vertex_header
+            = reinterpret_cast<TmshVertexHeader*>(&byte_data_[index]);
+        memcpy(vertex_header->signature, kTmshVertexSignature,
+               kSignatureLength);
+        auto attrStr = graphics::vertexAttributeString(vb_desc.attribute);
+        memcpy(vertex_header->attribute, attrStr.c_str(), attrStr.size());
+        vertex_header->format = vb_desc.format;
+        vertex_header->vertex_count
+            = vb_desc.size / graphics::vertexBufferFormatSize(vb_desc.format);
+        vertex_header->data_size = vb_desc.size;
+
+        index += sizeof(TmshVertexHeader);
+
+        // 頂点データ
+        memcpy(&byte_data_[index], &vb->data()[0], vb_desc.size);
+
+        index += vb_desc.size;
+    }
+
+
+    // インデックスデータ書き込み
+    auto&& ib_desc      = index_buffer->desc();
+    // ヘッダ
+    auto&& index_header = reinterpret_cast<TmshIndexHeader*>(&byte_data_[index]);
+    memcpy(index_header->signature, kTmshIndexSignature, kSignatureLength);
+    index_header->format         = ib_desc.format;
+    index_header->primitive_type = ib_desc.primitive_type;
+    index_header->index_count
+        = ib_desc.size / graphics::indexBufferFormatSize(ib_desc.format);
+    index_header->data_size = ib_desc.size;
+
+    index += sizeof(TmshIndexHeader);
+    
+    // インデックスデータ
+    memcpy(&byte_data_[index], &index_buffer->data()[0], ib_desc.size);
+}
 }
 }
 }
