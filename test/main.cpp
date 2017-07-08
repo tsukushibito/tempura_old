@@ -57,7 +57,7 @@ void Test::init() {
 
     Logger::initialize();
 
-    setCurrentDirectory("../../");
+    setCurrentDirectory("../");
     Logger::trace("Current directory : {}", getCurrentDirectory().absolute());
 
     window_ = Window::makeUnique();
@@ -128,6 +128,7 @@ void Test::testResource() {
     Texture::initialize(load_thread_, device_);
     Mesh::initialize(load_thread_, device_);
 
+#if 0
     {
         // テストデータ
         Vector4 cube_vertices[8] = {
@@ -164,8 +165,16 @@ void Test::testResource() {
 
         auto tmsh_byte_data = tmsh.byteData();
 
-        std::ofstream ofs("resource/mesh/test.tmsh");
+		using namespace temp::system;
+		Logger::trace("Current directory : {}", getCurrentDirectory().absolute());
+        std::ofstream ofs("resource/mesh/test.tmsh", std::ios::trunc);
+		if (ofs.good())
+		{
+			ofs.write(reinterpret_cast<const char*>(&tmsh_byte_data[0]), tmsh_byte_data.size());
+		}
+		ofs.close();
     }
+#endif
 
     {
         auto mesh = Mesh::create(Path("resource/mesh/test.tmsh"));

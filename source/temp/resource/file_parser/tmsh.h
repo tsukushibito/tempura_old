@@ -47,19 +47,20 @@ struct TmshIndexHeader {
     UInt32                      data_size;
 };
 
+struct TmshVertexData {
+	TmshVertexHeader header;
+	Int8*            byte_data;
+};
+using VertexAttributeString = String;
+using TmshVertexDataTable = HashMap<VertexAttributeString, TmshVertexData*>;
+
+struct TmshIndexData {
+	TmshIndexHeader header;
+	Int8*           byte_data;
+};
 
 class Tmsh {
 public:
-    struct VertexData {
-        TmshVertexHeader header;
-        Int8*            byte_data;
-    };
-    using VertexDataTable = HashMap<String, VertexData*>;
-
-    struct IndexData {
-        TmshIndexHeader header;
-        Int8*           byte_data;
-    };
 
     explicit Tmsh(const ByteData& data);
     explicit Tmsh(const Mesh::VertexBufferTable& vertex_buffer_table,
@@ -69,17 +70,17 @@ public:
 
     const ByteData&        byteData() const { return byte_data_; }
     const TmshHeader&      header() const { return *header_; }
-    const VertexDataTable& vertexDataTable() const {
+    const TmshVertexDataTable& vertexDataTable() const {
         return vertex_data_table_;
     }
-    const IndexData& indexData() const { return *index_data_; }
+    const TmshIndexData& indexData() const { return *index_data_; }
 
 private:
-    Bool            valid_ = false;
-    ByteData        byte_data_;
-    TmshHeader*     header_ = nullptr;
-    VertexDataTable vertex_data_table_;
-    IndexData*      index_data_ = nullptr;
+    Bool				valid_ = false;
+    ByteData        	byte_data_;
+    TmshHeader*     	header_ = nullptr;
+    TmshVertexDataTable vertex_data_table_;
+    TmshIndexData*      index_data_ = nullptr;
 };
 }
 }

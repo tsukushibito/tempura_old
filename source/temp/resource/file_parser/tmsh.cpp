@@ -109,8 +109,8 @@ Tmsh::Tmsh(const Mesh::VertexBufferTable& vertex_buffer_table,
     auto header = reinterpret_cast<TmshHeader*>(&byte_data_[index]);
     memcpy(header->signature, kTmshSignature, kSignatureLength);
     header->version            = kVersion;
-    header->vertex_chunk_count = vertex_buffer_table.size();
-    header->data_size          = data_size;
+    header->vertex_chunk_count = static_cast<UInt32>(vertex_buffer_table.size());
+    header->data_size          = static_cast<UInt32>(data_size);
 
     index += sizeof(TmshHeader);
 
@@ -128,8 +128,8 @@ Tmsh::Tmsh(const Mesh::VertexBufferTable& vertex_buffer_table,
         memcpy(vertex_header->attribute, attrStr.c_str(), attrStr.size());
         vertex_header->format = vb_desc.format;
         vertex_header->vertex_count
-            = vb_desc.size / graphics::vertexBufferFormatSize(vb_desc.format);
-        vertex_header->data_size = vb_desc.size;
+            = static_cast<UInt32>(vb_desc.size / graphics::vertexBufferFormatSize(vb_desc.format));
+        vertex_header->data_size = static_cast<UInt32>(vb_desc.size);
 
         index += sizeof(TmshVertexHeader);
 
@@ -148,8 +148,8 @@ Tmsh::Tmsh(const Mesh::VertexBufferTable& vertex_buffer_table,
     index_header->format         = ib_desc.format;
     index_header->primitive_type = ib_desc.primitive_type;
     index_header->index_count
-        = ib_desc.size / graphics::indexBufferFormatSize(ib_desc.format);
-    index_header->data_size = ib_desc.size;
+        = static_cast<UInt32>(ib_desc.size / graphics::indexBufferFormatSize(ib_desc.format));
+    index_header->data_size = static_cast<UInt32>(ib_desc.size);
 
     index += sizeof(TmshIndexHeader);
     
