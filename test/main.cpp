@@ -165,14 +165,14 @@ void Test::testResource() {
 
         auto tmsh_byte_data = tmsh.byteData();
 
-		using namespace temp::system;
-		Logger::trace("Current directory : {}", getCurrentDirectory().absolute());
+        using namespace temp::system;
+        Logger::trace("Current directory : {}", getCurrentDirectory().absolute());
         std::ofstream ofs("resource/mesh/test.tmsh", std::ios::trunc);
-		if (ofs.good())
-		{
-			ofs.write(reinterpret_cast<const char*>(&tmsh_byte_data[0]), tmsh_byte_data.size());
-		}
-		ofs.close();
+        if (ofs.good())
+        {
+            ofs.write(reinterpret_cast<const char*>(&tmsh_byte_data[0]), tmsh_byte_data.size());
+        }
+        ofs.close();
     }
 #endif
 

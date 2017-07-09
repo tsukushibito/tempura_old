@@ -9,6 +9,8 @@
 #ifndef GUARD_b9182cb820a84ff5967c57e597f641e1
 #define GUARD_b9182cb820a84ff5967c57e597f641e1
 
+#include "temp/graphics/graphics.h"
+
 namespace temp {
 namespace resource {
 

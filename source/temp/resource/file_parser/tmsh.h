@@ -12,8 +12,7 @@
 #include "temp/container.h"
 #include "temp/type.h"
 
-#include "temp/graphics/graphics.h"
-
+#include "temp/resource/resource_common.h"
 #include "temp/resource/mesh.h"
 
 namespace temp {
@@ -48,23 +47,23 @@ struct TmshIndexHeader {
 };
 
 struct TmshVertexData {
-	TmshVertexHeader header;
-	Int8*            byte_data;
+    TmshVertexHeader header;
+    Int8*            byte_data;
 };
 using VertexAttributeString = String;
 using TmshVertexDataTable = HashMap<VertexAttributeString, TmshVertexData*>;
 
 struct TmshIndexData {
-	TmshIndexHeader header;
-	Int8*           byte_data;
+    TmshIndexHeader header;
+    Int8*           byte_data;
 };
 
 class Tmsh {
 public:
 
     explicit Tmsh(const ByteData& data);
-    explicit Tmsh(const Mesh::VertexBufferTable& vertex_buffer_table,
-                  const Mesh::IndexBufferSPtr&   index_buffer);
+    explicit Tmsh(const VertexDataTable& vertex_data_table,
+                  const IndexData&   index_data);
 
     const Bool valid() const { return valid_; }
 
