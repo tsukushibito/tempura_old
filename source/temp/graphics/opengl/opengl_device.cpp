@@ -65,15 +65,15 @@ OpenGLTexture::SPtr OpenGLDevice::createTexture(const TextureDesc& desc) {
 }
 
 OpenGLVertexBuffer::SPtr OpenGLDevice::createVertexBuffer(
-    const VertexBufferDesc& desc, const ByteData& data) {
+    const VertexBufferDesc& desc, const void* data) {
     using temp::system::Logger;
 
-    auto task = [this, &data]() {
+    auto task = [this, desc, data]() {
         GLuint id;
         glCallWithErrorCheck(glGenBuffers, 1, &id);
         glCallWithErrorCheck(glBindBuffer, GL_ARRAY_BUFFER, id);
         glCallWithErrorCheck(glBufferData, GL_ARRAY_BUFFER,
-                             static_cast<GLsizei>(data.size()), &data[0],
+                             static_cast<GLsizei>(desc.size), data,
                              GL_STATIC_DRAW);
         glCallWithErrorCheck(glBindBuffer, GL_ARRAY_BUFFER, 0);
         return id;
@@ -94,15 +94,15 @@ OpenGLVertexBuffer::SPtr OpenGLDevice::createVertexBuffer(
 }
 
 OpenGLIndexBuffer::SPtr OpenGLDevice::createIndexBuffer(
-    const IndexBufferDesc& desc, const ByteData& data) {
+    const IndexBufferDesc& desc, const void* data) {
     using temp::system::Logger;
 
-    auto task = [this, &data]() {
+    auto task = [this, desc, data]() {
         GLuint id;
         glCallWithErrorCheck(glGenBuffers, 1, &id);
         glCallWithErrorCheck(glBindBuffer, GL_ELEMENT_ARRAY_BUFFER, id);
         glCallWithErrorCheck(glBufferData, GL_ELEMENT_ARRAY_BUFFER,
-                             static_cast<GLsizei>(data.size()), &data[0],
+                             static_cast<GLsizei>(desc.size), data,
                              GL_STATIC_DRAW);
         glCallWithErrorCheck(glBindBuffer, GL_ELEMENT_ARRAY_BUFFER, 0);
         return id;

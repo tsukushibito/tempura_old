@@ -12,8 +12,8 @@
 #include "temp/container.h"
 #include "temp/type.h"
 
-#include "temp/resource/resource_common.h"
 #include "temp/resource/mesh.h"
+#include "temp/resource/resource_common.h"
 
 namespace temp {
 namespace resource {
@@ -21,7 +21,6 @@ namespace tmsh {
 
 const Int32 kVersion               = 1;
 const Int32 kSignatureLength       = 4;
-const Int32 kVertexAttributeLength = 16;
 
 struct TmshHeader {
     Char   signature[kSignatureLength];
@@ -32,7 +31,7 @@ struct TmshHeader {
 
 struct TmshVertexHeader {
     Char                         signature[kSignatureLength];
-    Char                         attribute[kVertexAttributeLength];
+    graphics::VertexAttribute    attribute;
     graphics::VertexBufferFormat format;
     UInt32                       vertex_count;
     UInt32                       data_size;
@@ -50,8 +49,7 @@ struct TmshVertexData {
     TmshVertexHeader header;
     Int8*            byte_data;
 };
-using VertexAttributeString = String;
-using TmshVertexDataTable = HashMap<VertexAttributeString, TmshVertexData*>;
+    using TmshVertexDataTable   = HashMap<graphics::VertexAttribute, TmshVertexData*, graphics::VertexAttributeHash>;
 
 struct TmshIndexData {
     TmshIndexHeader header;
@@ -60,24 +58,23 @@ struct TmshIndexData {
 
 class Tmsh {
 public:
-
     explicit Tmsh(const ByteData& data);
     explicit Tmsh(const VertexDataTable& vertex_data_table,
-                  const IndexData&   index_data);
+                  const IndexData&       index_data);
 
     const Bool valid() const { return valid_; }
 
-    const ByteData&        byteData() const { return byte_data_; }
-    const TmshHeader&      header() const { return *header_; }
+    const ByteData&            byteData() const { return byte_data_; }
+    const TmshHeader&          header() const { return *header_; }
     const TmshVertexDataTable& vertexDataTable() const {
         return vertex_data_table_;
     }
     const TmshIndexData& indexData() const { return *index_data_; }
 
 private:
-    Bool				valid_ = false;
-    ByteData        	byte_data_;
-    TmshHeader*     	header_ = nullptr;
+    Bool                valid_ = false;
+    ByteData            byte_data_;
+    TmshHeader*         header_ = nullptr;
     TmshVertexDataTable vertex_data_table_;
     TmshIndexData*      index_data_ = nullptr;
 };

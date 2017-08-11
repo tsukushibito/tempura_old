@@ -36,12 +36,12 @@ public:
     }
 
     VertexBufferSPtr createVertexBuffer(const VertexBufferDesc& desc,
-                                        const ByteData&         data) {
-        return derived()->createVertexBuffer();
+                                        const void*             data) {
+        return derived()->createVertexBuffer(desc, data);
     }
 
     IndexBufferSPtr createIndexBuffer(const IndexBufferDesc& desc,
-                                      const ByteData&        data) {
+                                      const void*            data) {
         return derived()->createIndexBuffer(desc, data);
     }
 

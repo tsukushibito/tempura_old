@@ -57,7 +57,7 @@ void Test::init() {
 
     Logger::initialize();
 
-    setCurrentDirectory("../");
+    setCurrentDirectory("../../");
     Logger::trace("Current directory : {}", getCurrentDirectory().absolute());
 
     window_ = Window::makeUnique();
@@ -129,39 +129,33 @@ void Test::testResource() {
     Mesh::initialize(load_thread_, device_);
 
 #if 0
+#else
     {
+        using namespace temp::graphics;
+        using namespace temp::resource;
         // テストデータ
+        VertexDataTable vertex_data_table;
+        auto& vertex_data = vertex_data_table[VertexAttribute::kPosition];
+        vertex_data.format = VertexBufferFormat::kFloat32x4;
+        vertex_data.attribute = VertexAttribute::kPosition;
         Vector4 cube_vertices[8] = {
             {1, 1, 1, 1},  {1, 1, -1, 1},  {-1, 1, -1, 1},  {-1, 1, 1, 1},
             {1, -1, 1, 1}, {1, -1, -1, 1}, {-1, -1, -1, 1}, {-1, -1, 1, 1},
         };
-        temp::ByteData cube_vertex_data(sizeof(cube_vertices));
-        memcpy(&cube_vertex_data[0], cube_vertices, sizeof(cube_vertices));
+        vertex_data.byte_data.resize(sizeof(cube_vertices));
+        memcpy(&vertex_data.byte_data[0], cube_vertices, sizeof(cube_vertices));
 
-        using namespace temp::graphics;
-        VertexBufferDesc vb_desc;
-
-        vb_desc.format = VertexBufferFormat::kFloat32x4;
-        vb_desc.attribute = VertexAttribute::kPosition;
-        vb_desc.size = sizeof(cube_vertices);
-        auto vb = device_->createVertexBuffer(vb_desc, cube_vertex_data);
-        
+        IndexData index_data;
+        index_data.format = IndexBufferFormat::kUInt16;
+        index_data.primitive_type = PrimitiveType::kTriangleList;
         temp::UInt16 cube_faces[36] = {
             0, 1, 2, 0, 2, 3, 3, 2, 6, 3, 6, 7, 7, 6, 5, 7, 5, 4,
             4, 5, 1, 4, 1, 0, 0, 3, 7, 0, 7, 4, 2, 1, 5, 2, 5, 6,
         };
-        temp::ByteData cube_face_data(sizeof(cube_faces));
-        memcpy(&cube_face_data[0], cube_faces, sizeof(cube_faces));
-        
-        IndexBufferDesc ib_desc;
-        ib_desc.format = IndexBufferFormat::kUInt16;
-        ib_desc.size = sizeof(cube_faces);
-        ib_desc.primitive_type = PrimitiveType::kTriangleList;
-        auto ib = device_->createIndexBuffer(ib_desc, cube_face_data);
+        index_data.byte_data.resize(sizeof(cube_faces));
+        memcpy(&index_data.byte_data[0], cube_faces, sizeof(cube_faces));
 
-        temp::resource::Mesh::VertexBufferTable vb_table;
-        vb_table[VertexAttribute::kPosition] = vb;
-        temp::resource::tmsh::Tmsh tmsh(vb_table, ib);        
+        temp::resource::tmsh::Tmsh tmsh(vertex_data_table, index_data);
 
         auto tmsh_byte_data = tmsh.byteData();
 

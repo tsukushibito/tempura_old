@@ -16,7 +16,10 @@ using temp::system::Logger;
 
 template <typename Type>
 ResourceBase<Type>::ResourceBase(const system::Path& path)
-    : path_(path), hash_(path.hash()), state_(State::NotLoaded) {}
+    : path_(path)
+    , hash_(path.hash())
+    , load_state_(LoadState::kNotLoaded)
+    , save_state_(SaveState::kNotSaved) {}
 
 template <typename Type>
 ResourceBase<Type>::~ResourceBase() {
@@ -80,9 +83,15 @@ typename ResourceBase<Type>::ResourceSPtr ResourceBase<Type>::create(
 }
 
 template <typename Type>
-typename ResourceBase<Type>::State ResourceBase<Type>::state() const {
+typename ResourceBase<Type>::LoadState ResourceBase<Type>::loadState() const {
     std::unique_lock<std::mutex> lock(mutex_);
-    return state_;
+    return load_state_;
+}
+
+template <typename Type>
+typename ResourceBase<Type>::SaveState ResourceBase<Type>::saveState() const {
+    std::unique_lock<std::mutex> lock(mutex_);
+    return save_state_;
 }
 
 template <typename Type>
@@ -98,16 +107,16 @@ const Size ResourceBase<Type>::hash() const {
 template <typename Type>
 void ResourceBase<Type>::load() {
     std::unique_lock<std::mutex> lock(mutex_);
-    if (state_ != State::NotLoaded) return;
+    if (load_state_ != LoadState::kNotLoaded) return;
     loadImpl(false);
-    state_ = State::Loaded;
+    load_state_ = LoadState::kLoaded;
 }
 
 template <typename Type>
 std::future<void> ResourceBase<Type>::asyncLoad() {
     std::unique_lock<std::mutex> lock(mutex_);
-    if (state_ != State::NotLoaded) return std::future<void>();
-    state_ = State::Loading;
+    if (load_state_ != LoadState::kNotLoaded) return std::future<void>();
+    load_state_ = LoadState::kLoading;
 
     return s_loading_thread->pushJob([this]() { loadImpl(true); });
 }
@@ -115,48 +124,53 @@ std::future<void> ResourceBase<Type>::asyncLoad() {
 template <typename Type>
 void ResourceBase<Type>::unload() {
     std::unique_lock<std::mutex> lock(mutex_);
-    if (state_ == State::NotLoaded || state_ == State::Unloading) return;
+    if (load_state_ == LoadState::kNotLoaded || load_state_ == LoadState::kUnloading) return;
     temp::system::Logger::trace("[{0}] unloading : path = {1} : hash = {2}",
                                 Type::kTypeName.c_str(),
                                 path_.absolute().c_str(), hash_);
-    state_ = State::Unloading;
+    load_state_ = LoadState::kUnloading;
 
-    ByteData().swap(byte_data_);  // メモリ解放
+    // ByteData().swap(byte_data_);  // メモリ解放
 
-    state_ = State::NotLoaded;
+    load_state_ = LoadState::kNotLoaded;
 }
 
 template <typename Type>
-ByteData& ResourceBase<Type>::byteData() {
-    return byte_data_;
+void ResourceBase<Type>::save() {
+    using namespace std;
+    unique_lock<std::mutex> lock(mutex_);
+    if (save_state_ == SaveState::kSaving) return;
+
+    save_state_ = SaveState::kSaving;
+
+    ofstream ofs(path_.absolute().c_str(), ios::binary);
+
+    serialize(ofs);
+
+    ofs.close();
+
+    save_state_ = SaveState::kSaved;
 }
+
 
 template <typename Type>
 void ResourceBase<Type>::loadImpl(bool isAsync) {
     using namespace std;
     using temp::system::Logger;
-    Logger::trace(
-        "[{0}] loading({3}) : path = {1} : hash = {2}", Type::kTypeName.c_str(),
-        path_.absolute().c_str(), hash_, isAsync ? "async" : "sync");
+    Logger::trace("[{0}] loading({3}) : path = {1} : hash = {2}",
+                  Type::kTypeName.c_str(), path_.absolute().c_str(), hash_,
+                  isAsync ? "async" : "sync");
 
     // 同期、非同期で排他処理の有無を分ける必要があるので、処理を一旦ラムダに持たせる
     auto load_task = [this]() {
 
-        ifstream ifs(path_.absolute().c_str());
-        
-        if (!ifs.good()) {
-            Logger::error("{0} is not found.", path_.absolute().c_str());
-        }
+        ifstream ifs(path_.absolute().c_str(), ios::binary);
 
-        istreambuf_iterator<Char> begin(ifs);
-        istreambuf_iterator<Char> end;
-        byte_data_.assign(begin, end);
+        deserialize(ifs);
 
         ifs.close();
 
-        login();
-
-        state_ = State::Loaded;
+        load_state_ = LoadState::kLoaded;
     };
 
     if (isAsync) {
@@ -168,12 +182,15 @@ void ResourceBase<Type>::loadImpl(bool isAsync) {
 }
 
 template <typename Type>
-void ResourceBase<Type>::login() {
+void ResourceBase<Type>::deserialize(std::ifstream& ifs) {
     // 静的多態の場合
-    static_cast<Type*>(this)->loginImpl();
+    static_cast<Type*>(this)->deserialize(ifs);
+}
 
-    // 動的多態の場合
-    // loginImpl();
+template <typename Type>
+void ResourceBase<Type>::serialize(std::ofstream& ofs) {
+    // 静的多態の場合
+    static_cast<Type*>(this)->serialize(ofs);
 }
 
 // Tのデストラクタ呼び出し後に呼び出されるので、ログアウト処理の実装はTのデストラクタ内で行うようにする

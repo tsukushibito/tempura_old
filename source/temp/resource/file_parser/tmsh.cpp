@@ -44,9 +44,9 @@ Tmsh::Tmsh(const ByteData& data) : byte_data_(data) {
         }
 
         // ヘッダ読み込み
-        String attr = vertex_data->header.attribute;
+        auto attr = vertex_data->header.attribute;
         if (vertex_data_table_.find(attr) != vertex_data_table_.end()) {
-            system::Logger::error("{0} is duplicate attribute.", attr.c_str());
+            system::Logger::error("{0} is duplicate attribute.", static_cast<UInt32>(attr));
             return;
         }
         vertex_data_table_[attr] = vertex_data;
@@ -54,7 +54,7 @@ Tmsh::Tmsh(const ByteData& data) : byte_data_(data) {
             = &byte_data_[index + sizeof(TmshVertexHeader)];
 
         // データサイズ分、インデックスをすすめる
-        index += vertex_data->header.data_size;
+        index += sizeof(TmshVertexHeader) + vertex_data->header.data_size;
     }
 
     // インデックスデータ読み込み
@@ -73,7 +73,7 @@ Tmsh::Tmsh(const ByteData& data) : byte_data_(data) {
         index_data_->byte_data = &byte_data_[index + sizeof(TmshIndexHeader)];
 
         // データサイズ分、インデックスをすすめる
-        index += index_data->header.data_size;
+        index += sizeof(TmshIndexHeader) + index_data->header.data_size;
     }
 
     valid_ = true;
@@ -123,8 +123,7 @@ Tmsh::Tmsh(const VertexDataTable& vertex_data_table,
             = reinterpret_cast<TmshVertexHeader*>(&byte_data_[index]);
         memcpy(vertex_header->signature, kTmshVertexSignature,
                kSignatureLength);
-        auto attrStr = graphics::vertexAttributeString(vdata.attribute);
-        memcpy(vertex_header->attribute, attrStr.c_str(), attrStr.size());
+        vertex_header->attribute = vdata.attribute;
         vertex_header->format = vdata.format;
         vertex_header->vertex_count
             = static_cast<UInt32>(vdata.byte_data.size() / graphics::vertexBufferFormatSize(vdata.format));

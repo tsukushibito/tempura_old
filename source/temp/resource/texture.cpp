@@ -27,9 +27,6 @@ void Texture::terminate() {
 
 Texture::Texture(const system::Path& path) : Super(path) {}
 
-void Texture::loginImpl() {
-    auto&& byte_data = byteData();
-    // g_graphics_device->createTexture();
-}
+    
 }
 }

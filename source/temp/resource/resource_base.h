@@ -9,9 +9,9 @@
 #ifndef GUARD_7b165123cb9d40ba8f9fbe15833384b3
 #define GUARD_7b165123cb9d40ba8f9fbe15833384b3
 
+#include "temp/container.h"
 #include "temp/define.h"
 #include "temp/type.h"
-#include "temp/container.h"
 
 #include "temp/system/file_system.h"
 #include "temp/system/thread_pool.h"
@@ -30,15 +30,21 @@ public:
     /**
      * @brief loading state
      */
-    enum class State {
-        NotLoaded,
-        Loading,
-        Loaded,
-        Unloading,
+    enum class LoadState {
+        kNotLoaded,
+        kLoading,
+        kLoaded,
+        kUnloading,
     };
 
-private:
-    using ResourceTable     = HashMap<Size, typename Super::WPtr>;
+    enum class SaveState {
+        kNotSaved,
+        kSaving,
+        kSaved,
+    };
+
+    private : using ResourceTable
+        = HashMap<Size, typename Super::WPtr>;
     using ResourceTableUPtr = std::unique_ptr<ResourceTable>;
 
 protected:
@@ -53,7 +59,9 @@ public:
 
     static ResourceSPtr create(const system::Path& path);
 
-    State state() const;
+    LoadState loadState() const;
+
+    SaveState saveState() const;
 
     const system::Path& path() const;
 
@@ -65,13 +73,13 @@ public:
 
     void unload();
 
-protected:
-    ByteData& byteData();
+    void save();
 
 private:
     void loadImpl(bool is_async = true);
 
-    void login();  // ロード用スレッドで実行される
+    void deserialize(std::ifstream& ifs);  // ロード用スレッドで実行される
+    void serialize(std::ofstream& ofs);
 
 protected:
     static ResourceTable            s_resource_table;
@@ -82,8 +90,8 @@ protected:
     const Size         hash_;
 
     mutable std::mutex mutex_;
-    State              state_;
-    ByteData           byte_data_;
+    LoadState          load_state_;
+    SaveState          save_state_;
 };
 }
 }

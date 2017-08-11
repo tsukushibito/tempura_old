@@ -31,10 +31,10 @@ public:
     TextureSPtr createTexture(const TextureDesc& desc);
 
     VertexBufferSPtr createVertexBuffer(const VertexBufferDesc& desc,
-                                        const ByteData&         data);
+                                        const void*             data);
 
     IndexBufferSPtr createIndexBuffer(const IndexBufferDesc& desc,
-                                      const ByteData&        data);
+                                      const void*            data);
 
     PixelShaderSPtr createPixelShader(const ShaderCode& code);
 

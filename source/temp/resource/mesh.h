@@ -44,14 +44,16 @@ public:
     using VertexBufferSPtr = temp::graphics::VertexBuffer::SPtr;
 
     using VertexBufferTable
-    = HashMap<graphics::VertexAttribute, VertexBufferSPtr, graphics::VertexAttributeHash>;
+        = HashMap<graphics::VertexAttribute, VertexBufferSPtr,
+                  graphics::VertexAttributeHash>;
 
-    Bool intereaved() const { return intereaved_; }
+    Bool& intereaved() { return intereaved_; }
 
 private:
     Mesh(const system::Path& path);
 
-    void loginImpl();
+    void deserialize(std::ifstream& ifs);
+    void serialize(std::ofstream& ofs);
 
 public:
     IndexBufferSPtr  indexBuffer() const;
@@ -64,8 +66,6 @@ private:
     IndexBufferSPtr   index_buffer_;
     VertexBufferTable vertex_buffer_table_;
 };
-
-String vertexAttributeString(graphics::VertexAttribute attribute);
 }
 }
 
