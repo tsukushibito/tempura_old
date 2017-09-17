@@ -25,6 +25,7 @@ namespace graphics {
 #if defined(TEMP_GRAPHICS_OPENGL)
 namespace opengl {
 class OpenGLDevice;
+class OpenGLRenderTarget;
 class OpenGLTexture;
 class OpenGLVertexShader;
 class OpenGLPixelShader;
@@ -32,6 +33,7 @@ class OpenGLVertexBuffer;
 class OpenGLIndexBuffer;
 }
 using Device       = opengl::OpenGLDevice;
+using RenderTarget = opengl::OpenGLRenderTarget;
 using Texture      = opengl::OpenGLTexture;
 using VertexShader = opengl::OpenGLVertexShader;
 using PixelShader  = opengl::OpenGLPixelShader;
@@ -39,6 +41,7 @@ using VertexBuffer = opengl::OpenGLVertexBuffer;
 using IndexBuffer  = opengl::OpenGLIndexBuffer;
 #endif
 using DeviceSPtr       = std::shared_ptr<Device>;
+using RenderTargetSPtr = std::shared_ptr<RenderTarget>;
 using TextureSPtr      = std::shared_ptr<Texture>;
 using VertexShaderSPtr = std::shared_ptr<VertexShader>;
 using PixelShaderSPtr  = std::shared_ptr<PixelShader>;
@@ -60,11 +63,42 @@ struct TextureDesc {
     Size          width;
     Size          height;
     Int32         mipLevel;
-
-    TextureDesc() {}
-    explicit TextureDesc(TextureFormat fmt, Size w, Size h, Int32 mipLv)
-        : format(fmt), width(w), height(h), mipLevel(mipLv) {}
 };
+
+template <typename T = TextureFormat>
+Size textureFormatBitPerPixel(TextureFormat format) {
+    switch (format) {
+    case TextureFormat::kDXT1:
+        return 4;
+    case TextureFormat::kDXT5:
+        return 8;
+    case TextureFormat::kRGB16:
+        return 16;
+    case TextureFormat::kRGB24:
+        return 24;
+    case TextureFormat::kAlpha8:
+        return 8;
+    case TextureFormat::kRGBA16:
+        return 16;
+    case TextureFormat::kRGBA32:
+        return 32;
+    default:
+        return 0;
+    }
+}
+
+enum class RenderTargetFormat {
+    kRGBA32,    // 各チャネル8ビット整数のRGBA4チャネル
+    kRGBA64F,   // 各チャネル16ビット浮動小数のRGBA4チャネル
+    kRGBA128F,  // 各チャネル32ビット浮動小数のRGBA4チャネル
+};
+
+struct RenderTargetDesc {
+    RenderTargetFormat format;
+    Size               width;
+    Size               height;
+};
+
 
 enum class IndexBufferFormat {
     kUInt16,
@@ -109,12 +143,15 @@ enum class VertexAttribute {
     kBinormal,
     kColor,
     kBlendIndices,
-    kBlendWight,
+    kBlendWeight,
     kTexCoord0,
     kTexCoord1,
     kTexCoord2,
     kTexCoord3,
+
+    COUNT,
 };
+
 
 struct VertexAttributeHash {
     std::size_t operator()(const VertexAttribute& x) const {
@@ -133,7 +170,7 @@ template <typename T = VertexBufferFormat>
 Size vertexBufferFormatSize(VertexBufferFormat format) {
     switch (format) {
     case VertexBufferFormat::kUInt8x4:
-        return 2;
+        return 4;
     case VertexBufferFormat::kFloat16x2:
         return 4;
     case VertexBufferFormat::kFloat16x4:
@@ -151,43 +188,54 @@ template <typename T = VertexAttribute>
 String vertexAttributeString(VertexAttribute attribute) {
     switch (attribute) {
     case graphics::VertexAttribute::kPosition:
-        return "POSITION";
-        break;
+        return "Position";
     case graphics::VertexAttribute::kNormal:
-        return "NORMAL";
-        break;
+        return "Normal";
     case graphics::VertexAttribute::kTangent:
-        return "TANGENT";
-        break;
+        return "Tangent";
     case graphics::VertexAttribute::kBinormal:
-        return "BINORMAL";
-        break;
+        return "Binormal";
     case graphics::VertexAttribute::kColor:
-        return "COLOR";
-        break;
+        return "Color";
     case graphics::VertexAttribute::kBlendIndices:
-        return "BLENDINDICES";
-        break;
-    case graphics::VertexAttribute::kBlendWight:
-        return "BLENDWIGHT";
-        break;
+        return "BlendIndices";
+    case graphics::VertexAttribute::kBlendWeight:
+        return "BlendWeight";
     case graphics::VertexAttribute::kTexCoord0:
-        return "TEXCOORD0";
-        break;
+        return "TexCoord0";
     case graphics::VertexAttribute::kTexCoord1:
-        return "TEXCOORD1";
-        break;
+        return "TexCoord1";
     case graphics::VertexAttribute::kTexCoord2:
-        return "TEXCOORD2";
-        break;
+        return "TexCoord2";
     case graphics::VertexAttribute::kTexCoord3:
-        return "TEXCOORD3";
-        break;
+        return "TexCoord3";
+    case graphics::VertexAttribute::COUNT:
+        return "";
     }
 
     return "";
 }
 
+enum class SamplerFilter {
+    kNearest,
+    kLinear,
+
+    COUNT,
+};
+
+enum class SamplerAddressMode {
+    kWrap,
+    kMirror,
+    kClamp,
+    kBorder,
+
+    COUNT,
+};
+
+struct SamplerDesc {
+    SamplerFilter filter;
+    SamplerAddressMode address_mode;
+};
 
 struct ShaderCode {
     String code_;

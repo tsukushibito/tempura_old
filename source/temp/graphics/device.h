@@ -19,6 +19,7 @@
 
 #include "temp/graphics/index_buffer.h"
 #include "temp/graphics/pixel_shader.h"
+#include "temp/graphics/render_target.h"
 #include "temp/graphics/texture.h"
 #include "temp/graphics/vertex_buffer.h"
 #include "temp/graphics/vertex_shader.h"
@@ -31,7 +32,11 @@ class DeviceBase : public SmartPointerObject<T> {
 public:
     NativeHandle nativeHandle() const { return native_handle_; }
 
-    TextureSPtr createTexture(const TextureDesc& desc) {
+    RenderTargetSPtr createRenderTarget(const RenderTargetDesc& desc) {
+        return derived()->createRenderTarget(desc);
+    }
+
+    TextureSPtr createTexture(const TextureDesc& desc, const void* data) {
         return derived()->createTexture(desc);
     }
 

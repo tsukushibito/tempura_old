@@ -12,6 +12,8 @@
 #include <iterator>
 #include "temp.h"
 
+#include "temp/math_exp/vector.h"
+
 class Test {
    public:
     Test();
@@ -22,8 +24,10 @@ class Test {
 
     void run();
 
+    void testExp();
     void testResource();
     void testMath();
+    void testRenderer();
 
    private:
     temp::system::Application::SPtr application_;
@@ -32,6 +36,8 @@ class Test {
     temp::system::ThreadPool::SPtr render_thread_;
     temp::system::ThreadPool::SPtr worker_threads_;
     temp::graphics::Device::SPtr device_;
+    temp::render::Renderer::SPtr renderer_;
+    temp::render::Camera::SPtr camera_;
 };
 
 Test::Test() {
@@ -62,31 +68,26 @@ void Test::init() {
 
     window_ = Window::makeUnique();
     device_ = Device::makeShared(window_->nativeHandle());
-    TextureDesc texDesc(TextureFormat::kRGBA32, 128, 128, 0);
 
-    ShaderCode vscode;
-    {
-        std::ifstream ifs("shader/glsl/clear_glsl.vert");
-        std::istreambuf_iterator<Char> it(ifs);
-        std::istreambuf_iterator<Char> last;
-        vscode.code_ = String(it, last);
-    }
+    temp::resource::initialize(load_thread_, device_);
 
-    ShaderCode pscode;
-    {
-        std::ifstream ifs("shader/glsl/clear_glsl.frag");
-        std::istreambuf_iterator<Char> it(ifs);
-        std::istreambuf_iterator<Char> last;
-        pscode.code_ = String(it, last);
-    }
+    DrawAreaSize draw_area_size = {window_->width(), window_->height()};
+    Path shader_directory("shader");
+    renderer_ = Renderer::makeUnique(worker_threads_, render_thread_, device_,
+                                     draw_area_size, shader_directory);
+    camera_ = renderer_->createCamera();
 
-    {
-        auto tex1 = device_->createTexture(texDesc);
-        auto tex2 = device_->createTexture(texDesc);
-        auto tex3 = device_->createTexture(texDesc);
-        auto vshader = device_->createVertexShader(vscode);
-        auto pshader = device_->createPixelShader(pscode);
-    }
+    RenderTargetDesc rt_desc;
+    rt_desc.format = RenderTargetFormat::kRGBA32;
+    rt_desc.width = window_->width();
+    rt_desc.height = window_->height();
+    auto render_target = renderer_->createRenderTarget(rt_desc);
+    
+    camera_->renderTarget() = render_target;
+
+    renderer_->setMainCamera(camera_);
+
+    testExp();
 
     testResource();
 
@@ -97,6 +98,11 @@ void Test::term() {
     using namespace temp;
     using namespace temp::system;
     using namespace temp::resource;
+
+    camera_ = nullptr;
+    renderer_ = nullptr;
+
+    temp::resource::terminate();
 
     window_ = nullptr;
 
@@ -109,9 +115,11 @@ void Test::term() {
     Logger::terminate();
 }
 
-void Test::update() {
-    auto future = render_thread_->pushJob([this]() {});
-    future.wait();
+void Test::update() { 
+    temp::system::Timer timer;
+    renderer_->render();
+    auto ms = timer.milliseconds();
+    std::cout << "Delta time : " << ms << " ms" << std::endl;
 }
 
 void Test::run() {
@@ -119,63 +127,126 @@ void Test::run() {
     application_->run();
 }
 
+void Test::testExp() {
+    using namespace temp;
+    using namespace temp::math_exp;
+}
+
 void Test::testResource() {
     using temp::resource::Texture;
     using temp::resource::Mesh;
+    using temp::resource::VertexShader;
     using temp::system::Path;
     using namespace temp::math;
 
-    Texture::initialize(load_thread_, device_);
-    Mesh::initialize(load_thread_, device_);
-
 #if 0
 #else
+
+    // テストデータ
+    temp::UInt16 cube_faces[36] = {
+        0, 1, 2, 0, 2, 3, 3, 2, 6, 3, 6, 7, 7, 6, 5, 7, 5, 4,
+        4, 5, 1, 4, 1, 0, 0, 3, 7, 0, 7, 4, 2, 1, 5, 2, 5, 6,
+    };
+
+    Vector4 cube_vertices[8] = {
+        {1, 1, 1, 1},  {1, 1, -1, 1},  {-1, 1, -1, 1},  {-1, 1, 1, 1},
+        {1, -1, 1, 1}, {1, -1, -1, 1}, {-1, -1, -1, 1}, {-1, -1, 1, 1},
+    };
+
     {
         using namespace temp::graphics;
         using namespace temp::resource;
+
+        auto mesh = Mesh::create(Path("resource/mesh/test.tmsh"));
+
         // テストデータ
-        VertexDataTable vertex_data_table;
-        auto& vertex_data = vertex_data_table[VertexAttribute::kPosition];
-        vertex_data.format = VertexBufferFormat::kFloat32x4;
-        vertex_data.attribute = VertexAttribute::kPosition;
-        Vector4 cube_vertices[8] = {
-            {1, 1, 1, 1},  {1, 1, -1, 1},  {-1, 1, -1, 1},  {-1, 1, 1, 1},
-            {1, -1, 1, 1}, {1, -1, -1, 1}, {-1, -1, -1, 1}, {-1, -1, 1, 1},
-        };
-        vertex_data.byte_data.resize(sizeof(cube_vertices));
-        memcpy(&vertex_data.byte_data[0], cube_vertices, sizeof(cube_vertices));
+        auto device = Mesh::graphicsDevice();
 
-        IndexData index_data;
-        index_data.format = IndexBufferFormat::kUInt16;
-        index_data.primitive_type = PrimitiveType::kTriangleList;
-        temp::UInt16 cube_faces[36] = {
-            0, 1, 2, 0, 2, 3, 3, 2, 6, 3, 6, 7, 7, 6, 5, 7, 5, 4,
-            4, 5, 1, 4, 1, 0, 0, 3, 7, 0, 7, 4, 2, 1, 5, 2, 5, 6,
-        };
-        index_data.byte_data.resize(sizeof(cube_faces));
-        memcpy(&index_data.byte_data[0], cube_faces, sizeof(cube_faces));
+        IndexBufferDesc ib_desc;
+        ib_desc.format = IndexBufferFormat::kUInt16;
+        ib_desc.primitive_type = PrimitiveType::kTriangleList;
+        ib_desc.size = sizeof(cube_faces);
+        auto ib = device->createIndexBuffer(ib_desc, cube_faces);
 
-        temp::resource::tmsh::Tmsh tmsh(vertex_data_table, index_data);
+        mesh->replaceIndexBuffer(ib);
 
-        auto tmsh_byte_data = tmsh.byteData();
+        VertexBufferDesc vb_desc;
+        vb_desc.attribute = VertexAttribute::kPosition;
+        vb_desc.format = VertexBufferFormat::kFloat32x4;
+        vb_desc.size = sizeof(cube_vertices);
+        auto vb = device->createVertexBuffer(vb_desc, cube_vertices);
 
-        using namespace temp::system;
-        Logger::trace("Current directory : {}", getCurrentDirectory().absolute());
-        std::ofstream ofs("resource/mesh/test.tmsh", std::ios::trunc);
-        if (ofs.good())
-        {
-            ofs.write(reinterpret_cast<const char*>(&tmsh_byte_data[0]), tmsh_byte_data.size());
-        }
-        ofs.close();
+        Mesh::VertexBufferTable vb_table;
+        vb_table[VertexAttribute::kPosition] = vb;
+        mesh->replaceVertexBufferTable(vb_table);
+
+        mesh->save();
     }
 #endif
 
-    {
+    do {
+        using namespace temp;
         auto mesh = Mesh::create(Path("resource/mesh/test.tmsh"));
         mesh->load();
+
+        auto ib = mesh->indexBuffer();
+        auto data = ib->data();
+        UInt16* p = reinterpret_cast<UInt16*>(&data[0]);
+        if (memcmp(p, cube_faces, data.size()) != 0) {
+            system::Logger::error("Failed to Mesh save and load!");
+        }
+        printf("***** cube_faces *****\n");
+        printf("{\n");
+        for (int i = 0; i < 2; ++i) {
+            for (int j = 0; j < 16; ++j) {
+                printf("%d, ", cube_faces[16 * i + j]);
+            }
+            printf("\n");
+        }
+        printf("}\n");
+        printf("***** ********** *****\n");
+        printf("\n");
+        printf("***** loaded ib data *****\n");
+        printf("{\n");
+        for (int i = 0; i < 2; ++i) {
+            for (int j = 0; j < 16; ++j) {
+                printf("%d, ", p[16 * i + j]);
+            }
+            printf("\n");
+        }
+        printf("}\n");
+        printf("***** ********** *****\n");
+
+        auto vb_table = mesh->vertexBufferTable();
+        auto key_value = vb_table.find(graphics::VertexAttribute::kPosition);
+        if (key_value == vb_table.end()) break;
+
+        auto vb = key_value->second;
+        data = vb->data();
+        Vector4* vertics = reinterpret_cast<Vector4*>(&data[0]);
+
+        if (memcmp(vertics, cube_vertices, data.size()) != 0) {
+            system::Logger::error("Failed to Mesh save and load!");
+        }
+
+        printf("***** cube_vertices *****\n");
+        for (int i = 0; i < 8; ++i) {
+            printf("%s\n", cube_vertices[i].toString().c_str());
+        }
+        printf("***** ********** *****\n");
+        printf("\n");
+        printf("***** cube_vertices *****\n");
+        for (int i = 0; i < 8; ++i) {
+            printf("%s\n", vertics[i].toString().c_str());
+        }
+        printf("***** ********** *****\n");
+
+    } while (false);
+
+    {
+        auto vs = VertexShader::create(Path("shader/glsl/test/glsl.vert"));
+        vs->load();
     }
-    Texture::terminate();
-    Mesh::terminate();
 }
 
 void Test::testMath() {
@@ -277,6 +348,8 @@ void Test::testMath() {
     auto t23 = t2 * t3;
     Logger::trace("t23 = \n{0}", t23.toString());
 }
+
+void Test::testRenderer() {}
 
 int main(/*int argc, char const* argv[]*/) {
     using temp::system::Logger;

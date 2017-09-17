@@ -10,6 +10,13 @@
 namespace temp {
 namespace resource {
 
+namespace {
+
+const Int32 kVersion         = 1;
+const Int32 kSignatureLength = 4;
+const Char* kTextureSignature   = "TTEX";
+}
+
 temp::graphics::Device::SPtr Texture::s_graphics_device;
 
 const temp::String Texture::kTypeName = "Texture";
@@ -27,6 +34,44 @@ void Texture::terminate() {
 
 Texture::Texture(const system::Path& path) : Super(path) {}
 
+void Texture::deserialize(std::ifstream& ifs) {
+
+    // using temp::system::Logger;
+
+    Char signature[kSignatureLength];
+    ifs.read(signature, kSignatureLength);
+    if (memcmp(signature, kTextureSignature, kSignatureLength) != 0) {
+        // Logger::error("[Texture::deserialize] illegal texture signature. path:{0}",
+        //               path_.absolute().c_str());
+        return;
+    }
+
+    Int32 version;
+    ifs.read(reinterpret_cast<char*>(&version), sizeof(version));
+    if (version != kVersion) {
+        // バージョン違いのときの処理
+    }
+
+    temp::graphics::TextureDesc desc;
+    ifs.read(reinterpret_cast<char*>(&desc.format),
+             sizeof(desc.format));
+    ifs.read(reinterpret_cast<char*>(&desc.width),
+             sizeof(desc.width));
+    ifs.read(reinterpret_cast<char*>(&desc.height),
+             sizeof(desc.height));
+    ifs.read(reinterpret_cast<char*>(&desc.mipLevel),
+             sizeof(desc.mipLevel));
+
+    /*
+    TextureFormat format;
+    Size          width;
+    Size          height;
+    Int32         mipLevel;
+    */
+}
+
+void Texture::serialize(std::ofstream& ofs) {
+}
     
 }
 }

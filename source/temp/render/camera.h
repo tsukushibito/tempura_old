@@ -1,86 +1,93 @@
 /**
  * @file camera.h
- * @brief Camera class
+ * @brief
  * @author tsukushibito
  * @version 0.0.1
- * @date 2016-08-23
+ * @date 2017-08-19
  */
 #pragma once
-#ifndef GUARD_082c71951f804213bb68ce9b2d068884
-#define GUARD_082c71951f804213bb68ce9b2d068884
+#ifndef GUARD_6bc11c98b40c4c329c12b7a1364ab7d7
+#define GUARD_6bc11c98b40c4c329c12b7a1364ab7d7
 
 #include "temp/container.h"
-#include "temp/math/matrix.h"
-#include "temp/math/transform.h"
+#include "temp/define.h"
 #include "temp/type.h"
+#include "temp/temp_math.h"
+
+#include "temp/graphics/render_target.h"
 
 namespace temp {
 namespace render {
 
 class Renderer;
-class RenderTexture;
 
-enum class ClearFlag {
-    SolidColor,
-    Skybox,
-    DepthOnly,
-    DontClear,
+struct Viewport {
+    Float32 top;
+    Float32 left;
+    Float32 bottom;
+    Float32 right;
+
+    Viewport() : top(0.0f), left(0.0f), bottom(1.0f), right(1.0f) {}
 };
 
-enum class ProjectionType {
-    Perspective,
-    Orthographic,
+enum class CameraType {
+    kPerspective,
+    kOrthographic,
 };
 
-struct CameraData {
-    math::Matrix44 viewMatrix_;
-    math::Matrix44 projMatrix_;
+struct PerspectiveParam {
+    Float32 near;
+    Float32 far;
+    Float32 fov;
+    Float32 aspect;
 
-    ClearFlag clearFlag_ = ClearFlag::SolidColor;
-
-    Int32 cullingMask_ = 0xffffffff;
-
-    std::shared_ptr<RenderTexture> renderTexture_;
+    PerspectiveParam()
+        : near(0.5f)
+        , far(1000.0f)
+        , fov(temp::math::pi() / 6.0f)
+        , aspect(16.0f / 9.0f) {}
 };
 
-using CameraDataHandle = temp::Handle<CameraData>;
+struct OrthographicParam {
+    Float32 near;
+    Float32 far;
+    Float32 width;
+    Float32 height;
 
-class Camera {
-    using RendererWPtr = std::weak_ptr<Renderer>;
+    OrthographicParam()
+        : near(0.5f), far(1000.0f), width(30.0f), height(30.0f) {}
+};
+
+class Camera : public SmartPointerObject<Camera> {
+    friend class Renderer;
 
 public:
-    Camera(const RendererWPtr& renderer);
-
-    ~Camera();
-
-    void setTransform(const math::Transform& transform);
-
-    void setPerspective(Float32 fovy, Float32 aspect, Float32 znear,
-                        Float32 zfar);
-
-    void setOrthographic(Float32 left, Float32 right, Float32 top,
-                         Float32 bottom, Float32 znear, Float32 zfar);
-
-    const CameraData& getData() const;
+    using RenderTarget     = temp::graphics::RenderTarget;
+    using RenderTargetSPtr = temp::graphics::RenderTargetSPtr;
 
 private:
-    RendererWPtr renderer_;
+    Camera(const std::function<void(Camera*)>& on_destroy)
+        : on_destroy_(on_destroy) {}
 
-    math::Transform transform_;
+public:
+    ~Camera() { on_destroy_(this); }
 
-    Float32 fovy_   = 0.0f;
-    Float32 aspect_ = 0.0f;
-    Float32 znear_  = 0.0f;
-    Float32 zfar_   = 0.0f;
-    Float32 left_   = 0.0f;
-    Float32 right_  = 0.0f;
-    Float32 top_    = 0.0f;
-    Float32 bottom_ = 0.0f;
+    RenderTargetSPtr&  renderTarget() { return render_target_; }
+    Viewport&          viewport() { return viewport_; }
+    Color&             clearColor() { return clearColor_; }
+    PerspectiveParam&  perspectiveParam() { return perspective_param_; }
+    OrthographicParam& orthographicParam() { return orthographic_param_; }
+
+private:
+    std::function<void(Camera*)> on_destroy_;
+
+    RenderTargetSPtr  render_target_;
+    Viewport          viewport_;
+    Color             clearColor_;
+    PerspectiveParam  perspective_param_;
+    OrthographicParam orthographic_param_;
 };
+}
+}
 
-void cameraDataGavageCollect();
-
-}  // namespace render
-}  // namespace temp
-
-#endif  // GUARD_082c71951f804213bb68ce9b2d068884
+#endif  // GUARD_6bc11c98b40c4c329c12b7a1364ab7d7

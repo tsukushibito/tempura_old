@@ -23,7 +23,7 @@ class Texture : public ResourceBase<Texture> {
 
 public:
     static void initialize(const system::ThreadPool::SPtr& loading_thread,
-                           const graphics::Device::SPtr&     device);
+                           const graphics::Device::SPtr&   device);
 
     static void terminate();
 
@@ -32,11 +32,24 @@ private:
 
     static const String kTypeName;
 
+public:
+    using TextureSPtr = temp::graphics::Texture::SPtr;
+
 private:
     Texture(const system::Path& path);
 
-    void loginImpl();
+    void deserialize(std::ifstream& ifs);
+    void serialize(std::ofstream& ofs);
+
+public:
+    TextureSPtr texture() const { return texture_; }
+
+    void replaceTexture(const TextureSPtr& texture) { texture_ = texture; }
+
+private:
+    temp::graphics::Texture::SPtr texture_;
 };
+
 }
 }
 

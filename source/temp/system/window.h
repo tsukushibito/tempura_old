@@ -9,8 +9,8 @@
 #ifndef GUARD_7436746b1e0349869c4b963feb8fcded
 #define GUARD_7436746b1e0349869c4b963feb8fcded
 
-#include "temp/type.h"
 #include "temp/define.h"
+#include "temp/type.h"
 #if defined(TEMP_PLATFORM_WINDOWS)
 #include <Windows.h>
 #endif
@@ -20,24 +20,25 @@ namespace system {
 
 class Window : public SmartPointerObject<Window> {
     friend SmartPointerObject<Window>;
+
 public:
 #if defined(TEMP_PLATFORM_MAC)
-	using NativeHandle = void*;
+    using NativeHandle = void*;
 #elif defined(TEMP_PLATFORM_WINDOWS)
-	using NativeHandle = HWND;
+    using NativeHandle = HWND;
 #endif
 
 private:
-    Window(Size width = 1280, Size height = 720);
+    Window(Size width = 800, Size height = 600);
 
 public:
     ~Window();
 
 public:
-	NativeHandle nativeHandle() const;
+    NativeHandle nativeHandle() const;
 
-    Size         width() const { return width_; }
-    Size         height() const { return height_; }
+    Size width() const { return width_; }
+    Size height() const { return height_; }
 
 private:
     class Impl;

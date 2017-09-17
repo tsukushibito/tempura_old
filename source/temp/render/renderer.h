@@ -1,48 +1,74 @@
 /**
  * @file renderer.h
- * @brief renderer
+ * @brief
  * @author tsukushibito
  * @version 0.0.1
- * @date 2016-03-18
+ * @date 2017-08-15
  */
 #pragma once
-#ifndef GUARD_0c103a63ba65427bbd196ab3610f2b5e
-#define GUARD_0c103a63ba65427bbd196ab3610f2b5e
+#ifndef GUARD_4b7e6e19086d4f838e50af8e09862223
+#define GUARD_4b7e6e19086d4f838e50af8e09862223
 
-#include <mutex>
-#include "temp/type.h"
 #include "temp/container.h"
+#include "temp/define.h"
+#include "temp/type.h"
 
-namespace temp {
-namespace graphics_old {
-class Device; 
-using DeviceSPtr = std::shared_ptr<Device>;
-} // namespace graphics
-} // namespace temp
+#include "temp/system/file_system.h"
+#include "temp/system/thread_pool.h"
+
+#include "temp/graphics/device.h"
+
+#include "temp/render/camera.h"
+#include "temp/render/render_common.h"
 
 namespace temp {
 namespace render {
 
 class Renderer : public SmartPointerObject<Renderer> {
-private:
-    Renderer(const graphics_old::DeviceSPtr &graphics_device);
+    friend class SmartPointerObject<Renderer>;
 
 public:
-    static SPtr create(const graphics_old::DeviceSPtr &graphics_device);
-
-    void renderAllViews();
-
-    void swapBackBuffers();
-
-private:
+    using Path               = temp::system::Path;
+    using ThreadPoolSPtr     = temp::system::ThreadPool::SPtr;
+    using GraphicsDeviceSPtr = temp::graphics::DeviceSPtr;
+    using RenderTargetSPtr   = temp::graphics::RenderTargetSPtr;
+    using RenderTargetDesc   = temp::graphics::RenderTargetDesc;
 
 private:
-    graphics_old::DeviceSPtr device_;
-    std::mutex camera_list_mutex_;
+    Renderer(const ThreadPoolSPtr&     command_thread,
+             const ThreadPoolSPtr&     render_thread,
+             const GraphicsDeviceSPtr& device,
+             const DrawAreaSize& draw_area_size, const Path& shader_directory);
 
+public:
+    ~Renderer();
+
+    RenderTargetSPtr createRenderTarget(const RenderTargetDesc& desc);
+
+    Camera::SPtr createCamera();
+
+    void setMainCamera(const Camera::SPtr& camera);
+
+    void render();
+
+private:
+    ThreadPoolSPtr     command_thread_;
+    ThreadPoolSPtr     render_thread_;
+    GraphicsDeviceSPtr graphics_device_;
+
+    DrawAreaSize draw_area_size_;
+
+    Path shader_directory_;
+
+    std::mutex            camera_list_mutex_;
+    temp::Vector<Camera*> camera_list_;
+    Camera::WPtr          main_camera_;
+
+    class Impl;
+    using ImplUPtr = std::unique_ptr<Impl>;
+    ImplUPtr impl_;
 };
-    
-} // namespace render
-} // namespace temp
+}
+}
 
-#endif // GUARD_0c103a63ba65427bbd196ab3610f2b5e
+#endif  // GUARD_4b7e6e19086d4f838e50af8e09862223

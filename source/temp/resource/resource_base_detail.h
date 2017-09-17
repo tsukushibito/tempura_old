@@ -6,13 +6,13 @@
  * @date 2016-02-23
  */
 #include <fstream>
-#include "temp/system/logger.h"
+// #include "temp/system/logger.h"
 #include "temp/temp_assert.h"
 
 namespace temp {
 namespace resource {
 
-using temp::system::Logger;
+// using temp::system::Logger;
 
 template <typename Type>
 ResourceBase<Type>::ResourceBase(const system::Path& path)
@@ -33,8 +33,8 @@ ResourceBase<Type>::~ResourceBase() {
     // 管理テーブルから削除
     s_resource_table.erase(hash_);
 
-    Logger::trace("[{0}] Deleted : path = {1} : hash = {2}",
-                  Type::kTypeName.c_str(), path_.absolute().c_str(), hash_);
+    // Logger::trace("[{0}] Deleted : path = {1} : hash = {2}",
+    //               Type::kTypeName.c_str(), path_.absolute().c_str(), hash_);
 }
 
 template <typename Type>
@@ -50,8 +50,8 @@ void ResourceBase<Type>::terminate() {
         auto&& res_wptr = key_value.second;
         auto&& res_sptr = res_wptr.lock();
         if (res_sptr) {
-            Logger::trace("[{0}] {1} is not released!", Type::kTypeName.c_str(),
-                          res_sptr->path().absolute().c_str());
+            // Logger::trace("[{0}] {1} is not released!", Type::kTypeName.c_str(),
+            //               res_sptr->path().absolute().c_str());
         }
     }
     s_resource_table.clear();
@@ -76,9 +76,9 @@ typename ResourceBase<Type>::ResourceSPtr ResourceBase<Type>::create(
     auto p = std::make_shared<Creator>(path);
 
     s_resource_table[hash] = p;
-    temp::system::Logger::trace("[{0}] Created : path = {1} : hash = {2}",
-                                Type::kTypeName.c_str(),
-                                path.absolute().c_str(), hash);
+    // temp::system::Logger::trace("[{0}] Created : path = {1} : hash = {2}",
+    //                             Type::kTypeName.c_str(),
+    //                             path.absolute().c_str(), hash);
     return std::move(p);
 }
 
@@ -125,9 +125,9 @@ template <typename Type>
 void ResourceBase<Type>::unload() {
     std::unique_lock<std::mutex> lock(mutex_);
     if (load_state_ == LoadState::kNotLoaded || load_state_ == LoadState::kUnloading) return;
-    temp::system::Logger::trace("[{0}] unloading : path = {1} : hash = {2}",
-                                Type::kTypeName.c_str(),
-                                path_.absolute().c_str(), hash_);
+    // temp::system::Logger::trace("[{0}] unloading : path = {1} : hash = {2}",
+    //                             Type::kTypeName.c_str(),
+    //                             path_.absolute().c_str(), hash_);
     load_state_ = LoadState::kUnloading;
 
     // ByteData().swap(byte_data_);  // メモリ解放
@@ -156,10 +156,10 @@ void ResourceBase<Type>::save() {
 template <typename Type>
 void ResourceBase<Type>::loadImpl(bool isAsync) {
     using namespace std;
-    using temp::system::Logger;
-    Logger::trace("[{0}] loading({3}) : path = {1} : hash = {2}",
-                  Type::kTypeName.c_str(), path_.absolute().c_str(), hash_,
-                  isAsync ? "async" : "sync");
+    // using temp::system::Logger;
+    // Logger::trace("[{0}] loading({3}) : path = {1} : hash = {2}",
+    //               Type::kTypeName.c_str(), path_.absolute().c_str(), hash_,
+    //               isAsync ? "async" : "sync");
 
     // 同期、非同期で排他処理の有無を分ける必要があるので、処理を一旦ラムダに持たせる
     auto load_task = [this]() {
@@ -211,5 +211,6 @@ std::mutex ResourceBase<Type>::s_table_mutex;
 
 template <typename Type>
 system::ThreadPool::SPtr ResourceBase<Type>::s_loading_thread;
+
 }
 }

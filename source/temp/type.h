@@ -138,5 +138,12 @@ private:
     Int32 value_ = 0;
 };
 
+struct Color {
+    Float32 red;
+    Float32 green;
+    Float32 blue;
+    Float32 alpha;
+};
+
 }  // namespace temp
 #endif  // GUARD_6b1252d3036740fdad7d9e1dd5fe06c9

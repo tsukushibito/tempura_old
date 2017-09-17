@@ -21,13 +21,17 @@ namespace graphics {
 namespace opengl {
 namespace mac {
 
-OpenGLContextHandle createContext(void* ns_window);
+OpenGLContextHandle createContext(
+    temp::system::Window::NativeHandle window_handle,
+    OpenGLContextHandle                shared_context = nullptr);
 
 void deleteContext(OpenGLContextHandle context);
 
 void makeCurrent(OpenGLContextHandle context);
 
 void swapBuffers(OpenGLContextHandle context);
+
+OpenGLContextHandle createSharedContext(OpenGLContextHandle shared_context);
 }
 }
 }

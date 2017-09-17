@@ -10,7 +10,6 @@
 #define GUARD_a46caba6fcdc4b88befb703ce714426b
 
 #include "temp/container.h"
-#include "temp/temp_math.h"
 
 #include "temp/resource/resource_base.h"
 
@@ -30,24 +29,22 @@ public:
 
     static void terminate();
 
-private:
-    static temp::graphics::Device::SPtr s_graphics_device;
+    static ::temp::graphics::Device::SPtr graphicsDevice() {
+        return s_graphics_device;
+    }
 
-    static const temp::String kTypeName;
+private:
+    static ::temp::graphics::Device::SPtr s_graphics_device;
+
+    static const ::temp::String kTypeName;
 
 public:
-    using Vector3F32   = math::Vector3;
-    using Vector4UInt8 = math::Vector4Base<UInt8>;
-    using Vector2F32   = math::Vector2;
-
-    using IndexBufferSPtr  = temp::graphics::IndexBuffer::SPtr;
-    using VertexBufferSPtr = temp::graphics::VertexBuffer::SPtr;
+    using IndexBufferSPtr  = ::temp::graphics::IndexBuffer::SPtr;
+    using VertexBufferSPtr = ::temp::graphics::VertexBuffer::SPtr;
 
     using VertexBufferTable
         = HashMap<graphics::VertexAttribute, VertexBufferSPtr,
                   graphics::VertexAttributeHash>;
-
-    Bool& intereaved() { return intereaved_; }
 
 private:
     Mesh(const system::Path& path);
@@ -60,9 +57,10 @@ public:
     VertexBufferSPtr vertexBuffer(graphics::VertexAttribute attribute) const;
     const VertexBufferTable& vertexBufferTable() const;
 
-private:
-    Bool intereaved_ = false;
+    void replaceIndexBuffer(const IndexBufferSPtr& ib);
+    void replaceVertexBufferTable(const VertexBufferTable& vb_table);
 
+private:
     IndexBufferSPtr   index_buffer_;
     VertexBufferTable vertex_buffer_table_;
 };

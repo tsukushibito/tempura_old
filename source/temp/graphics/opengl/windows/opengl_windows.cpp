@@ -76,9 +76,9 @@ void initializeOpenglExtension() {
 #include <gl_ext/temp_wglext_link.inl>
 #undef TEMP_OPENGL_EXTENSION_LINK
 }
-}
 
-HGLRC createContext(HWND window_handle) {
+OpenGLContextHandle createContextImpl(HDC                 hdc,
+                                      OpenGLContextHandle shared_context) {
     // OpeGL拡張機能初期化用のダミーウィンドウとコンテキストを作成
     auto dummy_window_handle  = createDummyWindow();
     auto dummy_device_context = GetDC(dummy_window_handle);
@@ -90,11 +90,9 @@ HGLRC createContext(HWND window_handle) {
     // glewの初期化
     error = glewInit();
     if (error != GLEW_OK) {
-        Logger::error("glewInit failed!: {0}",
-                             glewGetErrorString(error));
+        Logger::error("glewInit failed!: {0}", glewGetErrorString(error));
     } else {
-        Logger::info("glewInit version: {0}",
-                            glewGetString(GLEW_VERSION));
+        Logger::info("glewInit version: {0}", glewGetString(GLEW_VERSION));
     }
 #else
     initializeOpenglExtension();
@@ -104,18 +102,15 @@ HGLRC createContext(HWND window_handle) {
     auto vendor = glGetString(GL_VENDOR);
     if (vendor != nullptr) Logger::info("[OpenGL] vendor : {0}", vendor);
     auto renderer = glGetString(GL_RENDER);
-    if (renderer != nullptr)
-        Logger::info("[OpenGL] renderer : {0}", renderer);
+    if (renderer != nullptr) Logger::info("[OpenGL] renderer : {0}", renderer);
     auto version = glGetString(GL_VERSION);
-    if (version != nullptr)
-        Logger::info("[OpenGL] version : {0}", version);
+    if (version != nullptr) Logger::info("[OpenGL] version : {0}", version);
     auto extensions = glGetString(GL_EXTENSIONS);
-	if (extensions != nullptr)
-	{
-		String extensionsStr = reinterpret_cast<const Char*>(extensions);
-		// std::replace(extensionsStr.begin(), extensionsStr.end(), ' ', '\n');
-		Logger::info("[OpenGL] extensions : {0}", extensionsStr);
-	}
+    if (extensions != nullptr) {
+        String extensionsStr = reinterpret_cast<const Char*>(extensions);
+        // std::replace(extensionsStr.begin(), extensionsStr.end(), ' ', '\n');
+        Logger::info("[OpenGL] extensions : {0}", extensionsStr);
+    }
     String         version_string = reinterpret_cast<const char*>(version);
     StringStream   ss(version_string);
     Vector<String> num_strs;
@@ -164,7 +159,6 @@ HGLRC createContext(HWND window_handle) {
 
     int  pixelFormat = 0;
     UINT numFormats  = 0;
-    HDC  hdc         = GetDC(window_handle);
 
     // ピクセルフォーマット選択
     BOOL isValid
@@ -220,21 +214,36 @@ HGLRC createContext(HWND window_handle) {
         assert(false);
     }
 
+    wglShareLists(context, shared_context);
+
     return context;
 }
-
-void deleteContext(HGLRC context) {
-	wglDeleteContext(context);
 }
 
-void makeCurrent(HGLRC context) {
-	auto hdc = wglGetCurrentDC();
-	wglMakeCurrent(hdc, context);
+OpenGLContextHandle createContext(
+    temp::system::Window::NativeHandle window_handle,
+    OpenGLContextHandle                shared_context) {
+    HDC hdc = GetDC(window_handle);
+    return createContextImpl(hdc, shared_context);
 }
 
-void swapBuffers(HGLRC context) {
-	auto hdc = wglGetCurrentDC();
-	SwapBuffers(hdc);
+void deleteContext(OpenGLContextHandle context) { wglDeleteContext(context); }
+
+void makeCurrent(OpenGLContextHandle context) {
+    auto hdc = wglGetCurrentDC();
+    wglMakeCurrent(hdc, context);
+}
+
+void swapBuffers(OpenGLContextHandle context) {
+    auto hdc = wglGetCurrentDC();
+    SwapBuffers(hdc);
+}
+
+OpenGLContextHandle createSharedContext(OpenGLContextHandle shared_context) {
+    auto current_context = wglGetCurrentContext();
+    auto hdc             = wglGetCurrentDC();
+    auto context         = createContext();
+    wglMakeCurrent(hdc, current_context);
 }
 }
 }

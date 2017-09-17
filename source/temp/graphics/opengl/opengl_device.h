@@ -28,7 +28,9 @@ private:
     explicit OpenGLDevice(NativeWindowHandle window_handle);
 
 public:
-    TextureSPtr createTexture(const TextureDesc& desc);
+    RenderTargetSPtr createRenderTarget(const RenderTargetDesc& desc);
+
+    TextureSPtr createTexture(const TextureDesc& desc, const void* data);
 
     VertexBufferSPtr createVertexBuffer(const VertexBufferDesc& desc,
                                         const void*             data);

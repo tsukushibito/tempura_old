@@ -21,14 +21,17 @@ namespace graphics {
 namespace opengl {
 namespace windows {
 
-HGLRC createContext(HWND window_handle);
+OpenGLContextHandle createContext(
+    temp::system::Window::NativeHandle window_handle,
+    OpenGLContextHandle                shared_context = nullptr);
 
-void deleteContext(HGLRC context);
+void deleteContext(OpenGLContextHandle context);
 
-void makeCurrent(HGLRC context);
+void makeCurrent(OpenGLContextHandle context);
 
-void swapBuffers(HGLRC context);
+void swapBuffers(OpenGLContextHandle context);
 
+OpenGLContextHandle createSharedContext(OpenGLContextHandle shared_context);
 }
 }
 }

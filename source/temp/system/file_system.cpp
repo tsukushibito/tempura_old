@@ -1,33 +1,35 @@
-﻿#include <algorithm>
+﻿#include "temp/system/file_system.h"
+#include <algorithm>
 #include <sstream>
-#include "temp/system/file_system.h"
 
 namespace temp {
 namespace system {
 
 namespace {
-    
-void backslashToSlash(String &string) { std::replace(string.begin(), string.end(), '\\', '/'); }
-    
-inline Vector<String> splitString(const String &str, char delim) {
-    Vector<String> elems;
+
+void backslashToSlash(String& string) {
+    std::replace(string.begin(), string.end(), '\\', '/');
+}
+
+inline Vector<String> splitString(const String& str, char delim) {
+    Vector<String>    elems;
     std::stringstream ss(str);
-    String item;
+    String            item;
     while (getline(ss, item, delim)) {
         if (!item.empty()) {
             elems.push_back(item);
         }
     }
-    
+
     return elems;
 }
 
 struct DecomposedPath {
-    String root_;
-    Vector< String > element_names_;
+    String         root_;
+    Vector<String> element_names_;
 };
 
-DecomposedPath decomposeAbsolutePath(const String &absPath) {
+DecomposedPath decomposeAbsolutePath(const String& absPath) {
     DecomposedPath decomposedPath;
 
     decomposedPath.element_names_ = splitString(absPath, '/');
@@ -48,7 +50,8 @@ DecomposedPath decomposeAbsolutePath(const String &absPath) {
         size_t pos = decomposedPath.element_names_[0].find_first_of(':');
         if (pos != String::npos) {
             decomposedPath.root_ = decomposedPath.element_names_[0] + "/";
-            decomposedPath.element_names_.erase(decomposedPath.element_names_.begin());
+            decomposedPath.element_names_.erase(
+                decomposedPath.element_names_.begin());
         }
     }
 
@@ -62,14 +65,17 @@ DecomposedPath decomposeAbsolutePath(const String &absPath) {
     return decomposedPath;
 }
 
-} // namespace
+}  // namespace
 
-Path::Path(const String &string) : absolute_path_string_(string) {
+Path::Path(const String& string) : absolute_path_string_(string) {
     convertToAbsolutePath(absolute_path_string_);
     backslashToSlash(absolute_path_string_);
-    hash_ = std::hash< String >()(absolute_path_string_);
+
+    hash_ = std::hash<String>()(absolute_path_string_);
+
     DecomposedPath decomposed = decomposeAbsolutePath(absolute_path_string_);
-    root_ = std::move(decomposed.root_);
+
+    root_          = std::move(decomposed.root_);
     element_names_ = std::move(decomposed.element_names_);
 }
 
@@ -98,14 +104,15 @@ String Path::parent() const {
     return parent;
 }
 
-String Path::relative(const Path &base) const {
+String Path::relative(const Path& base) const {
     if (root_ != base.root_) {
         return absolute_path_string_;
     }
 
     Size commonDirLevel = 0;
     for (; commonDirLevel < base.element_names_.size(); ++commonDirLevel) {
-        if (element_names_[commonDirLevel] != base.element_names_[commonDirLevel]) {
+        if (element_names_[commonDirLevel]
+            != base.element_names_[commonDirLevel]) {
             break;
         }
     }
@@ -138,7 +145,7 @@ String Path::fileName() const {
 
 String Path::stem() const {
     String stem = fileName();
-    size_t pos = stem.find_last_of('.');
+    size_t pos  = stem.find_last_of('.');
     if (pos != String::npos) {
         stem = stem.substr(0, pos);
     }
@@ -148,7 +155,7 @@ String Path::stem() const {
 String Path::extension() const {
     String extension;
     String file_name = fileName();
-    size_t pos = file_name.find_last_of('.');
+    size_t pos       = file_name.find_last_of('.');
     if (pos != String::npos && pos < file_name.size() - 1) {
         extension = file_name.substr(pos);
     }
@@ -158,7 +165,8 @@ String Path::extension() const {
 
 Bool Path::empty() const { return absolute_path_string_.empty(); }
 
-void setCurrentDirectory(const String &path) { setCurrentDirectory(Path(path)); }
-
+void setCurrentDirectory(const String& path) {
+    setCurrentDirectory(Path(path));
+}
 }
 }

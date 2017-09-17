@@ -11,11 +11,27 @@
 
 #include <utility>
 
+#include "temp/system/window.h"
+
+#include "temp/graphics/graphics_common.h"
 #include "temp/graphics/opengl/opengl_define.h"
 
 namespace temp {
 namespace graphics {
 namespace opengl {
+
+OpenGLContextHandle createContext(
+    temp::system::Window::NativeHandle window_handle,
+    OpenGLContextHandle                shared_context = nullptr);
+
+void deleteContext(OpenGLContextHandle context);
+
+void makeCurrent(OpenGLContextHandle context);
+
+void swapBuffers(OpenGLContextHandle context);
+
+OpenGLContextHandle createSharedContext(OpenGLContextHandle shared_context);
+
 /**
  * @brief OpenGL デバッグプロシージャ
  *
@@ -68,6 +84,11 @@ auto glCallWithErrorCheck(F&& function, Args&&... args)
                                                     std::forward<Args>(
                                                         args)...);
 }
+
+GLenum renderTargetFormatToGlFormat(RenderTargetFormat format);
+
+GLenum textureFormatToGlFormat(TextureFormat format);
+
 }  // namespace opengl
 }  // namespace graphics
 }  // namespace temp

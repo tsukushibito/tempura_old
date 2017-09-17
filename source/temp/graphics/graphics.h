@@ -16,12 +16,12 @@
 #ifdef TEMP_GRAPHICS_OPENGL
 #include "temp/graphics/opengl/opengl_device.h"
 #include "temp/graphics/opengl/opengl_texture.h"
+#include "temp/graphics/opengl/opengl_render_target.h"
 #include "temp/graphics/opengl/opengl_index_buffer.h"
 #include "temp/graphics/opengl/opengl_vertex_buffer.h"
+#include "temp/graphics/opengl/opengl_vertex_shader.h"
+#include "temp/graphics/opengl/opengl_pixel_shader.h"
 #endif
 
-namespace temp {
-namespace graphics {}
-}
 
 #endif  // GUARD_06ee30f321684357842780bfa43ecbf1

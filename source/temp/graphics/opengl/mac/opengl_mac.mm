@@ -1,14 +1,18 @@
-#include "temp/container.h"
-#include "temp/graphics/opengl/opengl_define.h"
-#include "temp/graphics/opengl/mac/opengl_mac.h"
-#include "temp/system/mac/mac.h"
 #include <iostream>
-#include <string>
 #include <mutex>
+#include <string>
+
 #import <Cocoa/Cocoa.h>
 #import <OpenGL/OpenGL.h>
 #import <OpenGL/gl3.h>
 #import <OpenGL/gl3ext.h>
+
+#include "temp/container.h"
+
+#include "temp/system/mac/mac.h"
+
+#include "temp/graphics/opengl/mac/opengl_mac.h"
+#include "temp/graphics/opengl/opengl_define.h"
 
 
 namespace temp {
@@ -16,8 +20,10 @@ namespace graphics {
 namespace opengl {
 namespace mac {
 
-OpenGLContextHandle createContext(void* ns_window) {
-    NSWindow* window = (__bridge NSWindow*)ns_window;
+OpenGLContextHandle createContext(
+    temp::system::Window::NativeHandle window_handle,
+    OpenGLContextHandle                shared_context) {
+    NSWindow* window = (__bridge NSWindow*)window_handle;
     // ピクセルフォーマット指定
     NSOpenGLPixelFormatAttribute att[] = {NSOpenGLPFAOpenGLProfile,
                                           NSOpenGLProfileVersion4_1Core,
@@ -43,11 +49,13 @@ OpenGLContextHandle createContext(void* ns_window) {
         return nullptr;  // TODO: バージョンを下げた設定で作成し直す
     }
 
+    NSOpenGLContext* share = (__bridge NSOpenGLContext*)shared_context;
+
     // コンテキストの作成
     NSOpenGLContext* context =
-        [[NSOpenGLContext alloc] initWithFormat:pixelFormat shareContext:nil];
+        [[NSOpenGLContext alloc] initWithFormat:pixelFormat shareContext:share];
 
-    NSView* ns_view     = [window contentView];
+    NSView* ns_view = [window contentView];
     [context setView:ns_view];
 
     // カレントコンテキストに設定
@@ -72,11 +80,11 @@ OpenGLContextHandle createContext(void* ns_window) {
 
 void deleteContext(OpenGLContextHandle context) {
     NSOpenGLContext* ns_context = (__bridge NSOpenGLContext*)context;
-    ns_context = nil;
+    ns_context                  = nil;
 }
 
 void makeCurrent(OpenGLContextHandle context) {
-    NSOpenGLContext *ns_context = (__bridge NSOpenGLContext*)context;
+    NSOpenGLContext* ns_context = (__bridge NSOpenGLContext*)context;
 
     if (ns_context == nullptr) {
         [NSOpenGLContext clearCurrentContext];
@@ -86,12 +94,19 @@ void makeCurrent(OpenGLContextHandle context) {
 }
 
 void swapBuffers(OpenGLContextHandle context) {
-    NSOpenGLContext *ns_context = (__bridge NSOpenGLContext*)context;
+    NSOpenGLContext* ns_context = (__bridge NSOpenGLContext*)context;
 
     [ns_context flushBuffer];
 }
 
-    
+OpenGLContextHandle createSharedContext(OpenGLContextHandle shared_context) {
+    NSOpenGLContext* context
+        = (__bridge NSOpenGLContext*)shared_context;
+    NSView* ns_view     = [context view];
+    NSWindow* ns_window = [ns_view window];
+    return createContext(ns_window, shared_context);
+}
+
 }
 }
 }
