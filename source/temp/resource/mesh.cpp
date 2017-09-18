@@ -1,4 +1,4 @@
-#include "temp/resource/mesh.h"
+﻿#include "temp/resource/mesh.h"
 
 #include "temp/system/logger.h"
 
@@ -67,11 +67,11 @@ void Mesh::deserialize(std::ifstream& ifs) {
     ifs.read(reinterpret_cast<char*>(&ib_desc.primitive_type),
              sizeof(ib_desc.primitive_type));
     ifs.read(reinterpret_cast<char*>(&ib_desc.size), sizeof(ib_desc.size));
-    ByteData data;
-    data.resize(ib_desc.size);
-    ifs.read(reinterpret_cast<char*>(&data[0]), data.size());
+    ByteData indices_data;
+    indices_data.resize(ib_desc.size);
+    ifs.read(reinterpret_cast<char*>(&indices_data[0]), indices_data.size());
 
-    index_buffer_ = s_graphics_device->createIndexBuffer(ib_desc, &data[0]);
+    index_buffer_ = s_graphics_device->createIndexBuffer(ib_desc, &indices_data[0]);
 
     for (Int32 i = 0; i < vertex_chunk_count; ++i) {
         ifs.read(signature, kSignatureLength);
@@ -87,12 +87,12 @@ void Mesh::deserialize(std::ifstream& ifs) {
         ifs.read(reinterpret_cast<char*>(&vb_desc.attribute),
                  sizeof(vb_desc.attribute));
         ifs.read(reinterpret_cast<char*>(&vb_desc.size), sizeof(vb_desc.size));
-        ByteData data;
-        data.resize(vb_desc.size);
-        ifs.read(reinterpret_cast<char*>(&data[0]), data.size());
+        ByteData vertices_data;
+        vertices_data.resize(vb_desc.size);
+        ifs.read(reinterpret_cast<char*>(&vertices_data[0]), vertices_data.size());
 
         vertex_buffer_table_[vb_desc.attribute]
-            = s_graphics_device->createVertexBuffer(vb_desc, &data[0]);
+            = s_graphics_device->createVertexBuffer(vb_desc, &vertices_data[0]);
     }
 }
 
@@ -118,7 +118,7 @@ void Mesh::serialize(std::ofstream& ofs) {
 
     for (auto&& key_value : vertex_buffer_table_) {
         ofs.write(kVertexSignature, kSignatureLength);
-        auto&  attr = key_value.first;
+        // auto&  attr = key_value.first;
         auto&  vb   = key_value.second;
         auto&& desc = vb->desc();
         ofs.write(reinterpret_cast<const char*>(&desc.format),

@@ -27,7 +27,9 @@ OpenGLContextHandle createContext(
 
 void deleteContext(OpenGLContextHandle context);
 
-void makeCurrent(OpenGLContextHandle context);
+void makeCurrent(
+    temp::system::Window::NativeHandle window_handle,
+    OpenGLContextHandle context);
 
 void swapBuffers(OpenGLContextHandle context);
 

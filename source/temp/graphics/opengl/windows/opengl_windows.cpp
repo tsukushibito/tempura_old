@@ -9,6 +9,8 @@
 #include "temp/system/logger.h"
 #include "temp/system/windows/system_windows.h"
 
+#include "temp/graphics/opengl/opengl_common.h"
+
 namespace temp {
 namespace graphics {
 namespace opengl {
@@ -78,9 +80,9 @@ void initializeOpenglExtension() {
 }
 
 OpenGLContextHandle createContextImpl(HDC                 hdc,
-                                      OpenGLContextHandle shared_context) {
+    OpenGLContextHandle shared_context) {
     // OpeGL拡張機能初期化用のダミーウィンドウとコンテキストを作成
-    auto dummy_window_handle  = createDummyWindow();
+    auto dummy_window_handle = createDummyWindow();
     auto dummy_device_context = GetDC(dummy_window_handle);
     auto dummy_opengl_context = createDummyOpenglContext(dummy_device_context);
     BOOL result = wglMakeCurrent(dummy_device_context, dummy_opengl_context);
@@ -91,7 +93,8 @@ OpenGLContextHandle createContextImpl(HDC                 hdc,
     error = glewInit();
     if (error != GLEW_OK) {
         Logger::error("glewInit failed!: {0}", glewGetErrorString(error));
-    } else {
+    }
+    else {
         Logger::info("glewInit version: {0}", glewGetString(GLEW_VERSION));
     }
 #else
@@ -105,12 +108,14 @@ OpenGLContextHandle createContextImpl(HDC                 hdc,
     if (renderer != nullptr) Logger::info("[OpenGL] renderer : {0}", renderer);
     auto version = glGetString(GL_VERSION);
     if (version != nullptr) Logger::info("[OpenGL] version : {0}", version);
+    /*
     auto extensions = glGetString(GL_EXTENSIONS);
     if (extensions != nullptr) {
         String extensionsStr = reinterpret_cast<const Char*>(extensions);
         // std::replace(extensionsStr.begin(), extensionsStr.end(), ' ', '\n');
         Logger::info("[OpenGL] extensions : {0}", extensionsStr);
     }
+    */
     String         version_string = reinterpret_cast<const char*>(version);
     StringStream   ss(version_string);
     Vector<String> num_strs;
@@ -123,7 +128,7 @@ OpenGLContextHandle createContextImpl(HDC                 hdc,
 
 
     // 拡張機能によるコンテキストの作成
-    const FLOAT fAtribList[] = {0, 0};
+    const FLOAT fAtribList[] = { 0, 0 };
 
     // ピクセルフォーマット指定用
     const int pixel_format_attrib_list[] = {
@@ -147,7 +152,7 @@ OpenGLContextHandle createContextImpl(HDC                 hdc,
             majorVersion,  //
             WGL_CONTEXT_MINOR_VERSION_ARB,
             minorVersion,  //
-#if DEBUG
+#if _DEBUG
             WGL_CONTEXT_FLAGS_ARB,
             WGL_CONTEXT_DEBUG_BIT_ARB,
 #endif
@@ -155,15 +160,15 @@ OpenGLContextHandle createContextImpl(HDC                 hdc,
             WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
             0,
             0,  // End
-          };
+    };
 
     int  pixelFormat = 0;
-    UINT numFormats  = 0;
+    UINT numFormats = 0;
 
     // ピクセルフォーマット選択
     BOOL isValid
         = wglChoosePixelFormatARB(hdc, pixel_format_attrib_list, fAtribList, 1,
-                                  &pixelFormat, &numFormats);
+            &pixelFormat, &numFormats);
 
     error = glGetError();
     if (isValid == FALSE) {
@@ -214,7 +219,27 @@ OpenGLContextHandle createContextImpl(HDC                 hdc,
         assert(false);
     }
 
-    wglShareLists(context, shared_context);
+    if (shared_context != nullptr)
+    {
+        result = wglShareLists(context, shared_context);
+        if (result == FALSE) {
+            auto err = GetLastError();
+            Logger::error("wglShareLists failed. {0}", err);
+        }
+    }
+
+#ifdef _DEBUG
+    result = wglMakeCurrent(hdc, context);
+    if (result == FALSE) {
+        assert(false);
+    }
+    glDebugMessageCallback(debugProc, nullptr);
+    // カレントコンテキストを解除
+    result = wglMakeCurrent((HDC)NULL, (HGLRC)NULL);
+    if (result == FALSE) {
+        assert(false);
+    }
+#endif
 
     return context;
 }
@@ -229,12 +254,16 @@ OpenGLContextHandle createContext(
 
 void deleteContext(OpenGLContextHandle context) { wglDeleteContext(context); }
 
-void makeCurrent(OpenGLContextHandle context) {
-    auto hdc = wglGetCurrentDC();
+void makeCurrent(
+    temp::system::Window::NativeHandle window_handle,
+    OpenGLContextHandle                context) {
+    (void)context;
+    auto hdc = GetDC(window_handle);
     wglMakeCurrent(hdc, context);
 }
 
 void swapBuffers(OpenGLContextHandle context) {
+    (void)context;
     auto hdc = wglGetCurrentDC();
     SwapBuffers(hdc);
 }
@@ -242,8 +271,9 @@ void swapBuffers(OpenGLContextHandle context) {
 OpenGLContextHandle createSharedContext(OpenGLContextHandle shared_context) {
     auto current_context = wglGetCurrentContext();
     auto hdc             = wglGetCurrentDC();
-    auto context         = createContext();
+    auto context         = createContextImpl(hdc, shared_context);
     wglMakeCurrent(hdc, current_context);
+    return context;
 }
 }
 }

@@ -60,12 +60,15 @@ public:
 
     NativeHandle nativeHandle() { return native_handle_; }
 
+    NativeWindowHandle nativeWindowHandle() { return native_window_handle_; }
+
 
 private:
     T* derived() const { return static_cast<T*>(this); }
 
 protected:
     NativeHandle native_handle_;
+    NativeWindowHandle native_window_handle_;
 };
 }
 }

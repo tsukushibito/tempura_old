@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file main.cpp
  * @brief test main
  * @author tsukushibito
@@ -64,6 +64,7 @@ void Test::init() {
     Logger::initialize();
 
     setCurrentDirectory("../../");
+
     Logger::trace("Current directory : {}", getCurrentDirectory().absolute());
 
     window_ = Window::makeUnique();
@@ -87,11 +88,11 @@ void Test::init() {
 
     renderer_->setMainCamera(camera_);
 
-    testExp();
+    // testExp();
 
-    testResource();
+    // testResource();
 
-    testMath();
+    // testMath();
 }
 
 void Test::term() {
@@ -119,7 +120,7 @@ void Test::update() {
     temp::system::Timer timer;
     renderer_->render();
     auto ms = timer.milliseconds();
-    std::cout << "Delta time : " << ms << " ms" << std::endl;
+    // std::cout << "Delta time : " << ms << " ms" << std::endl;
 }
 
 void Test::run() {

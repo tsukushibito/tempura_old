@@ -75,6 +75,13 @@ void VertexArrayObject::setVertexBuffer(VertexAttribute         attribute,
 
         glCallWithErrorCheck(glVertexAttribPointer, index, size, type,
                              normalized, stride, pointer);
+
+        ByteData data(desc.size);
+        glCallWithErrorCheck(glGetBufferSubData, GL_ARRAY_BUFFER, 0, desc.size, &data[0]);
+        glCallWithErrorCheck(glBufferData, GL_ARRAY_BUFFER, desc.size, &data[0], GL_STATIC_DRAW);
+        // Float32 p[256];
+        // glCallWithErrorCheck(glGetBufferSubData, GL_ARRAY_BUFFER, 0, desc.size, p);
+        // glCallWithErrorCheck(glBufferData, GL_ARRAY_BUFFER, desc.size, p, GL_STATIC_DRAW);
     }
 
     glCallWithErrorCheck(glBindVertexArray, 0);
@@ -93,6 +100,14 @@ void VertexArrayObject::setIndexBuffer(const IndexBufferSPtr& index_buffer) {
         auto ibo = index_buffer_->nativeHandle();
 
         glCallWithErrorCheck(glBindBuffer, GL_ELEMENT_ARRAY_BUFFER, ibo);
+
+        auto&& desc = index_buffer_->desc();
+        ByteData data(desc.size);
+        glCallWithErrorCheck(glGetBufferSubData, GL_ELEMENT_ARRAY_BUFFER, 0, desc.size, &data[0]);
+        glCallWithErrorCheck(glBufferData, GL_ELEMENT_ARRAY_BUFFER, desc.size, &data[0], GL_STATIC_DRAW);
+        // Float32 p[256];
+        // glCallWithErrorCheck(glGetBufferSubData, GL_ARRAY_BUFFER, 0, desc.size, p);
+        // glCallWithErrorCheck(glBufferData, GL_ARRAY_BUFFER, desc.size, p, GL_STATIC_DRAW);
     }
 
     glCallWithErrorCheck(glBindVertexArray, 0);
@@ -128,6 +143,13 @@ void ProgramPiplineObject::setVertexShader(
 
     TEMP_ASSERT(vs, "");
     auto vso    = vs->nativeHandle();
+
+    GLint param;
+    glCallWithErrorCheck(glGetShaderiv, vso, GL_COMPILE_STATUS, &param);
+    if (param != GL_TRUE) {
+        TEMP_ASSERT(false, "");
+    }
+
     vs_program_ = glCallWithErrorCheck(glCreateProgram);
     glCallWithErrorCheck(glProgramParameteri, vs_program_, GL_PROGRAM_SEPARABLE,
                          GL_TRUE);
@@ -138,14 +160,18 @@ void ProgramPiplineObject::setVertexShader(
     }
     glCallWithErrorCheck(glLinkProgram, vs_program_);
 
-    GLint param;
-    glCallWithErrorCheck(glGetShaderiv, vso, GL_COMPILE_STATUS, &param);
-    if (param != GL_TRUE) {
-        TEMP_ASSERT(false, "");
-    }
     glCallWithErrorCheck(glGetProgramiv, vs_program_, GL_LINK_STATUS, &param);
     if (param != GL_TRUE) {
-        TEMP_ASSERT(false, "");
+        GLint maxLength = 0;
+        glGetProgramiv(vs_program_, GL_INFO_LOG_LENGTH, &maxLength);
+
+        //The maxLength includes the NULL character
+        if (maxLength > 0)
+        {
+            std::vector<GLchar> infoLog(maxLength);
+            glGetProgramInfoLog(vs_program_, maxLength, &maxLength, &infoLog[0]);
+            TEMP_ASSERT(false, &infoLog[0]);
+        }
     }
 
     glCallWithErrorCheck(glUseProgramStages, id_, GL_VERTEX_SHADER_BIT,

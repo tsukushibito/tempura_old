@@ -33,16 +33,19 @@ namespace opengl {
 OpenGLDevice::OpenGLDevice(NativeWindowHandle window_handle)
     : resource_creation_thread_(
           temp::system::ThreadPool::makeUnique("OpenGL resource create", 1)) {
+    native_window_handle_ = window_handle;
 #if defined(TEMP_PLATFORM_MAC)
     native_handle_ = mac::createContext(window_handle);
-    resource_creation_thread_->pushJob(
+    auto job = resource_creation_thread_->pushJob(
         [this]() { mac::makeCurrent(native_handle_); });
+    job.wait();
 #elif defined(TEMP_PLATFORM_WINDOWS)
     native_handle_ = windows::createContext(window_handle);
-    resource_creation_thread_->pushJob([this, window_handle]() {
+    auto job = resource_creation_thread_->pushJob([this, window_handle]() {
         auto hdc = GetDC(window_handle);
         wglMakeCurrent(hdc, native_handle_);
     });
+    job.wait();
 #endif
 }
 
@@ -61,7 +64,7 @@ OpenGLRenderTarget::SPtr OpenGLDevice::createRenderTarget(
                              ? GL_UNSIGNED_BYTE
                              : GL_FLOAT;
         glCallWithErrorCheck(glTexImage2D, GL_TEXTURE_2D, 0, gl_format,
-                             desc.width, desc.height, 0, GL_RGBA, gl_type,
+                             (GLsizei)desc.width, (GLsizei)desc.height, 0, GL_RGBA, gl_type,
                              nullptr);
 
         glCallWithErrorCheck(glBindTexture, GL_TEXTURE_2D, 0);
@@ -222,6 +225,26 @@ OpenGLVertexShader::SPtr OpenGLDevice::createVertexShader(
         execInResourceCreationThread(task);
         Logger::trace("[OpenGL] vertex shader has deleted. id: {0}", id);
     });
+}
+
+void OpenGLDevice::prepareToShare() {
+#ifdef TEMP_PLATFORM_WINDOWS
+    auto task = [this]() {
+        auto hdc = GetDC(native_window_handle_);
+        wglMakeCurrent(hdc, nullptr);
+    };
+    execInResourceCreationThread(task);
+#endif
+}
+
+void OpenGLDevice::restoreContext() {
+#ifdef TEMP_PLATFORM_WINDOWS
+    auto task = [this]() {
+        auto hdc = GetDC(native_window_handle_);
+        wglMakeCurrent(hdc, native_handle_);
+    };
+    execInResourceCreationThread(task);
+#endif
 }
 
 template <typename TaskType>

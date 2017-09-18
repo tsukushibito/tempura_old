@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file opengl_renderer.mm
  * @brief
  * @author tsukushibito
@@ -28,15 +28,18 @@ Renderer::Impl::Impl(Renderer& renderer) : renderer_(renderer) {
     using namespace temp::graphics::opengl;
 
     OpenGLContextHandle context = renderer.graphics_device_->nativeHandle();
-    gl_context_ = temp::graphics::opengl::createSharedContext(context);
+    temp::system::Window::NativeHandle window_handle = renderer.graphics_device_->nativeWindowHandle();
+    renderer.graphics_device_->prepareToShare();
+    gl_context_ = temp::graphics::opengl::createContext(window_handle, context);
+    renderer.graphics_device_->restoreContext();
 
-    auto job = renderer_.render_thread_->pushJob([this]() {
-        makeCurrent(gl_context_);
+    auto job = renderer_.render_thread_->pushJob([this, window_handle]() {
+        makeCurrent(window_handle, gl_context_);
 
         GLsizei sampler_count = (GLsizei)SamplerFilter::COUNT
-                                * (GLsizei)SamplerAddressMode::COUNT;
+            * (GLsizei)SamplerAddressMode::COUNT;
         glCallWithErrorCheck(glGenSamplers, sampler_count,
-                             (GLuint*)&sampler_table_);
+            (GLuint*)&sampler_table_);
 
         GLenum gl_min_filter_table[(Int32)SamplerFilter::COUNT] = {
             // GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR,
@@ -51,21 +54,21 @@ Renderer::Impl::Impl(Renderer& renderer) : renderer_(renderer) {
 
         for (Int32 filter = 0; filter < (Int32)SamplerFilter::COUNT; ++filter) {
             for (Int32 address = 0; address < (Int32)SamplerAddressMode::COUNT;
-                 ++address) {
-                auto sampler       = sampler_table_[filter][address];
+                ++address) {
+                auto sampler = sampler_table_[filter][address];
                 auto gl_min_filter = gl_min_filter_table[filter];
                 auto gl_mag_filter = gl_mag_filter_table[filter];
-                auto gl_address    = gl_address_table[address];
+                auto gl_address = gl_address_table[address];
                 glCallWithErrorCheck(glSamplerParameteri, sampler,
-                                     GL_TEXTURE_MIN_FILTER, gl_min_filter);
+                    GL_TEXTURE_MIN_FILTER, gl_min_filter);
                 glCallWithErrorCheck(glSamplerParameteri, sampler,
-                                     GL_TEXTURE_MAG_FILTER, gl_mag_filter);
+                    GL_TEXTURE_MAG_FILTER, gl_mag_filter);
                 glCallWithErrorCheck(glSamplerParameteri, sampler,
-                                     GL_TEXTURE_WRAP_R, gl_address);
+                    GL_TEXTURE_WRAP_R, gl_address);
                 glCallWithErrorCheck(glSamplerParameteri, sampler,
-                                     GL_TEXTURE_WRAP_S, gl_address);
+                    GL_TEXTURE_WRAP_S, gl_address);
                 glCallWithErrorCheck(glSamplerParameteri, sampler,
-                                     GL_TEXTURE_WRAP_T, gl_address);
+                    GL_TEXTURE_WRAP_T, gl_address);
             }
         }
 
@@ -84,9 +87,21 @@ Renderer::Impl::Impl(Renderer& renderer) : renderer_(renderer) {
             p = 255;
         }
         glCallWithErrorCheck(glTexImage2D, GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, 0,
-                             GL_RGBA, GL_UNSIGNED_BYTE,
-                             (const GLvoid*)debug_data);
+            GL_RGBA, GL_UNSIGNED_BYTE,
+            (const GLvoid*)debug_data);
         glCallWithErrorCheck(glBindTexture, GL_TEXTURE_2D, 0);
+
+        glCallWithErrorCheck(glGenBuffers, 1, &debug_vertices_);
+        glCallWithErrorCheck(glBindBuffer, GL_ARRAY_BUFFER, debug_vertices_);
+        Float32 debug_vertices[] = {
+            0.0f, 1.0f,
+            -1.0f, 0.0f,
+            1.0f, 0.0f,
+        };
+        glCallWithErrorCheck(glBufferData, GL_ARRAY_BUFFER, sizeof(debug_vertices), debug_vertices, GL_STATIC_DRAW);
+        glCallWithErrorCheck(glBindBuffer, GL_ARRAY_BUFFER, 0);
+
+        glCallWithErrorCheck(glGenVertexArrays, 1, &debug_vao_);
     });
 
     job.wait();
@@ -147,13 +162,16 @@ void Renderer::Impl::render() {
 
     prev_frame_render_job_ = renderer_.render_thread_->pushJob([this]() {
 
+        /*
+        glCallWithErrorCheck(glClear, GL_COLOR_BUFFER_BIT |
+                             GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+                             */
 
-        // glCallWithErrorCheck(glClear, GL_COLOR_BUFFER_BIT |
-        // GL_DEPTH_BUFFER_BIT
-        //                                   | GL_STENCIL_BUFFER_BIT);
-
-        for (auto&& camera : renderer_.camera_list_) {
-            renderView(camera);
+        {
+            std::unique_lock<std::mutex> lock(renderer_.camera_list_mutex_);
+            for (auto&& camera : renderer_.camera_list_) {
+                renderView(camera);
+            }
         }
 
         auto main_camera = renderer_.main_camera_.lock();
@@ -167,6 +185,7 @@ void Renderer::Impl::render() {
             auto sampler       = sampler_table_[(Int32)SamplerFilter::kLinear]
                                          [(Int32)SamplerAddressMode::kBorder];
             copyToBackBuffer_->copy(texture, sampler);
+
             // copyToBackBuffer_->copy(debug_tex_, sampler);
         }
 
@@ -197,7 +216,7 @@ void Renderer::Impl::renderView(Camera* camera) {
         glCallWithErrorCheck(glBindRenderbuffer, GL_RENDERBUFFER, depth_buffer);
         auto desc = render_target->description();
         glCallWithErrorCheck(glRenderbufferStorage, GL_RENDERBUFFER,
-                             GL_DEPTH_COMPONENT, desc.width, desc.height);
+                             GL_DEPTH_COMPONENT, (GLsizei)desc.width, (GLsizei)desc.height);
 
         glCallWithErrorCheck(glFramebufferRenderbuffer, GL_FRAMEBUFFER,
                              GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER,

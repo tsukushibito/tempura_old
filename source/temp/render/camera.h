@@ -36,26 +36,26 @@ enum class CameraType {
 };
 
 struct PerspectiveParam {
-    Float32 near;
-    Float32 far;
+    Float32 near_clip;
+    Float32 far_clip;
     Float32 fov;
     Float32 aspect;
 
     PerspectiveParam()
-        : near(0.5f)
-        , far(1000.0f)
+        : near_clip(0.5f)
+        , far_clip(1000.0f)
         , fov(temp::math::pi() / 6.0f)
         , aspect(16.0f / 9.0f) {}
 };
 
 struct OrthographicParam {
-    Float32 near;
-    Float32 far;
+    Float32 near_clip;
+    Float32 far_clip;
     Float32 width;
     Float32 height;
 
     OrthographicParam()
-        : near(0.5f), far(1000.0f), width(30.0f), height(30.0f) {}
+        : near_clip(0.5f), far_clip(1000.0f), width(30.0f), height(30.0f) {}
 };
 
 class Camera : public SmartPointerObject<Camera> {

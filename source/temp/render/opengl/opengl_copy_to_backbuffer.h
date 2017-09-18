@@ -39,6 +39,7 @@ public:
 
     void copy(GLuint texture, GLuint sampler);
 
+    GLuint arrayBuffer(temp::graphics::VertexAttribute attribute);
 private:
     GraphicsDeviceSPtr graphics_device_;
     temp::system::Path shader_directory_;

@@ -42,6 +42,10 @@ public:
 
     VertexShaderSPtr createVertexShader(const ShaderCode& code);
 
+    // 
+    void prepareToShare();
+    void restoreContext();
+
 private:
     template <typename TaskType>
     auto execInResourceCreationThread(TaskType& task) -> decltype(task());

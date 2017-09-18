@@ -27,6 +27,7 @@ CopyToBackBuffer::CopyToBackBuffer(const GraphicsDeviceSPtr& graphics_device,
     , ppo_(new ProgramPiplineObject) {
     using namespace temp::system;
     using namespace temp::graphics;
+    using namespace temp::graphics::opengl;
 
     Path vs_path = shader_directory_ + kCopyVS;
 
@@ -80,6 +81,7 @@ CopyToBackBuffer::CopyToBackBuffer(const GraphicsDeviceSPtr& graphics_device,
 
     ppo_->setVertexShader(vs);
     ppo_->setPixelShader(ps);
+
 }
 
 CopyToBackBuffer::~CopyToBackBuffer() {}
@@ -108,7 +110,7 @@ void CopyToBackBuffer::copy(GLuint texture, GLuint sampler) {
     glCallWithErrorCheck(glBindVertexArray, vao);
 
     auto    ib    = vao_->indexBuffer();
-    GLsizei count = ib->desc().size / indexBufferFormatSize(ib->desc().format);
+    GLsizei count = (GLsizei)(ib->desc().size / indexBufferFormatSize(ib->desc().format));
     GLenum  type;
     switch (ib->desc().format) {
     case IndexBufferFormat::kUInt16:
@@ -121,12 +123,17 @@ void CopyToBackBuffer::copy(GLuint texture, GLuint sampler) {
         type = GL_UNSIGNED_SHORT;
         break;
     }
+    
     glCallWithErrorCheck(glDrawElements, GL_TRIANGLE_STRIP, count, type,
                          (const GLvoid*)0);
     
     glCallWithErrorCheck(glBindTexture, GL_TEXTURE_2D, 0);
     glCallWithErrorCheck(glBindProgramPipeline, 0);
     glCallWithErrorCheck(glBindVertexArray, 0);
+}
+
+GLuint CopyToBackBuffer::arrayBuffer(temp::graphics::VertexAttribute attribute) {
+    return vao_->vertexBuffer(attribute)->nativeHandle();
 }
 }
 }

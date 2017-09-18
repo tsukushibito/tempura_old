@@ -1,4 +1,4 @@
-#include "temp/temp_assert.h"
+﻿#include "temp/temp_assert.h"
 
 #include "temp/system/logger.h"
 
@@ -35,11 +35,13 @@ void deleteContext(OpenGLContextHandle context) {
 #endif
 }
 
-void makeCurrent(OpenGLContextHandle context) {
+void makeCurrent(
+    temp::system::Window::NativeHandle window_handle,
+    OpenGLContextHandle                context) {
 #if defined(TEMP_PLATFORM_MAC)
-    return mac::makeCurrent(context);
+    return mac::makeCurrent(window_handle, context);
 #elif defined(TEMP_PLATFORM_WINDOWS) 
-    return windows::makeCurrent(context);
+    return windows::makeCurrent(window_handle, context);
 #elif defined(TEMP_PLATFORM_LINUX)
 #endif
 }

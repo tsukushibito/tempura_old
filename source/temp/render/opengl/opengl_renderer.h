@@ -60,6 +60,8 @@ private:
     std::unique_ptr<opengl::CopyToBackBuffer> copyToBackBuffer_;
 
     GLuint debug_tex_;
+    GLuint debug_vertices_;
+    GLuint debug_vao_;
 };
 }
 }

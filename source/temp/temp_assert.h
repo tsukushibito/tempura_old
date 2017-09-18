@@ -27,7 +27,7 @@ inline void reportAssertion(const Char *msg, const Char *file, Size line) {
     StringStream log;
     log << file << " : line[" << line << "] : " << msg << std::endl;
     OutputDebugStringA(log.str().c_str());
-    DebugBreak();
+    // DebugBreak();
 #else
     std::cout << file << " : line[" << line << "] : " << msg << std::endl;
     __builtin_trap();
