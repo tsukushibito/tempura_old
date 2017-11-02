@@ -10,7 +10,7 @@ public:
         : ResourceBase(path, load_thread, on_destroy) {}
 
 private:
-    virtual void prepare(const ByteData& byte_data) {}
+	virtual void prepare(const ByteData& byte_data) { (void*)(&byte_data); }
 };
 
 void f() {

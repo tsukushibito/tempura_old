@@ -11,36 +11,36 @@ ResourceBase::ResourceBase(const Path&               path,
                            const ThreadPool::SPtr&   load_thread,
                            std::function<void(void)> on_destroy)
     : load_thread_(load_thread)
-    , state_(kNotLoaded)
+    , state_(ResourceState::kNotLoaded)
     , path_(path)
     , on_destroy_(on_destroy) {
     id_ = std::hash<std::string>()(path_.string());
 }
 
-virtual ResourceBase::~ResourceBase() { on_destroy_(); }
+ResourceBase::~ResourceBase() { on_destroy_(); }
 
 void ResourceBase::load(Bool is_sync) {
     if (state_ != ResourceState::kNotLoaded) return;
 
-    auto job = [this]() { load_impl(false); };
+    auto job = [this]() { loadImpl(false); };
     if (is_sync) {
         execJobSyncInLoadThread(job);
     } else {
-        load_thread_.pushJob(job);
+        load_thread_->pushJob(job);
     }
 }
 
 void ResourceBase::reload(Bool is_sync) {
-    auto job = [this]() { load_impl(true); };
+    auto job = [this]() { loadImpl(true); };
     if (is_sync) {
         execJobSyncInLoadThread(job);
     } else {
-        load_thread_.pushJob(job);
+        load_thread_->pushJob(job);
     }
 }
 
 void ResourceBase::loadImpl(Bool is_reload) {
-    std::unique_lock<std::mutex>(mutex_);
+    auto lock = std::unique_lock<std::mutex>(mutex_);
 
     if (is_reload) {
         on_destroy_();
@@ -63,7 +63,7 @@ void ResourceBase::loadImpl(Bool is_reload) {
     prepare(byte_data);
 }
 
-void ResourceBas::execJobSyncInLoadThread(std::function<void(void)> job) {
+void ResourceBase::execJobSyncInLoadThread(std::function<void(void)> job) {
     Bool is_load_thread = false;
 
     auto&& thread_id      = std::this_thread::get_id();

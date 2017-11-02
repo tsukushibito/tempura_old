@@ -21,8 +21,8 @@ namespace filesystem {
 using Path = boost::filesystem::path;
 using namespace boost::filesystem;
 #else
-using Path = std::filesystem::path;
-using namespace std::filesystem;
+using Path = std::tr2::sys::path;
+using namespace std::tr2::sys;
 #endif
 }
 }

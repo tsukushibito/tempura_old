@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file graphics_common.h
  * @brief
  * @author tsukushibito

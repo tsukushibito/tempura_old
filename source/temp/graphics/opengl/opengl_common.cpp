@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file opengl_common.cpp
  * @brief
  * @author tsukushibito

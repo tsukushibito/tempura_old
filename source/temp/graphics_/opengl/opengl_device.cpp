@@ -90,10 +90,11 @@ OpenGLTexture::SPtr OpenGLDevice::createTexture(const TextureDesc& desc,
                                                 const void*        data) {
     using temp::system::Logger;
 
-    auto task = [this, &desc]() {
+    auto task = [this, &desc, data]() {
         GLuint id;
         glCallWithErrorCheck(glGenTextures, 1, &id);
         glCallWithErrorCheck(glBindTexture, GL_TEXTURE_2D, id);
+		(const void*)data;
         // glCallWithErrorCheck(glTexImage2D, );
         glCallWithErrorCheck(glBindTexture, GL_TEXTURE_2D, 0);
         return id;

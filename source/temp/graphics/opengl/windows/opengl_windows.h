@@ -19,12 +19,12 @@ namespace opengl {
 namespace windows {
 
 OpenGLContextHandle createContext(
-    temp::system::Window::NativeHandle window_handle,
+    WindowHandle window_handle,
     OpenGLContextHandle                shared_context = nullptr);
 
 void deleteContext(OpenGLContextHandle context);
 
-void makeCurrent(temp::system::Window::NativeHandle window_handle,
+void makeCurrent(WindowHandle window_handle,
                  OpenGLContextHandle                context);
 
 void swapBuffers(OpenGLContextHandle context);

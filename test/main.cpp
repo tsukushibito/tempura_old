@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file main.cpp
  * @brief test main
  * @author tsukushibito
@@ -288,7 +288,9 @@ void Test::testMath() {
     TEMP_ASSERT(Vector3(3, 4, 0).length() == 5, "");
     auto norm = Vector3(3, 3, 3).normalized();
     auto angle = Vector3::angle(Vector3(1, 0, 0), Vector3(0, 1, 0));
+    TEMP_ASSERT(angle, "");
     auto axisZ = Vector3::cross(Vector3(1, 0, 0), Vector3(0, 1, 0));
+    TEMP_ASSERT(axisZ.x() == 0 && axisZ.y() == 0 && axisZ.z() == 0, "");
     auto zero = Vector3::dot(Vector3(1, 0, 0), Vector3(0, 1, 0));
     TEMP_ASSERT(zero == 0, "");
 

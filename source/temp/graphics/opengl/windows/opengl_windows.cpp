@@ -1,4 +1,4 @@
-#include "temp/graphics/opengl/windows/opengl_windows.h"
+﻿#include "temp/graphics/opengl/windows/opengl_windows.h"
 
 #if defined(TEMP_PLATFORM_WINDOWS)
 
@@ -232,7 +232,7 @@ OpenGLContextHandle createContextImpl(HDC                 hdc,
 }
 }
 
-OpenGLContextHandle createContext(WindowsHandle       window_handle,
+OpenGLContextHandle createContext(WindowHandle       window_handle,
                                   OpenGLContextHandle shared_context) {
     HDC hdc = GetDC(window_handle);
     return createContextImpl(hdc, shared_context);

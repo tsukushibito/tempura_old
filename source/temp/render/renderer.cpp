@@ -21,10 +21,9 @@ Renderer::SPtr createRenderer(const graphics::Device::SPtr& device,
     case GraphicsAPI::kMetal:
     default:
         TEMP_ASSERT(false, "");
-        return nullptr;
     }
 
-    return nullptr;
+	return nullptr;
 }
 }
 }
