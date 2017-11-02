@@ -1,38 +1,62 @@
-﻿/**
+/**
  * @file opengl_common.h
  * @brief
  * @author tsukushibito
  * @version 0.0.1
- * @date 2017-05-03
+ * @date 2017-09-21
  */
 #pragma once
-#ifndef GUARD_978959c601b84191bc7b6a160046bd0b
-#define GUARD_978959c601b84191bc7b6a160046bd0b
+#ifndef GUARD_bcaddb8fb51741eab37a374bc9208879
+#define GUARD_bcaddb8fb51741eab37a374bc9208879
 
-#include <utility>
-
-#include "temp/system/window.h"
+#include "temp/define.h"
 
 #include "temp/graphics/graphics_common.h"
-#include "temp/graphics/opengl/opengl_define.h"
+
+#ifdef TEMP_PLATFORM_WINDOWS
+#include <Windows.h>
+#endif
+
+#if defined(TEMP_PLATFORM_WINDOWS) || defined(TEMP_PLATFORM_LINUX)
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <gl_ext/glext.h>
+
+#define TEMP_OPENGL_EXTENSION_LINK(func, name) extern func name;
+#include <gl_ext/temp_glext_link.inl>
+#if defined(TEMP_PLATFORM_LINUX)
+#include <gl_ext/glxext.h>
+#elif defined(TEMP_PLATFORM_WINDOWS)
+#include <gl_ext/wglext.h>
+#include <gl_ext/temp_wglext_link.inl>
+#endif
+#undef TEMP_OPENGL_EXTENSION_LINK
+
+#else
+#include <OpenGL/OpenGL.h>
+#include <OpenGL/gl3.h>
+#include <OpenGL/gl3ext.h>
+#endif  // defined(TEMP_PLATFORM_WINDOWS) || defined(TEMP_PLATFORM_LINUX)
+
 
 namespace temp {
 namespace graphics {
 namespace opengl {
 
-OpenGLContextHandle createContext(
-    temp::system::Window::NativeHandle window_handle,
-    OpenGLContextHandle                shared_context = nullptr);
+#if defined(TEMP_PLATFORM_MAC)
+using OpenGLContextHandle = void*;
+#elif defined(TEMP_PLATFORM_WINDOWS)
+using OpenGLContextHandle = HGLRC;
+#endif
+
+OpenGLContextHandle createContext(WindowHandle        window_handle,
+                                  OpenGLContextHandle shared_context = nullptr);
 
 void deleteContext(OpenGLContextHandle context);
 
-void makeCurrent(
-    temp::system::Window::NativeHandle window_handle,
-    OpenGLContextHandle                context);
+void makeCurrent(WindowHandle window_handle, OpenGLContextHandle context);
 
 void swapBuffers(OpenGLContextHandle context);
-
-OpenGLContextHandle createSharedContext(OpenGLContextHandle shared_context);
 
 /**
  * @brief OpenGL デバッグプロシージャ
@@ -90,8 +114,7 @@ auto glCallWithErrorCheck(F&& function, Args&&... args)
 GLenum renderTargetFormatToGlFormat(RenderTargetFormat format);
 
 GLenum textureFormatToGlFormat(TextureFormat format);
-
-}  // namespace opengl
-}  // namespace graphics
-}  // namespace temp
-#endif  // GUARD_978959c601b84191bc7b6a160046bd0b
+}
+}
+}
+#endif  // GUARD_bcaddb8fb51741eab37a374bc9208879

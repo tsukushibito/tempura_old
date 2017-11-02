@@ -3,52 +3,60 @@
  * @brief
  * @author tsukushibito
  * @version 0.0.1
- * @date 2017-09-16
+ * @date 2017-09-20
  */
 #pragma once
-#ifndef GUARD_a4aa86077059460f897b1d3ba549f427
-#define GUARD_a4aa86077059460f897b1d3ba549f427
+#ifndef GUARD_617c32ac490746cfba0ca3f38a014ecf
+#define GUARD_617c32ac490746cfba0ca3f38a014ecf
 
+#include "temp/container.h"
+#include "temp/define.h"
 #include "temp/temp_assert.h"
+#include "temp/temp_math.h"
+#include "temp/type.h"
 
 namespace temp {
 namespace render {
-
-enum class TextureAttribute {
-    kAlbedoMap,
-    kRoughnessMap,
-    kMetalicMap,
-    kNormalMap,
-
-    COUNT,
-};
-
-template <typename T = TextureAttribute>
-String textureAttributeString(TextureAttribute attribute) {
-    switch (attribute) {
-    case TextureAttribute::kAlbedoMap:
-        return "AlbedoMap";
-    case TextureAttribute::kRoughnessMap:
-        return "RoughnessMap";
-    case TextureAttribute::kMetalicMap:
-        return "MetalicMap";
-    case TextureAttribute::kNormalMap:
-        return "NormalMap";
-    case TextureAttribute::COUNT:
-        TEMP_ASSERT(false, "Invalid TextureAttribute!");
-        return "";
-    }
-
-    TEMP_ASSERT(false, "Invalid TextureAttribute!");
-    return "";
-}
 
 struct DrawAreaSize {
     Size width;
     Size height;
 };
 
+enum class ViewType {
+    kShadow,
+    kEnvironment,
+    kMain,
+};
+
+enum class ProjectionType {
+    kPerspective,
+    kOrthographic,
+};
+
+struct PerspectiveParam {
+    Float32 near_clip;
+    Float32 far_clip;
+    Float32 fov;
+    Float32 aspect;
+
+    PerspectiveParam()
+        : near_clip(0.5f)
+        , far_clip(1000.0f)
+        , fov(temp::math::pi() / 6.0f)
+        , aspect(16.0f / 9.0f) {}
+};
+
+struct OrthographicParam {
+    Float32 near_clip;
+    Float32 far_clip;
+    Float32 width;
+    Float32 height;
+
+    OrthographicParam()
+        : near_clip(0.5f), far_clip(1000.0f), width(30.0f), height(30.0f) {}
+};
 }
 }
 
-#endif  // GUARD_a4aa86077059460f897b1d3ba549f427
+#endif  // GUARD_617c32ac490746cfba0ca3f38a014ecf

@@ -1,32 +1,24 @@
 /**
  * @file resource_common.h
- * @brief 
+ * @brief
  * @author tsukushibito
  * @version 0.0.1
- * @date 2017-07-09
+ * @date 2017-10-20
  */
 #pragma once
-#ifndef GUARD_b9182cb820a84ff5967c57e597f641e1
-#define GUARD_b9182cb820a84ff5967c57e597f641e1
+#ifndef GUARD_07bd005f31e442ecb79da687d3ccd1fc
+#define GUARD_07bd005f31e442ecb79da687d3ccd1fc
 
-#include "temp/graphics/graphics.h"
+#include "temp/container.h"
+#include "temp/filesystem.h"
+#include "temp/temp_assert.h"
+#include "temp/type.h"
 
 namespace temp {
 namespace resource {
 
-struct VertexData {
-    graphics::VertexAttribute    attribute;
-    graphics::VertexBufferFormat format;
-    ByteData                     byte_data;
-};
-using VertexDataTable = HashMap<graphics::VertexAttribute, VertexData,
-                                graphics::VertexAttributeHash>;
+using ResourceId = Size;
+}
+}
 
-struct IndexData {
-    graphics::IndexBufferFormat format;
-    graphics::PrimitiveType     primitive_type;
-    ByteData                    byte_data;
-};
-}
-}
-#endif // GUARD_b9182cb820a84ff5967c57e597f641e1
+#endif  // GUARD_07bd005f31e442ecb79da687d3ccd1fc

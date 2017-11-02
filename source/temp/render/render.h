@@ -3,12 +3,10 @@
  * @brief 
  * @author tsukushibito
  * @version 0.0.1
- * @date 2017-08-20
+ * @date 2017-09-20
  */
 #pragma once
-#ifndef GUARD_090fd399171a4b9e9e81a8cd878a3cc2
-#define GUARD_090fd399171a4b9e9e81a8cd878a3cc2
+#ifndef GUARD_4ed857032bea410f8e292f75b4f005c9
+#define GUARD_4ed857032bea410f8e292f75b4f005c9
 
-#include "temp/render/renderer.h"
-
-#endif // GUARD_090fd399171a4b9e9e81a8cd878a3cc2
+#endif // GUARD_4ed857032bea410f8e292f75b4f005c9

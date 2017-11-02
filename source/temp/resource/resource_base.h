@@ -1,101 +1,65 @@
-﻿/**
+/**
  * @file resource_base.h
- * @brief resource base class
+ * @brief
  * @author tsukushibito
  * @version 0.0.1
- * @date 2016-02-23
+ * @date 2017-10-21
  */
 #pragma once
-#ifndef GUARD_7b165123cb9d40ba8f9fbe15833384b3
-#define GUARD_7b165123cb9d40ba8f9fbe15833384b3
+#ifndef GUARD_360187526cfb4535afe399af584e6498
+#define GUARD_360187526cfb4535afe399af584e6498
 
-#include "temp/container.h"
-#include "temp/define.h"
-#include "temp/type.h"
+#include <utility>
 
-#include "temp/system/file_system.h"
 #include "temp/system/thread_pool.h"
 
-#include "temp/graphics_old/device.h"
+#include "temp/resource/resource_base.h"
+#include "temp/resource/resource_common.h"
 
 namespace temp {
 namespace resource {
 
-template <typename Type>
-class ResourceBase : public SmartPointerObject<Type> {
+using Path       = filesystem::Path;
+using ThreadPool = system::ThreadPool;
+
+enum class ResourceState {
+    kNotLoaded,
+    kLoading,
+    kLoaded,
+    kNotExists,
+};
+
+class ResourceBase {
 public:
-    using Super        = SmartPointerObject<Type>;
-    using ResourceSPtr = std::shared_ptr<Type>;
+    using UPtr = std::unique_ptr<ResourceBase>;
+    using SPtr = std::shared_ptr<ResourceBase>;
+    using WPtr = std::weak_ptr<ResourceBase>;
 
-    /**
-     * @brief loading state
-     */
-    enum class LoadState {
-        kNotLoaded,
-        kLoading,
-        kLoaded,
-        kUnloading,
-    };
+    ResourceBase(const Path& path, const ThreadPool::SPtr& load_thread,
+                 std::function<void(void)> on_destroy);
 
-    enum class SaveState {
-        kNotSaved,
-        kSaving,
-        kSaved,
-    };
+    virtual ~ResourceBase();
 
-    private : using ResourceTable
-        = HashMap<Size, typename Super::WPtr>;
-    using ResourceTableUPtr = std::unique_ptr<ResourceTable>;
+    void load(Bool is_sync = false);
 
-protected:
-    explicit ResourceBase(const system::Path& path);
-
-    ~ResourceBase();
-
-public:
-    static void initialize(const system::ThreadPool::SPtr& loading_thread);
-
-    static void terminate();
-
-    static ResourceSPtr create(const system::Path& path);
-
-    LoadState loadState() const;
-
-    SaveState saveState() const;
-
-    const system::Path& path() const;
-
-    const Size hash() const;
-
-    void load();
-
-    std::future<void> asyncLoad();
-
-    void unload();
-
-    void save();
+    void reload(Bool is_sync = false);
 
 private:
-    void loadImpl(bool is_async = true);
+    void loadImpl(Bool is_reload);
 
-    void deserialize(std::ifstream& ifs);  // ロード用スレッドで実行される
-    void serialize(std::ofstream& ofs);
+    void execJobSyncInLoadThread(std::function<void(void)> job);
 
-protected:
-    static ResourceTable            s_resource_table;
-    static std::mutex               s_table_mutex;
-    static system::ThreadPool::SPtr s_loading_thread;
+    virtual void prepare(const ByteData& byte_data) = 0;
 
-    const system::Path path_;
-    const Size         hash_;
-
-    mutable std::mutex mutex_;
-    LoadState          load_state_;
-    SaveState          save_state_;
+private:
+    std::mutex                mutex_;
+    ThreadPool::SPtr          load_thread_;
+    ResourceState             state_;
+    ResourceId                id_;
+    Path                      path_;
+    std::function<void(void)> on_destroy_;
 };
 }
 }
 
-#include "resource_base_detail.h"
-
-#endif  // GUARD_7b165123cb9d40ba8f9fbe15833384b3
+#endif  // GUARD_360187526cfb4535afe399af584e6498

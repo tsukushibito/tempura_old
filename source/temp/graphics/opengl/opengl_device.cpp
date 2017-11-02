@@ -1,56 +1,54 @@
-/**
- * @file opengl_device.cpp
- * @brief OpenGL device
- * @author tsukushibito
- * @version 0.0.1
- * @date 2017-03-14
- */
-
-#include "temp/define.h"
+#include "temp/graphics/opengl/opengl_device.h"
+#include "temp/graphics/opengl/opengl_common.h"
 
 #include "temp/system/logger.h"
-
-#include "temp/graphics/opengl/opengl_common.h"
-#if defined(TEMP_PLATFORM_MAC)
-#include "temp/graphics/opengl/mac/opengl_mac.h"
-#elif defined(TEMP_PLATFORM_WINDOWS)
-#include "temp/graphics/opengl/windows/opengl_windows.h"
-#endif
-#include "temp/graphics/opengl/opengl_device.h"
-#include "temp/graphics/opengl/opengl_index_buffer.h"
-#include "temp/graphics/opengl/opengl_pixel_shader.h"
-#include "temp/graphics/opengl/opengl_render_target.h"
-#include "temp/graphics/opengl/opengl_texture.h"
-#include "temp/graphics/opengl/opengl_vertex_buffer.h"
-#include "temp/graphics/opengl/opengl_vertex_shader.h"
-
-#include "temp/system/window.h"
 
 namespace temp {
 namespace graphics {
 namespace opengl {
 
-OpenGLDevice::OpenGLDevice(NativeWindowHandle window_handle)
-    : resource_creation_thread_(
-          temp::system::ThreadPool::makeUnique("OpenGL resource create", 1)) {
-    native_window_handle_ = window_handle;
-#if defined(TEMP_PLATFORM_MAC)
-    native_handle_ = mac::createContext(window_handle);
-    auto job = resource_creation_thread_->pushJob(
-        [this]() { mac::makeCurrent(native_handle_); });
-    job.wait();
-#elif defined(TEMP_PLATFORM_WINDOWS)
-    native_handle_ = windows::createContext(window_handle);
-    auto job = resource_creation_thread_->pushJob([this, window_handle]() {
-        auto hdc = GetDC(window_handle);
-        wglMakeCurrent(hdc, native_handle_);
-    });
-    job.wait();
-#endif
+Device::SPtr OpenGLDevice::create(WindowHandle                    window_handle,
+                                  const system::ThreadPool::SPtr& render_thread,
+                                  const system::ThreadPool::SPtr& load_thread) {
+    struct Creator : public OpenGLDevice {
+        Creator(WindowHandle                    window_handle,
+                const system::ThreadPool::SPtr& render_thread,
+                const system::ThreadPool::SPtr& load_thread)
+            : OpenGLDevice(window_handle, render_thread, load_thread) {}
+    };
+
+    return std::make_shared<Creator>(window_handle, render_thread, load_thread);
 }
 
+OpenGLDevice::OpenGLDevice(WindowHandle                    window_handle,
+                           const system::ThreadPool::SPtr& render_thread,
+                           const system::ThreadPool::SPtr& load_thread)
+    : window_handle_(window_handle)
+    , render_thread_(render_thread)
+    , load_thread_(load_thread) {
+    // 各スレッド用コンテキストを作成
+    render_context_ = createContext(window_handle_, nullptr);
+    load_context_   = createContext(window_handle_, render_context_);
 
-OpenGLRenderTarget::SPtr OpenGLDevice::createRenderTarget(
+    {
+        auto future = render_thread_->pushJob(
+            [this]() { makeCurrent(window_handle_, render_context_); });
+        future.wait();
+    }
+
+    {
+        auto future = load_thread_->pushJob(
+            [this]() { makeCurrent(window_handle_, load_context_); });
+        future.wait();
+    }
+}
+
+OpenGLDevice::~OpenGLDevice() {
+    deleteContext(render_context_);
+    deleteContext(load_context_);
+}
+
+RenderTargetSPtr OpenGLDevice::createRenderTarget(
     const RenderTargetDesc& desc) {
     using temp::system::Logger;
 
@@ -64,57 +62,94 @@ OpenGLRenderTarget::SPtr OpenGLDevice::createRenderTarget(
                              ? GL_UNSIGNED_BYTE
                              : GL_FLOAT;
         glCallWithErrorCheck(glTexImage2D, GL_TEXTURE_2D, 0, gl_format,
-                             (GLsizei)desc.width, (GLsizei)desc.height, 0, GL_RGBA, gl_type,
-                             nullptr);
+                             (GLsizei)desc.width, (GLsizei)desc.height, 0,
+                             GL_RGBA, gl_type, nullptr);
 
         glCallWithErrorCheck(glBindTexture, GL_TEXTURE_2D, 0);
         return id;
     };
 
-    GLuint id = execInResourceCreationThread(task);
+    GLuint id = execInLoadThread(task);
     Logger::trace("[OpenGL] render_target has created. id: {0}", id);
 
-    return RenderTarget::makeShared(
-        id, desc,
-        [this](GLuint id) {
-            auto task
-                = [id]() { glCallWithErrorCheck(glDeleteTextures, 1, &id); };
-            execInResourceCreationThread(task);
-            Logger::trace("[OpenGL] render_target has deleted. id: {0}", id);
-        },
-        resource_creation_thread_);
+    struct Creator : OpenGLRenderTarget {
+        Creator(GLuint id, const RenderTargetDesc& desc,
+                std::function<void(GLuint)> on_destroy)
+            : OpenGLRenderTarget(id, desc, on_destroy) {}
+    };
+
+    return std::make_shared<Creator>(id, desc, [this](GLuint id) {
+        auto task = [id]() { glCallWithErrorCheck(glDeleteTextures, 1, &id); };
+        execInLoadThread(task);
+        Logger::trace("[OpenGL] render_target has deleted. id: {0}", id);
+    });
 }
 
-
-OpenGLTexture::SPtr OpenGLDevice::createTexture(const TextureDesc& desc,
-                                                const void*        data) {
+TextureSPtr OpenGLDevice::createTexture(const TextureDesc& desc,
+                                        const void*        data) {
     using temp::system::Logger;
 
-    auto task = [this, &desc]() {
+    auto task = [this, &desc, data]() {
         GLuint id;
         glCallWithErrorCheck(glGenTextures, 1, &id);
         glCallWithErrorCheck(glBindTexture, GL_TEXTURE_2D, id);
-        // glCallWithErrorCheck(glTexImage2D, );
+
+        auto    gl_internal_format = textureFormatToGlFormat(desc.format);
+        GLenum  gl_type            = GL_UNSIGNED_BYTE;
+        GLenum  gl_format;
+        GLsizei size;
+        switch (desc.format) {
+        case TextureFormat::kDXT1:
+            size = ((desc.width + 3) / 4) * ((desc.height + 3) / 4) * 8;
+            break;
+        case TextureFormat::kDXT5:
+            size = ((desc.width + 3) / 4) * ((desc.height + 3) / 4) * 16;
+            break;
+        case TextureFormat::kRGB24:
+            gl_format = GL_RGB;
+            break;
+        case TextureFormat::kAlpha8:
+            gl_format = GL_RED;
+            break;
+        case TextureFormat::kRGBA32:
+            gl_format = GL_RGBA;
+            break;
+        }
+
+        if (desc.format == TextureFormat::kDXT1
+            || desc.format == TextureFormat::kDXT5) {
+            glCallWithErrorCheck(glCompressedTexImage2D, GL_TEXTURE_2D, 0,
+                                 gl_internal_format, (GLsizei)desc.width,
+                                 (GLsizei)desc.height, 0, size, data);
+        } else {
+            glCallWithErrorCheck(glTexImage2D, GL_TEXTURE_2D, 0,
+                                 gl_internal_format, (GLsizei)desc.width,
+                                 (GLsizei)desc.height, 0, gl_format, gl_type,
+                                 data);
+        }
+
         glCallWithErrorCheck(glBindTexture, GL_TEXTURE_2D, 0);
         return id;
     };
 
-    GLuint id = execInResourceCreationThread(task);
+    GLuint id = execInLoadThread(task);
     Logger::trace("[OpenGL] texture has created. id: {0}", id);
 
-    return Texture::makeShared(
-        id, desc,
-        [this](GLuint id) {
-            auto task
-                = [id]() { glCallWithErrorCheck(glDeleteTextures, 1, &id); };
-            execInResourceCreationThread(task);
-            Logger::trace("[OpenGL] texture has deleted. id: {0}", id);
-        },
-        resource_creation_thread_);
+    struct Creator : OpenGLTexture {
+        Creator(GLuint id, const TextureDesc& desc,
+                std::function<void(GLuint)> on_destroy)
+            : OpenGLTexture(id, desc, on_destroy) {}
+    };
+
+    return std::make_shared<Creator>(id, desc, [this](GLuint id) {
+        auto task = [id]() { glCallWithErrorCheck(glDeleteTextures, 1, &id); };
+        execInLoadThread(task);
+        Logger::trace("[OpenGL] texture has deleted. id: {0}", id);
+    });
 }
 
-OpenGLVertexBuffer::SPtr OpenGLDevice::createVertexBuffer(
-    const VertexBufferDesc& desc, const void* data) {
+VertexBufferSPtr OpenGLDevice::createVertexBuffer(const VertexBufferDesc& desc,
+                                                  const void* data) {
     using temp::system::Logger;
 
     auto task = [this, desc, data]() {
@@ -128,22 +163,24 @@ OpenGLVertexBuffer::SPtr OpenGLDevice::createVertexBuffer(
         return id;
     };
 
-    GLuint id = execInResourceCreationThread(task);
+    GLuint id = execInLoadThread(task);
     Logger::trace("[OpenGL] vertex buffer has created. id: {0}", id);
 
-    return VertexBuffer::makeShared(
-        id, desc,
-        [this](GLuint id) {
-            auto task
-                = [id]() { glCallWithErrorCheck(glDeleteBuffers, 1, &id); };
-            execInResourceCreationThread(task);
-            Logger::trace("[OpenGL] vertex buffer has deleted. id: {0}", id);
-        },
-        resource_creation_thread_);
+    struct Creator : OpenGLVertexBuffer {
+        Creator(GLuint id, const VertexBufferDesc& desc,
+                std::function<void(GLuint)> on_destroy)
+            : OpenGLVertexBuffer(id, desc, on_destroy) {}
+    };
+
+    return std::make_shared<Creator>(id, desc, [this](GLuint id) {
+        auto task = [id]() { glCallWithErrorCheck(glDeleteBuffers, 1, &id); };
+        execInLoadThread(task);
+        Logger::trace("[OpenGL] vertex buffer has deleted. id: {0}", id);
+    });
 }
 
-OpenGLIndexBuffer::SPtr OpenGLDevice::createIndexBuffer(
-    const IndexBufferDesc& desc, const void* data) {
+IndexBufferSPtr OpenGLDevice::createIndexBuffer(const IndexBufferDesc& desc,
+                                                const void*            data) {
     using temp::system::Logger;
 
     auto task = [this, desc, data]() {
@@ -157,22 +194,23 @@ OpenGLIndexBuffer::SPtr OpenGLDevice::createIndexBuffer(
         return id;
     };
 
-    GLuint id = execInResourceCreationThread(task);
+    GLuint id = execInLoadThread(task);
     Logger::trace("[OpenGL] index buffer has created. id: {0}", id);
 
-    return IndexBuffer::makeShared(
-        id, desc,
-        [this](GLuint id) {
-            auto task
-                = [id]() { glCallWithErrorCheck(glDeleteBuffers, 1, &id); };
-            execInResourceCreationThread(task);
-            Logger::trace("[OpenGL] index buffer has deleted. id: {0}", id);
-        },
-        resource_creation_thread_);
+    struct Creator : OpenGLIndexBuffer {
+        Creator(GLuint id, const IndexBufferDesc& desc,
+                std::function<void(GLuint)> on_destroy)
+            : OpenGLIndexBuffer(id, desc, on_destroy) {}
+    };
+
+    return std::make_shared<Creator>(id, desc, [this](GLuint id) {
+        auto task = [id]() { glCallWithErrorCheck(glDeleteBuffers, 1, &id); };
+        execInLoadThread(task);
+        Logger::trace("[OpenGL] index buffer has deleted. id: {0}", id);
+    });
 }
 
-OpenGLPixelShader::SPtr OpenGLDevice::createPixelShader(
-    const ShaderCode& code) {
+PixelShaderSPtr OpenGLDevice::createPixelShader(const ShaderCode& code) {
     using temp::system::Logger;
 
     auto task = [this, code]() {
@@ -189,18 +227,23 @@ OpenGLPixelShader::SPtr OpenGLDevice::createPixelShader(
         return id;
     };
 
-    GLuint id = execInResourceCreationThread(task);
+    GLuint id = execInLoadThread(task);
     Logger::trace("[OpenGL] fragment shader has created. id: {0}", id);
 
-    return PixelShader::makeShared(id, code, [this](GLuint id) {
+    struct Creator : OpenGLPixelShader {
+        Creator(GLuint id, const ShaderCode& code,
+                std::function<void(GLuint)> on_destroy)
+            : OpenGLPixelShader(id, code, on_destroy) {}
+    };
+
+    return std::make_shared<Creator>(id, code, [this](GLuint id) {
         auto task = [id]() { glCallWithErrorCheck(glDeleteShader, id); };
-        execInResourceCreationThread(task);
+        execInLoadThread(task);
         Logger::trace("[OpenGL] fragment shader has deleted. id: {0}", id);
     });
 }
 
-OpenGLVertexShader::SPtr OpenGLDevice::createVertexShader(
-    const ShaderCode& code) {
+VertexShaderSPtr OpenGLDevice::createVertexShader(const ShaderCode& code) {
     using temp::system::Logger;
 
     auto task = [this, code]() {
@@ -217,42 +260,27 @@ OpenGLVertexShader::SPtr OpenGLDevice::createVertexShader(
         return id;
     };
 
-    GLuint id = execInResourceCreationThread(task);
+    GLuint id = execInLoadThread(task);
     Logger::trace("[OpenGL] vertex shader has created. id: {0}", id);
 
-    return VertexShader::makeShared(id, code, [this](GLuint id) {
+    struct Creator : OpenGLVertexShader {
+        Creator(GLuint id, const ShaderCode& code,
+                std::function<void(GLuint)> on_destroy)
+            : OpenGLVertexShader(id, code, on_destroy) {}
+    };
+
+    return std::make_shared<Creator>(id, code, [this](GLuint id) {
         auto task = [id]() { glCallWithErrorCheck(glDeleteShader, id); };
-        execInResourceCreationThread(task);
+        execInLoadThread(task);
         Logger::trace("[OpenGL] vertex shader has deleted. id: {0}", id);
     });
 }
 
-void OpenGLDevice::prepareToShare() {
-#ifdef TEMP_PLATFORM_WINDOWS
-    auto task = [this]() {
-        auto hdc = GetDC(native_window_handle_);
-        wglMakeCurrent(hdc, nullptr);
-    };
-    execInResourceCreationThread(task);
-#endif
-}
-
-void OpenGLDevice::restoreContext() {
-#ifdef TEMP_PLATFORM_WINDOWS
-    auto task = [this]() {
-        auto hdc = GetDC(native_window_handle_);
-        wglMakeCurrent(hdc, native_handle_);
-    };
-    execInResourceCreationThread(task);
-#endif
-}
-
 template <typename TaskType>
-auto OpenGLDevice::execInResourceCreationThread(TaskType& task)
-    -> decltype(task()) {
+auto OpenGLDevice::execInLoadThread(TaskType task) -> decltype(task()) {
     bool   is_res_creation_thread = false;
     auto&& thread_id              = std::this_thread::get_id();
-    auto&& thread_id_list         = resource_creation_thread_->threadIdList();
+    auto&& thread_id_list         = load_thread_->threadIdList();
     for (auto&& i : thread_id_list) {
         if (i == thread_id) {
             is_res_creation_thread = true;
@@ -262,10 +290,89 @@ auto OpenGLDevice::execInResourceCreationThread(TaskType& task)
     if (is_res_creation_thread) {
         return task();
     } else {
-        auto&& future = resource_creation_thread_->pushJob(task);
+        auto&& future = load_thread_->pushJob(task);
         return future.get();
     }
 }
+
+
+OpenGLIndexBuffer::OpenGLIndexBuffer(GLuint id, const IndexBufferDesc& desc,
+                                     std::function<void(GLuint)> on_destroy)
+    : id_(id), on_destroy_(on_destroy) {
+    desc_ = desc;
+}
+
+OpenGLIndexBuffer::~OpenGLIndexBuffer() { on_destroy_(id_); }
+
+const ByteData OpenGLIndexBuffer::data() {
+    glCallWithErrorCheck(glBindBuffer, GL_ELEMENT_ARRAY_BUFFER, id());
+    GLint size;
+    glCallWithErrorCheck(glGetBufferParameteriv, GL_ELEMENT_ARRAY_BUFFER,
+                         GL_BUFFER_SIZE, &size);
+    ByteData byte_data(size);
+    auto     mapped = glCallWithErrorCheck(glMapBuffer, GL_ELEMENT_ARRAY_BUFFER,
+                                       GL_READ_ONLY);
+    memcpy(&byte_data[0], mapped, size);
+    glCallWithErrorCheck(glUnmapBuffer, GL_ELEMENT_ARRAY_BUFFER);
+    glCallWithErrorCheck(glBindBuffer, GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    return byte_data;
+}
+
+OpenGLPixelShader::OpenGLPixelShader(GLuint id, const ShaderCode& code,
+                                     std::function<void(GLuint)> on_destroy)
+    : id_(id), on_destroy_(on_destroy) {
+    code_ = code;
+}
+
+OpenGLPixelShader::~OpenGLPixelShader() { on_destroy_(id_); }
+
+OpenGLRenderTarget::OpenGLRenderTarget(GLuint id, const RenderTargetDesc& desc,
+                                       std::function<void(GLuint)> on_destroy)
+    : id_(id), on_destroy_(on_destroy) {
+    desc_ = desc;
+}
+
+OpenGLRenderTarget::~OpenGLRenderTarget() { on_destroy_(id_); }
+
+OpenGLTexture::OpenGLTexture(GLuint id, const TextureDesc& desc,
+                             std::function<void(GLuint)> on_destroy)
+    : id_(id), on_destroy_(on_destroy) {
+    desc_ = desc;
+}
+
+OpenGLTexture::~OpenGLTexture() { on_destroy_(id_); }
+
+OpenGLVertexBuffer::OpenGLVertexBuffer(GLuint id, const VertexBufferDesc& desc,
+                                       std::function<void(GLuint)> on_destroy)
+    : id_(id), on_destroy_(on_destroy) {
+    desc_ = desc;
+}
+
+OpenGLVertexBuffer::~OpenGLVertexBuffer() { on_destroy_(id_); }
+
+const ByteData OpenGLVertexBuffer::data() {
+    glCallWithErrorCheck(glBindBuffer, GL_ARRAY_BUFFER, id());
+    GLint size;
+    glCallWithErrorCheck(glGetBufferParameteriv, GL_ARRAY_BUFFER,
+                         GL_BUFFER_SIZE, &size);
+    ByteData byte_data(size);
+    auto     mapped
+        = glCallWithErrorCheck(glMapBuffer, GL_ARRAY_BUFFER, GL_READ_ONLY);
+    memcpy(&byte_data[0], mapped, size);
+    glCallWithErrorCheck(glUnmapBuffer, GL_ARRAY_BUFFER);
+    glCallWithErrorCheck(glBindBuffer, GL_ARRAY_BUFFER, 0);
+
+    return byte_data;
+}
+
+OpenGLVertexShader::OpenGLVertexShader(GLuint id, const ShaderCode& code,
+                                       std::function<void(GLuint)> on_destroy)
+    : id_(id), on_destroy_(on_destroy) {
+    code_ = code;
+}
+
+OpenGLVertexShader::~OpenGLVertexShader() { on_destroy_(id_); }
 }
 }
 }

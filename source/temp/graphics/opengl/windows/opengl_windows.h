@@ -1,21 +1,18 @@
-﻿/**
+/**
  * @file opengl_windows.h
- * @brief OpenGL Windows依存部分
+ * @brief
  * @author tsukushibito
  * @version 0.0.1
- * @date 2017-03-16
+ * @date 2017-09-22
  */
 #pragma once
-#ifndef GUARD_e399957dbea84d7d9e01b3cca35ea527
-#define GUARD_e399957dbea84d7d9e01b3cca35ea527
+#ifndef GUARD_9f089a61db6c42c59b20bab84df9afc0
+#define GUARD_9f089a61db6c42c59b20bab84df9afc0
 
-#include "temp/graphics/opengl/opengl_define.h"
+#include "temp/graphics/opengl/opengl_common.h"
+#include "temp/graphics/opengl/windows/opengl_windows.h"
 
 #if defined(TEMP_PLATFORM_WINDOWS)
-
-#include "temp/graphics/opengl/opengl_device.h"
-#include "temp/type.h"
-
 namespace temp {
 namespace graphics {
 namespace opengl {
@@ -27,9 +24,8 @@ OpenGLContextHandle createContext(
 
 void deleteContext(OpenGLContextHandle context);
 
-void makeCurrent(
-    temp::system::Window::NativeHandle window_handle,
-    OpenGLContextHandle context);
+void makeCurrent(temp::system::Window::NativeHandle window_handle,
+                 OpenGLContextHandle                context);
 
 void swapBuffers(OpenGLContextHandle context);
 
@@ -38,6 +34,7 @@ OpenGLContextHandle createSharedContext(OpenGLContextHandle shared_context);
 }
 }
 }
+
 #endif
 
-#endif  // GUARD_e399957dbea84d7d9e01b3cca35ea527
+#endif  // GUARD_9f089a61db6c42c59b20bab84df9afc0

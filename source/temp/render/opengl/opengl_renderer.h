@@ -3,67 +3,57 @@
  * @brief
  * @author tsukushibito
  * @version 0.0.1
- * @date 2017-08-21
+ * @date 2017-09-28
  */
 #pragma once
-#ifndef GUARD_863b2c1cae9d409a8153998397747e60
-#define GUARD_863b2c1cae9d409a8153998397747e60
-
-#include "temp/temp_math.h"
-
-#include "temp/graphics/graphics.h"
-
-#include "temp/resource/pixel_shader.h"
-#include "temp/resource/vertex_shader.h"
+#ifndef GUARD_ab57776103ba468a9fbe45fc77a11914
+#define GUARD_ab57776103ba468a9fbe45fc77a11914
 
 #include "temp/render/renderer.h"
 
-#include "temp/render/opengl/opengl_copy_to_backbuffer.h"
+#include "temp/graphics/opengl/opengl_device.h"
 
 namespace temp {
 namespace render {
+namespace opengl {
 
-class Renderer::Impl {
+class OpenGLRenderer : public Renderer,
+                       public SmartPointerObject<OpenGLRenderer> {
 public:
-    explicit Impl(Renderer& renderer);
-    ~Impl();
+    OpenGLRenderer(const graphics::Device::SPtr&   device,
+                   const system::ThreadPool::SPtr& render_thread);
 
-    Renderer::RenderTargetSPtr createRenderTarget(
-        const graphics::RenderTargetDesc& desc);
+    ~OpenGLRenderer();
 
-    void render();
+    void render() override;
 
-    void onCameraDestory(Camera* camera);
+    Camera::SPtr createCamera() override;
+
+    void setMainCamera(const Camera::SPtr& camera) override;
+
+    graphics::opengl::OpenGLContextHandle contextHandle() const {
+        return gl_context_;
+    }
+
+    const graphics::Device& device() const { return *device_; }
 
 private:
-    void renderView(Camera* camera);
+    system::ThreadPool::SPtr render_thread_;
 
-    void copyToBackBuffer();
+    graphics::WindowHandle window_handle_;
 
-private:
-    struct FboAndDepthBuffer {
-        GLuint fbo;
-        GLuint depth_buffer;
-    };
+    graphics::opengl::OpenGLContextHandle gl_context_;
 
-    Renderer& renderer_;
+    std::shared_ptr<graphics::opengl::OpenGLDevice> device_;
 
-    temp::graphics::opengl::OpenGLContextHandle gl_context_;
+    std::mutex camera_list_mutex_;
 
-    std::future<void> prev_frame_render_job_;
+    Vector<Camera*> camera_list_;
 
-    HashMap<Camera*, FboAndDepthBuffer> fbo_table_;
-
-    GLuint sampler_table_[(Int32)temp::graphics::SamplerFilter::COUNT]
-                         [(Int32)temp::graphics::SamplerAddressMode::COUNT];
-
-    std::unique_ptr<opengl::CopyToBackBuffer> copyToBackBuffer_;
-
-    GLuint debug_tex_;
-    GLuint debug_vertices_;
-    GLuint debug_vao_;
+    Camera::SPtr main_camera_;
 };
 }
 }
+}
 
-#endif  // GUARD_863b2c1cae9d409a8153998397747e60
+#endif  // GUARD_ab57776103ba468a9fbe45fc77a11914

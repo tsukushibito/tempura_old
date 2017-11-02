@@ -7,22 +7,15 @@
 #import <OpenGL/gl3.h>
 #import <OpenGL/gl3ext.h>
 
-#include "temp/container.h"
-
-#include "temp/system/mac/mac.h"
-
 #include "temp/graphics/opengl/mac/opengl_mac.h"
-#include "temp/graphics/opengl/opengl_define.h"
-
 
 namespace temp {
 namespace graphics {
 namespace opengl {
 namespace mac {
 
-OpenGLContextHandle createContext(
-    temp::system::Window::NativeHandle window_handle,
-    OpenGLContextHandle                shared_context) {
+OpenGLContextHandle createContext(WindowHandle        window_handle,
+                                  OpenGLContextHandle shared_context) {
     NSWindow* window = (__bridge NSWindow*)window_handle;
     // ピクセルフォーマット指定
     NSOpenGLPixelFormatAttribute att[] = {NSOpenGLPFAOpenGLProfile,
@@ -57,6 +50,8 @@ OpenGLContextHandle createContext(
 
     NSView* ns_view = [window contentView];
     [context setView:ns_view];
+    int swap_interval = 0;
+    [context setValues:&swap_interval forParameter:NSOpenGLCPSwapInterval];
 
     // カレントコンテキストに設定
     [context makeCurrentContext];
@@ -83,7 +78,7 @@ void deleteContext(OpenGLContextHandle context) {
     ns_context                  = nil;
 }
 
-void makeCurrent(OpenGLContextHandle context) {
+void makeCurrent(WindowHandle window_handle, OpenGLContextHandle context) {
     NSOpenGLContext* ns_context = (__bridge NSOpenGLContext*)context;
 
     if (ns_context == nullptr) {
@@ -100,13 +95,11 @@ void swapBuffers(OpenGLContextHandle context) {
 }
 
 OpenGLContextHandle createSharedContext(OpenGLContextHandle shared_context) {
-    NSOpenGLContext* context
-        = (__bridge NSOpenGLContext*)shared_context;
-    NSView* ns_view     = [context view];
-    NSWindow* ns_window = [ns_view window];
+    NSOpenGLContext* context = (__bridge NSOpenGLContext*)shared_context;
+    NSView* ns_view          = [context view];
+    NSWindow* ns_window      = [ns_view window];
     return createContext(ns_window, shared_context);
 }
-
 }
 }
 }

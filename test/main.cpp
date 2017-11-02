@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file main.cpp
  * @brief test main
  * @author tsukushibito
@@ -35,9 +35,9 @@ class Test {
     temp::system::ThreadPool::SPtr load_thread_;
     temp::system::ThreadPool::SPtr render_thread_;
     temp::system::ThreadPool::SPtr worker_threads_;
-    temp::graphics::Device::SPtr device_;
-    temp::render::Renderer::SPtr renderer_;
-    temp::render::Camera::SPtr camera_;
+    temp::graphics_::Device::SPtr device_;
+    temp::render_old::Renderer::SPtr renderer_;
+    temp::render_old::Camera::SPtr camera_;
 };
 
 Test::Test() {
@@ -57,9 +57,9 @@ Test::Test() {
 void Test::init() {
     using namespace temp;
     using namespace temp::system;
-    using namespace temp::graphics;
-    using namespace temp::resource;
-    using namespace temp::render;
+    using namespace temp::graphics_;
+    using namespace temp::resource_old;
+    using namespace temp::render_old;
 
     Logger::initialize();
 
@@ -70,13 +70,12 @@ void Test::init() {
     window_ = Window::makeUnique();
     device_ = Device::makeShared(window_->nativeHandle());
 
-    temp::resource::initialize(load_thread_, device_);
+    temp::resource_old::initialize(load_thread_, device_);
 
     DrawAreaSize draw_area_size = {window_->width(), window_->height()};
     Path shader_directory("shader");
     renderer_ = Renderer::makeUnique(worker_threads_, render_thread_, device_,
                                      draw_area_size, shader_directory);
-    camera_ = renderer_->createCamera();
 
     RenderTargetDesc rt_desc;
     rt_desc.format = RenderTargetFormat::kRGBA32;
@@ -84,7 +83,7 @@ void Test::init() {
     rt_desc.height = window_->height();
     auto render_target = renderer_->createRenderTarget(rt_desc);
     
-    camera_->renderTarget() = render_target;
+    camera_ = renderer_->createCamera(render_target);
 
     renderer_->setMainCamera(camera_);
 
@@ -98,12 +97,12 @@ void Test::init() {
 void Test::term() {
     using namespace temp;
     using namespace temp::system;
-    using namespace temp::resource;
+    using namespace temp::resource_old;
 
     camera_ = nullptr;
     renderer_ = nullptr;
 
-    temp::resource::terminate();
+    temp::resource_old::terminate();
 
     window_ = nullptr;
 
@@ -120,7 +119,7 @@ void Test::update() {
     temp::system::Timer timer;
     renderer_->render();
     auto ms = timer.milliseconds();
-    // std::cout << "Delta time : " << ms << " ms" << std::endl;
+    std::cout << "Delta time : " << ms << " ms" << std::endl;
 }
 
 void Test::run() {
@@ -134,9 +133,9 @@ void Test::testExp() {
 }
 
 void Test::testResource() {
-    using temp::resource::Texture;
-    using temp::resource::Mesh;
-    using temp::resource::VertexShader;
+    using temp::resource_old::Texture;
+    using temp::resource_old::Mesh;
+    using temp::resource_old::VertexShader;
     using temp::system::Path;
     using namespace temp::math;
 
@@ -155,8 +154,8 @@ void Test::testResource() {
     };
 
     {
-        using namespace temp::graphics;
-        using namespace temp::resource;
+        using namespace temp::graphics_;
+        using namespace temp::resource_old;
 
         auto mesh = Mesh::create(Path("resource/mesh/test.tmsh"));
 
@@ -219,7 +218,7 @@ void Test::testResource() {
         printf("***** ********** *****\n");
 
         auto vb_table = mesh->vertexBufferTable();
-        auto key_value = vb_table.find(graphics::VertexAttribute::kPosition);
+        auto key_value = vb_table.find(graphics_::VertexAttribute::kPosition);
         if (key_value == vb_table.end()) break;
 
         auto vb = key_value->second;

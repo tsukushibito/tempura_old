@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file file_system.h
  * @brief file system
  * @author tsukushibito
@@ -49,9 +49,7 @@ public:
         return *this;
     }
 
-    Path operator+(const String& str) {
-        return Path(this->absolute() + str);
-    }
+    Path operator+(const String& str) { return Path(this->absolute() + str); }
 
     String absolute() const;
     String rootName() const;

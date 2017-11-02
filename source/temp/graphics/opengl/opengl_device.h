@@ -1,33 +1,38 @@
-﻿/**
+/**
  * @file opengl_device.h
- * @brief OpenGLデバイス
+ * @brief
  * @author tsukushibito
  * @version 0.0.1
- * @date 2017-02-28
+ * @date 2017-09-21
  */
 #pragma once
-#ifndef GUARD_c63f349cadc54355a8cca8adfd97d484
-#define GUARD_c63f349cadc54355a8cca8adfd97d484
+#ifndef GUARD_8709bf1374084e08b7ff2ce4964967e9
+#define GUARD_8709bf1374084e08b7ff2ce4964967e9
 
-#include "temp/graphics/graphics_common.h"
-
-#ifdef TEMP_GRAPHICS_OPENGL
 #include "temp/system/thread_pool.h"
 
 #include "temp/graphics/device.h"
-#include "temp/graphics/opengl/opengl_define.h"
+#include "temp/graphics/opengl/opengl_common.h"
 
 namespace temp {
 namespace graphics {
 namespace opengl {
 
-class OpenGLDevice : public DeviceBase<OpenGLDevice, OpenGLContextHandle> {
-    friend class SmartPointerObject<OpenGLDevice>;
-
-private:
-    explicit OpenGLDevice(NativeWindowHandle window_handle);
-
+/**
+ * @brief 
+ */
+class OpenGLDevice : public Device {
 public:
+    static Device::SPtr create(WindowHandle                    window_handle,
+                               const system::ThreadPool::SPtr& render_thread,
+                               const system::ThreadPool::SPtr& load_thread);
+
+    OpenGLDevice(WindowHandle                    window_handle,
+                 const system::ThreadPool::SPtr& render_thread,
+                 const system::ThreadPool::SPtr& load_thread);
+
+    ~OpenGLDevice();
+
     RenderTargetSPtr createRenderTarget(const RenderTargetDesc& desc);
 
     TextureSPtr createTexture(const TextureDesc& desc, const void* data);
@@ -42,20 +47,140 @@ public:
 
     VertexShaderSPtr createVertexShader(const ShaderCode& code);
 
-    // 
-    void prepareToShare();
-    void restoreContext();
+    GraphicsAPI api() const { return GraphicsAPI::kOpenGL; }
+
+    WindowHandle windowHandle() const { return window_handle_; }
+
+    OpenGLContextHandle renderContext() const { return render_context_; }
+
+    OpenGLContextHandle loadContext() const { return load_context_; }
+
+    template <typename TaskType>
+    auto execInLoadThread(TaskType task) -> decltype(task());
 
 private:
-    template <typename TaskType>
-    auto execInResourceCreationThread(TaskType& task) -> decltype(task());
+    WindowHandle window_handle_;
 
-    temp::system::ThreadPool::SPtr resource_creation_thread_;
+    OpenGLContextHandle      render_context_;
+    system::ThreadPool::SPtr render_thread_;
+
+    OpenGLContextHandle      load_context_;
+    system::ThreadPool::SPtr load_thread_;
+};
+
+/**
+ * @brief 
+ */
+class OpenGLIndexBuffer : public IndexBuffer {
+protected:
+    OpenGLIndexBuffer(GLuint id, const IndexBufferDesc& desc,
+                      std::function<void(GLuint)> on_destroy);
+
+public:
+    ~OpenGLIndexBuffer();
+
+    const ByteData data();
+
+    GLuint id() { return id_; }
+
+private:
+    GLuint                      id_;
+    std::function<void(GLuint)> on_destroy_;
+};
+
+/**
+ * @brief 
+ */
+class OpenGLPixelShader : public PixelShader {
+protected:
+    OpenGLPixelShader(GLuint id, const ShaderCode& code,
+                      std::function<void(GLuint)> on_destroy);
+
+public:
+    ~OpenGLPixelShader();
+
+    GLuint id() { return id_; }
+
+private:
+    GLuint                      id_;
+    std::function<void(GLuint)> on_destroy_;
+};
+
+/**
+ * @brief 
+ */
+class OpenGLRenderTarget : public RenderTarget {
+protected:
+    OpenGLRenderTarget(GLuint id, const RenderTargetDesc& desc,
+                       std::function<void(GLuint)> on_destroy);
+
+public:
+    ~OpenGLRenderTarget();
+
+    GLuint id() { return id_; }
+
+private:
+    GLuint                      id_;
+    std::function<void(GLuint)> on_destroy_;
+};
+
+/**
+ * @brief 
+ */
+class OpenGLTexture : public Texture {
+protected:
+    OpenGLTexture(GLuint id, const TextureDesc& desc,
+                  std::function<void(GLuint)> on_destroy);
+
+public:
+    ~OpenGLTexture();
+
+    GLuint id() { return id_; }
+
+private:
+    GLuint                      id_;
+    std::function<void(GLuint)> on_destroy_;
+};
+
+/**
+ * @brief 
+ */
+class OpenGLVertexBuffer : public VertexBuffer {
+protected:
+    OpenGLVertexBuffer(GLuint id, const VertexBufferDesc& desc,
+                       std::function<void(GLuint)> on_destroy);
+
+public:
+    ~OpenGLVertexBuffer();
+
+    const ByteData data();
+
+    GLuint id() { return id_; }
+
+private:
+    GLuint                      id_;
+    std::function<void(GLuint)> on_destroy_;
+};
+
+/**
+ * @brief 
+ */
+class OpenGLVertexShader : public VertexShader {
+protected:
+    OpenGLVertexShader(GLuint id, const ShaderCode& code,
+                       std::function<void(GLuint)> on_destroy);
+
+public:
+    ~OpenGLVertexShader();
+
+    GLuint id() { return id_; }
+
+private:
+    GLuint                      id_;
+    std::function<void(GLuint)> on_destroy_;
 };
 }
 }
 }
 
-#endif  // TEMP_GRAPHICS_OPENGL
-
-#endif  // GUARD_c63f349cadc54355a8cca8adfd97d484
+#endif  // GUARD_8709bf1374084e08b7ff2ce4964967e9

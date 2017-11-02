@@ -1,4 +1,4 @@
-﻿#include "temp/graphics/opengl/windows/opengl_windows.h"
+#include "temp/graphics/opengl/windows/opengl_windows.h"
 
 #if defined(TEMP_PLATFORM_WINDOWS)
 
@@ -80,26 +80,16 @@ void initializeOpenglExtension() {
 }
 
 OpenGLContextHandle createContextImpl(HDC                 hdc,
-    OpenGLContextHandle shared_context) {
+                                      OpenGLContextHandle shared_context) {
     // OpeGL拡張機能初期化用のダミーウィンドウとコンテキストを作成
-    auto dummy_window_handle = createDummyWindow();
+    auto dummy_window_handle  = createDummyWindow();
     auto dummy_device_context = GetDC(dummy_window_handle);
     auto dummy_opengl_context = createDummyOpenglContext(dummy_device_context);
     BOOL result = wglMakeCurrent(dummy_device_context, dummy_opengl_context);
 
     GLenum error;
-#ifdef TEMP_USE_GLEW
-    // glewの初期化
-    error = glewInit();
-    if (error != GLEW_OK) {
-        Logger::error("glewInit failed!: {0}", glewGetErrorString(error));
-    }
-    else {
-        Logger::info("glewInit version: {0}", glewGetString(GLEW_VERSION));
-    }
-#else
     initializeOpenglExtension();
-#endif
+
     // OpenGL情報取得
     using temp::system::Logger;
     auto vendor = glGetString(GL_VENDOR);
@@ -108,14 +98,12 @@ OpenGLContextHandle createContextImpl(HDC                 hdc,
     if (renderer != nullptr) Logger::info("[OpenGL] renderer : {0}", renderer);
     auto version = glGetString(GL_VERSION);
     if (version != nullptr) Logger::info("[OpenGL] version : {0}", version);
-    /*
     auto extensions = glGetString(GL_EXTENSIONS);
     if (extensions != nullptr) {
         String extensionsStr = reinterpret_cast<const Char*>(extensions);
         // std::replace(extensionsStr.begin(), extensionsStr.end(), ' ', '\n');
         Logger::info("[OpenGL] extensions : {0}", extensionsStr);
     }
-    */
     String         version_string = reinterpret_cast<const char*>(version);
     StringStream   ss(version_string);
     Vector<String> num_strs;
@@ -128,7 +116,7 @@ OpenGLContextHandle createContextImpl(HDC                 hdc,
 
 
     // 拡張機能によるコンテキストの作成
-    const FLOAT fAtribList[] = { 0, 0 };
+    const FLOAT fAtribList[] = {0, 0};
 
     // ピクセルフォーマット指定用
     const int pixel_format_attrib_list[] = {
@@ -160,15 +148,15 @@ OpenGLContextHandle createContextImpl(HDC                 hdc,
             WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
             0,
             0,  // End
-    };
+          };
 
     int  pixelFormat = 0;
-    UINT numFormats = 0;
+    UINT numFormats  = 0;
 
     // ピクセルフォーマット選択
     BOOL isValid
         = wglChoosePixelFormatARB(hdc, pixel_format_attrib_list, fAtribList, 1,
-            &pixelFormat, &numFormats);
+                                  &pixelFormat, &numFormats);
 
     error = glGetError();
     if (isValid == FALSE) {
@@ -219,8 +207,7 @@ OpenGLContextHandle createContextImpl(HDC                 hdc,
         assert(false);
     }
 
-    if (shared_context != nullptr)
-    {
+    if (shared_context != nullptr) {
         result = wglShareLists(context, shared_context);
         if (result == FALSE) {
             auto err = GetLastError();
@@ -245,18 +232,15 @@ OpenGLContextHandle createContextImpl(HDC                 hdc,
 }
 }
 
-OpenGLContextHandle createContext(
-    temp::system::Window::NativeHandle window_handle,
-    OpenGLContextHandle                shared_context) {
+OpenGLContextHandle createContext(WindowsHandle       window_handle,
+                                  OpenGLContextHandle shared_context) {
     HDC hdc = GetDC(window_handle);
     return createContextImpl(hdc, shared_context);
 }
 
 void deleteContext(OpenGLContextHandle context) { wglDeleteContext(context); }
 
-void makeCurrent(
-    temp::system::Window::NativeHandle window_handle,
-    OpenGLContextHandle                context) {
+void makeCurrent(WindowHandle window_handle, OpenGLContextHandle context) {
     (void)context;
     auto hdc = GetDC(window_handle);
     wglMakeCurrent(hdc, context);

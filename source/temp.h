@@ -19,8 +19,8 @@
 #include "temp/system/timer.h"
 #include "temp/system/window.h"
 
-#include "temp/graphics/graphics.h"
+#include "temp/graphics_/graphics.h"
 
-#include "temp/resource/resource.h"
+#include "temp/resource_old/resource.h"
 
-#include "temp/render/render.h"
+#include "temp/render_old/render.h"

@@ -29,40 +29,40 @@ struct DecomposedPath {
     Vector<String> element_names_;
 };
 
-DecomposedPath decomposeAbsolutePath(const String& absPath) {
-    DecomposedPath decomposedPath;
+DecomposedPath decomposeAbsolutePath(const String& abs_path) {
+    DecomposedPath decomposed_path;
 
-    decomposedPath.element_names_ = splitString(absPath, '/');
+    decomposed_path.element_names_ = splitString(abs_path, '/');
 
     String top_one_char;
     String top_tow_char;
-    if (absPath.size() >= 1) top_one_char = absPath.substr(0, 1);
-    if (absPath.size() >= 2) top_tow_char = absPath.substr(0, 2);
+    if (abs_path.size() >= 1) top_one_char = abs_path.substr(0, 1);
+    if (abs_path.size() >= 2) top_tow_char = abs_path.substr(0, 2);
     if (top_tow_char == "//") {
         // URL todo: 不完全な実装なので、正しく実装
-        decomposedPath.root_ = "//";
+        decomposed_path.root_ = "//";
     } else if (top_one_char == "/") {
         // Windows以外のパス
-        decomposedPath.root_ = "/";
-    } else if (decomposedPath.element_names_.size() > 0) {
+        decomposed_path.root_ = "/";
+    } else if (decomposed_path.element_names_.size() > 0) {
         // Windowsのパス
         // ドライブ名を含むかチェック
-        size_t pos = decomposedPath.element_names_[0].find_first_of(':');
+        size_t pos = decomposed_path.element_names_[0].find_first_of(':');
         if (pos != String::npos) {
-            decomposedPath.root_ = decomposedPath.element_names_[0] + "/";
-            decomposedPath.element_names_.erase(
-                decomposedPath.element_names_.begin());
+            decomposed_path.root_ = decomposed_path.element_names_[0] + "/";
+            decomposed_path.element_names_.erase(
+                decomposed_path.element_names_.begin());
         }
     }
 
-    if (!absPath.empty()) {
-        Char lastChar = *(--absPath.end());
+    if (!abs_path.empty()) {
+        Char lastChar = *(--abs_path.end());
         if (lastChar == '/') {
-            decomposedPath.element_names_.push_back("");
+            decomposed_path.element_names_.push_back("");
         }
     }
 
-    return decomposedPath;
+    return decomposed_path;
 }
 
 }  // namespace

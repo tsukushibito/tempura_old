@@ -3,74 +3,171 @@
  * @brief
  * @author tsukushibito
  * @version 0.0.1
- * @date 2017-02-27
+ * @date 2017-09-20
  */
 #pragma once
-#ifndef GUARD_fd7eefec960241e28c2cf1c986bf4ebf
-#define GUARD_fd7eefec960241e28c2cf1c986bf4ebf
-
-#include <memory>
-#include <mutex>
-#include <vector>
+#ifndef GUARD_370b844fb9fe4437a22331593738745b
+#define GUARD_370b844fb9fe4437a22331593738745b
 
 #include "temp/graphics/graphics_common.h"
-
-#include "temp/system/window.h"
-
-#include "temp/graphics/index_buffer.h"
-#include "temp/graphics/pixel_shader.h"
-#include "temp/graphics/render_target.h"
-#include "temp/graphics/texture.h"
-#include "temp/graphics/vertex_buffer.h"
-#include "temp/graphics/vertex_shader.h"
 
 namespace temp {
 namespace graphics {
 
-template <typename T, typename NativeHandle>
-class DeviceBase : public SmartPointerObject<T> {
+class IndexBuffer;
+using IndexBufferSPtr = std::shared_ptr<IndexBuffer>;
+class PixelShader;
+using PixelShaderSPtr = std::shared_ptr<PixelShader>;
+class RenderTarget;
+using RenderTargetSPtr = std::shared_ptr<RenderTarget>;
+class Texture;
+using TextureSPtr = std::shared_ptr<Texture>;
+class VertexBuffer;
+using VertexBufferSPtr = std::shared_ptr<VertexBuffer>;
+class VertexShader;
+using VertexShaderSPtr = std::shared_ptr<VertexShader>;
+
+class Device : Uncopyable {
 public:
-    NativeHandle nativeHandle() const { return native_handle_; }
+    using SPtr = std::shared_ptr<Device>;
+    using WPtr = std::weak_ptr<Device>;
+    using UPtr = std::unique_ptr<Device>;
 
-    RenderTargetSPtr createRenderTarget(const RenderTargetDesc& desc) {
-        return derived()->createRenderTarget(desc);
-    }
+    virtual ~Device() = default;
 
-    TextureSPtr createTexture(const TextureDesc& desc, const void* data) {
-        return derived()->createTexture(desc);
-    }
+    virtual RenderTargetSPtr createRenderTarget(const RenderTargetDesc& desc)
+        = 0;
 
-    VertexBufferSPtr createVertexBuffer(const VertexBufferDesc& desc,
-                                        const void*             data) {
-        return derived()->createVertexBuffer(desc, data);
-    }
+    virtual TextureSPtr createTexture(const TextureDesc& desc, const void* data)
+        = 0;
 
-    IndexBufferSPtr createIndexBuffer(const IndexBufferDesc& desc,
-                                      const void*            data) {
-        return derived()->createIndexBuffer(desc, data);
-    }
+    virtual VertexBufferSPtr createVertexBuffer(const VertexBufferDesc& desc,
+                                                const void*             data)
+        = 0;
 
-    PixelShaderSPtr createPixelShader(const ShaderCode& code) {
-        return derived()->createPixelShader(code);
-    }
+    virtual IndexBufferSPtr createIndexBuffer(const IndexBufferDesc& desc,
+                                              const void*            data)
+        = 0;
 
-    VertexShaderSPtr createVertexShader(const ShaderCode& code) {
-        return derived()->createVertexShader(code);
-    }
+    virtual PixelShaderSPtr createPixelShader(const ShaderCode& code) = 0;
 
-    NativeHandle nativeHandle() { return native_handle_; }
+    virtual VertexShaderSPtr createVertexShader(const ShaderCode& code) = 0;
 
-    NativeWindowHandle nativeWindowHandle() { return native_window_handle_; }
+    virtual GraphicsAPI api() const = 0;
+};
 
-
-private:
-    T* derived() const { return static_cast<T*>(this); }
+class IndexBuffer : Uncopyable {
+public:
+    using SPtr = std::shared_ptr<IndexBuffer>;
+    using WPtr = std::weak_ptr<IndexBuffer>;
+    using UPtr = std::unique_ptr<IndexBuffer>;
 
 protected:
-    NativeHandle native_handle_;
-    NativeWindowHandle native_window_handle_;
+    IndexBuffer() = default;
+
+public:
+    virtual ~IndexBuffer() = default;
+
+    const IndexBufferDesc& desc() const { return desc_; }
+
+    virtual const ByteData data() = 0;
+
+protected:
+    IndexBufferDesc desc_;
+};
+
+class PixelShader : Uncopyable {
+public:
+    using SPtr = std::shared_ptr<PixelShader>;
+    using WPtr = std::weak_ptr<PixelShader>;
+    using UPtr = std::unique_ptr<PixelShader>;
+
+protected:
+    PixelShader() = default;
+
+public:
+    virtual ~PixelShader() = default;
+
+    const ShaderCode& code() const { return code_; }
+
+protected:
+    ShaderCode code_;
+};
+
+class RenderTarget : Uncopyable {
+public:
+    using SPtr = std::shared_ptr<RenderTarget>;
+    using WPtr = std::weak_ptr<RenderTarget>;
+    using UPtr = std::unique_ptr<RenderTarget>;
+
+protected:
+    RenderTarget() = default;
+
+public:
+    virtual ~RenderTarget() = default;
+
+    const RenderTargetDesc& desc() const { return desc_; }
+
+protected:
+    RenderTargetDesc desc_;
+};
+
+class Texture : Uncopyable {
+public:
+    using SPtr = std::shared_ptr<Texture>;
+    using WPtr = std::weak_ptr<Texture>;
+    using UPtr = std::unique_ptr<Texture>;
+
+protected:
+    Texture() = default;
+
+public:
+    virtual ~Texture() = default;
+
+    const TextureDesc& desc() const { return desc_; }
+
+protected:
+    TextureDesc desc_;
+};
+
+class VertexBuffer : Uncopyable {
+public:
+    using SPtr = std::shared_ptr<VertexBuffer>;
+    using WPtr = std::weak_ptr<VertexBuffer>;
+    using UPtr = std::unique_ptr<VertexBuffer>;
+
+protected:
+    VertexBuffer() = default;
+
+public:
+    virtual ~VertexBuffer() = default;
+
+    const VertexBufferDesc& desc() const { return desc_; }
+
+    virtual const ByteData data() = 0;
+
+protected:
+    VertexBufferDesc desc_;
+};
+
+class VertexShader : Uncopyable {
+public:
+    using SPtr = std::shared_ptr<VertexShader>;
+    using WPtr = std::weak_ptr<VertexShader>;
+    using UPtr = std::unique_ptr<VertexShader>;
+
+protected:
+    VertexShader() = default;
+
+public:
+    virtual ~VertexShader() = default;
+
+    const ShaderCode& code() const { return code_; }
+
+protected:
+    ShaderCode code_;
 };
 }
 }
 
-#endif  // GUARD_fd7eefec960241e28c2cf1c986bf4ebf
+#endif  // GUARD_370b844fb9fe4437a22331593738745b

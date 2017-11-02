@@ -1,4 +1,12 @@
-﻿#include "temp/temp_assert.h"
+/**
+ * @file opengl_common.cpp
+ * @brief
+ * @author tsukushibito
+ * @version 0.0.1
+ * @date 2017-09-22
+ */
+
+#include "temp/temp_assert.h"
 
 #include "temp/system/logger.h"
 
@@ -6,7 +14,7 @@
 
 #if defined(TEMP_PLATFORM_MAC)
 #include "temp/graphics/opengl/mac/opengl_mac.h"
-#elif defined(TEMP_PLATFORM_WINDOWS) 
+#elif defined(TEMP_PLATFORM_WINDOWS)
 #include "temp/graphics/opengl/windows/opengl_windows.h"
 #elif defined(TEMP_PLATFORM_LINUX)
 #endif
@@ -15,12 +23,11 @@ namespace temp {
 namespace graphics {
 namespace opengl {
 
-OpenGLContextHandle createContext(
-    temp::system::Window::NativeHandle window_handle,
-    OpenGLContextHandle                shared_context) {
+OpenGLContextHandle createContext(WindowHandle        window_handle,
+                                  OpenGLContextHandle shared_context) {
 #if defined(TEMP_PLATFORM_MAC)
     return mac::createContext(window_handle, shared_context);
-#elif defined(TEMP_PLATFORM_WINDOWS) 
+#elif defined(TEMP_PLATFORM_WINDOWS)
     return windows::createContext(window_handle, shared_context);
 #elif defined(TEMP_PLATFORM_LINUX)
 #endif
@@ -29,18 +36,16 @@ OpenGLContextHandle createContext(
 void deleteContext(OpenGLContextHandle context) {
 #if defined(TEMP_PLATFORM_MAC)
     return mac::deleteContext(context);
-#elif defined(TEMP_PLATFORM_WINDOWS) 
+#elif defined(TEMP_PLATFORM_WINDOWS)
     return windows::deleteContext(context);
 #elif defined(TEMP_PLATFORM_LINUX)
 #endif
 }
 
-void makeCurrent(
-    temp::system::Window::NativeHandle window_handle,
-    OpenGLContextHandle                context) {
+void makeCurrent(WindowHandle window_handle, OpenGLContextHandle context) {
 #if defined(TEMP_PLATFORM_MAC)
     return mac::makeCurrent(window_handle, context);
-#elif defined(TEMP_PLATFORM_WINDOWS) 
+#elif defined(TEMP_PLATFORM_WINDOWS)
     return windows::makeCurrent(window_handle, context);
 #elif defined(TEMP_PLATFORM_LINUX)
 #endif
@@ -49,7 +54,7 @@ void makeCurrent(
 void swapBuffers(OpenGLContextHandle context) {
 #if defined(TEMP_PLATFORM_MAC)
     return mac::swapBuffers(context);
-#elif defined(TEMP_PLATFORM_WINDOWS) 
+#elif defined(TEMP_PLATFORM_WINDOWS)
     return windows::swapBuffers(context);
 #elif defined(TEMP_PLATFORM_LINUX)
 #endif
@@ -58,7 +63,7 @@ void swapBuffers(OpenGLContextHandle context) {
 OpenGLContextHandle createSharedContext(OpenGLContextHandle context) {
 #if defined(TEMP_PLATFORM_MAC)
     return mac::createSharedContext(context);
-#elif defined(TEMP_PLATFORM_WINDOWS) 
+#elif defined(TEMP_PLATFORM_WINDOWS)
     return windows::createSharedContext(context);
 #elif defined(TEMP_PLATFORM_LINUX)
 #endif
@@ -192,7 +197,7 @@ void printProgramInfoLog(GLuint program) {
 GLenum renderTargetFormatToGlFormat(RenderTargetFormat format) {
     GLenum gl_format = GL_RGBA8;
 
-    switch(format) {
+    switch (format) {
     case RenderTargetFormat::kRGBA32:
         gl_format = GL_RGBA8;
         break;
@@ -206,7 +211,7 @@ GLenum renderTargetFormatToGlFormat(RenderTargetFormat format) {
         TEMP_ASSERT(false, "invalid render target format!");
         break;
     }
-    
+
     return gl_format;
 }
 
@@ -215,21 +220,22 @@ GLenum textureFormatToGlFormat(TextureFormat format) {
 
     switch (format) {
     case TextureFormat::kDXT1:
-        gl_format = GL_RGBA;
+        gl_format = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+        break;
     case TextureFormat::kDXT5:
-        gl_format = GL_RGBA;
-    case TextureFormat::kRGB16:
-        gl_format = GL_RGBA;
+        gl_format = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+        break;
     case TextureFormat::kRGB24:
-        gl_format = GL_RGBA;
+        gl_format = GL_SRGB8;
+        break;
     case TextureFormat::kAlpha8:
-        gl_format = GL_RGBA;
-    case TextureFormat::kRGBA16:
-        gl_format = GL_RGBA;
+        gl_format = GL_R8;
+        break;
     case TextureFormat::kRGBA32:
-        gl_format = GL_RGBA8;
+        gl_format = GL_SRGB8_ALPHA8;
+        break;
     }
-    
+
     return gl_format;
 }
 
