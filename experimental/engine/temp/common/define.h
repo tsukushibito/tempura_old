@@ -14,10 +14,13 @@
 #endif
 #elif defined __APPLE__
 #define TEMP_PLATFORM_MAC
+#define TEMP_DECLSPEC
 #elif defined __gnu_linux__
 #define TEMP_PLATFORM_LINUX
+#define TEMP_DECLSPEC
 #elif defined __ANDROID__
 #define TEMP_PLATFORM_ANDROID
+#define TEMP_DECLSPEC
 #endif
 
 // #define TEMP_USE_D3D11

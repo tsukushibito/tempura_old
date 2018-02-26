@@ -1,5 +1,5 @@
-﻿#include "common/define.h"
-#include "common/type.h"
+﻿#include "temp/common/define.h"
+#include "temp/common/type.h"
 
 extern "C" {
 TEMP_DECLSPEC void tempCreateEngine();
