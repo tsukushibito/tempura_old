@@ -9,7 +9,7 @@ namespace temp {
 namespace app {
 namespace windows {
 
-class WindowsApplication : public IApplication {
+class WindowsApplication : public Application {
  public:
   WindowsApplication();
   virtual ~WindowsApplication();

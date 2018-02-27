@@ -4,11 +4,11 @@
 #ifdef TEMP_PLATFORM_WINDOWS
 #include "temp/app/windows/windows_application.h"
 namespace {
-temp::app::IApplication* createApplication() {
+temp::app::Application* createApplication() {
   return new temp::app::windows::WindowsApplication();
 }
 
-void destroyApplication(temp::app::IApplication* app) {
+void destroyApplication(temp::app::Application* app) {
   auto win_app = dynamic_cast<temp::app::windows::WindowsApplication*>(app);
   delete win_app;
 }
@@ -18,11 +18,11 @@ void destroyApplication(temp::app::IApplication* app) {
 
 extern "C" {
 
-TEMP_DECLSPEC temp::app::IApplication* tempCreateApplication() {
+TEMP_DECLSPEC temp::app::Application* tempCreateApplication() {
   return createApplication();
 }
 
-TEMP_DECLSPEC void tempDestroyApplication(temp::app::IApplication* app) {
+TEMP_DECLSPEC void tempDestroyApplication(temp::app::Application* app) {
   destroyApplication(app);
 }
 

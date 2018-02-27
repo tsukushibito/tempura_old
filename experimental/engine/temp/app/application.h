@@ -7,10 +7,10 @@
 namespace temp {
 namespace app {
 
-class IApplication {
+class Application {
  public:
-  IApplication() {}
-  virtual ~IApplication() {};
+  Application() {}
+  virtual ~Application(){};
 
   virtual void setOnInitializeCallback(
       const std::function<void(void)> &on_initialize) = 0;

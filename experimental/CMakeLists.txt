@@ -40,7 +40,7 @@ add_library(engine SHARED ${engine_source_list})
 target_link_libraries(engine ${EXTRA_LIBS})
 set_target_properties(engine PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${PROJECT_SOURCE_DIR}/engine)
 target_include_directories(engine PRIVATE ${PROJECT_SOURCE_DIR}/engine)
-target_include_directories(engine PRIVATE ${PROJECT_SOURCE_DIR}/third_party/opengl)
+target_include_directories(engine PRIVATE ${PROJECT_SOURCE_DIR}/../third_party/opengl)
 
 add_executable(temp_test ${test_source_list})
 target_include_directories(temp_test PRIVATE ${PROJECT_SOURCE_DIR}/test)

@@ -30,3 +30,5 @@
 #define TEMP_GRAPHICS_OPENGL
 // #define TEMP_OPENGL_WITHOUT_CHECK_ERROR
 #endif
+
+#define TEMP_ASSERT(expr, msg)  // 仮対応
