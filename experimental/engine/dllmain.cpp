@@ -5,6 +5,9 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL,  // DLL モジュールのハンドル
                     DWORD fdwReason,     // 関数を呼び出す理由
                     LPVOID lpvReserved   // 予約済み
 ) {
+  (void*)lpvReserved;
+  (void*)hinstDLL;
+
   switch (fdwReason) {
     case DLL_PROCESS_ATTACH:
       break;

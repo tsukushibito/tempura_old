@@ -1,4 +1,7 @@
-﻿#include <iostream>
+﻿#include <chrono>
+#include <ctime>
+#include <iomanip>
+#include <iostream>
 
 #include "temp/core/logger.h"
 
@@ -7,30 +10,38 @@ namespace core {
 
 void Logger::log(const String &tag, const String &msg, LogLevel level) {
   if (level < getInstance().level_) return;
-  String levelTag;
+  auto now = std::chrono::system_clock::now();
+  auto now_time = std::chrono::system_clock::to_time_t(now);
+  StringStream time_tag_stream;
+  tm local_now;
+  localtime_s(&local_now, &now_time);
+  time_tag_stream << "[" << std::put_time(&local_now, "%Y-%m-%d %X") << "]";
+  String time_tag = time_tag_stream.str();
+
+  String level_tag;
   switch (level) {
     case LogLevel::kTrace:
-      levelTag = "[TRACE]";
+      level_tag = "[TRACE]";
       break;
     case LogLevel::kDebug:
-      levelTag = "[DEBUG]";
+      level_tag = "[DEBUG]";
       break;
     case LogLevel::kInfo:
-      levelTag = "[INFO]";
+      level_tag = "[INFO]";
       break;
     case LogLevel::kWarn:
-      levelTag = "[WARN]";
+      level_tag = "[WARN]";
       break;
     case LogLevel::kError:
-      levelTag = "[ERROR]";
+      level_tag = "[ERROR]";
       break;
     case LogLevel::kFatal:
-      levelTag = "[FATAL]";
+      level_tag = "[FATAL]";
       break;
     default:
       break;
   }
-  std::cout << levelTag << "[" << tag << "] " << msg << std::endl;
+  std::cout << time_tag << level_tag << "[" << tag << "] " << msg << std::endl;
 }
 
 void Logger::trace(const String &tag, const String &msg) {
