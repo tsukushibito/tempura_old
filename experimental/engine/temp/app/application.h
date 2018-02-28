@@ -23,7 +23,7 @@ class Application {
   virtual void *getNativeWindowHandle() = 0;
 };
 
-using ApplicationUPtr = std::unique_ptr<Application>;
+using ApplicationSPtr = std::shared_ptr<Application>;
 
 }  // namespace app
 }  // namespace temp

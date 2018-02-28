@@ -1,3 +1,3 @@
 ﻿#pragma once
-#include "logger.h"
-#include "thread_pool.h"
+#include "temp/core/logger.h"
+#include "temp/core/thread_pool.h"

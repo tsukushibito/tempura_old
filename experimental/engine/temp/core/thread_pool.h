@@ -58,6 +58,7 @@ class ThreadPool : public SmartPointerObject<ThreadPool> {
 
   Bool stopped_;
 };
+
 }  // namespace core
 }  // namespace temp
 

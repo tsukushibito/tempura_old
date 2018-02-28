@@ -1,5 +1,6 @@
 #import <Cocoa/Cocoa.h>
-#include "temp/app/application.h"
+
+#include "temp/app/mac/mac_application.h"
 #include "temp/core/thread_pool.h"
 
 @interface ApplicationDelegate : NSObject < NSApplicationDelegate > {
@@ -28,113 +29,92 @@
 
 namespace temp {
 namespace app{
+namespace mac {
+    
+struct MacApplication::Properties {
+    NSApplication *app = nil;
+    ApplicationDelegate *delegate = nil;
+    core::ThreadPool::UPtr main_thread = core::ThreadPool::makeUnique("Main", 1);
 
-class Application::Impl {
-public:
-    Impl()
-        : app_(nil)
-        , delegate_(nil)
-        , main_thread_(core::ThreadPool::makeUnique("Main", 1))
-        , on_initialize_([]() {})
-        , on_update_([]() {})
-        , on_terminate_([]() {}) {
-        app_ = [NSApplication sharedApplication];
-        delegate_ = [[ApplicationDelegate alloc] init];
-        [app_ setDelegate:delegate_];
-        [app_ setActivationPolicy:NSApplicationActivationPolicyRegular];
+    std::atomic_char exit_flag;
+    std::function<void(void)> on_initialize = [](){};
+    std::function<void(void)> on_update = [](){};
+    std::function<void(void)> on_terminate = [](){};
 
-        exit_flag_ = 0;
-    }
-
-    ~Impl() { [app_ terminate:app_]; }
-
-    void setOnInitializeCallback(const std::function<void(void)> &on_initialize) {
-        on_initialize_ = on_initialize;
-    }
-
-    void setOnUpdateCallback(const std::function<void(void)> &on_update) {
-        on_update_ = on_update;
-    }
-
-    void setOnTerminateCallback(const std::function<void(void)> &on_terminate) {
-        on_terminate_ = on_terminate;
-    }
-
-    temp::Int32 run() {
-        auto delegate = [[WindowDelegate alloc] init];
-        window_handle_ = [[NSWindow alloc]
-            initWithContentRect:NSMakeRect(0, 0, 1080, 720)
-                      styleMask:NSWindowStyleMaskTitled
-                                | NSWindowStyleMaskMiniaturizable
-                                | NSWindowStyleMaskClosable
-                        backing:NSBackingStoreBuffered
-                          defer:NO];
-        [window_handle_ setTitle:@"てんぷら"];
-        [window_handle_ center];
-        [window_handle_ setDelegate:delegate];
-        [window_handle_ makeKeyWindow];
-        NSWindowCollectionBehavior behavior = [window_handle_ collectionBehavior];
-        behavior |= NSWindowCollectionBehaviorManaged
-                    | NSWindowCollectionBehaviorParticipatesInCycle
-                    | NSWindowCollectionBehaviorFullScreenPrimary;
-        [window_handle_ setCollectionBehavior:behavior];
-        [window_handle_ orderFrontRegardless];
-
-        on_initialize_();
-
-        auto future = main_thread_->pushTask(0, [this](){mainLoop(); });
-        [app_ run];
-        exit_flag_ = 1;
-        future.wait();
-
-        on_terminate_();
-
-        return 0;
-    }
-
-    void exit() {
-        exit_flag_ = 1;
-        [app_ stop:app_];
-    }
-
-private:
-    void mainLoop() {
-        while (!exit_flag_) {
-            on_update_();
-        }
-    }
-
-    NSApplication *app_;
-    ApplicationDelegate *delegate_;
-    core::ThreadPool::UPtr main_thread_;
-
-    std::atomic_char exit_flag_;
-    std::function< void(void)> on_initialize_;
-    std::function< void(void)> on_update_;
-    std::function< void(void)> on_terminate_;
-
-    NSWindow* window_handle_;
+    NSWindow *window_handle = nil;
 };
 
-Application::Application() : impl_(new Impl) {}
+MacApplication::MacApplication()
+    : properties_(new Properties()) {
+    properties_->app = [NSApplication sharedApplication];
+    properties_->delegate = [[ApplicationDelegate alloc] init];
+    [properties_->app setDelegate:properties_->delegate];
+    [properties_->app setActivationPolicy:NSApplicationActivationPolicyRegular];
 
-Application::~Application() {}
-
-void Application::setOnInitializeCallback(const std::function< void(void)> &on_initialize) {
-    impl_->setOnInitializeCallback(on_initialize);
+    properties_->exit_flag = 0;
 }
 
-void Application::setOnUpdateCallback(const std::function< void(void)> &on_update) {
-    impl_->setOnUpdateCallback(on_update);
+MacApplication::~MacApplication() { [properties_->app terminate:properties_->app]; }
+
+void MacApplication::setOnInitializeCallback(const std::function<void(void)> &on_initialize) {
+    properties_->on_initialize = on_initialize;
 }
 
-void Application::setOnTerminateCallback(const std::function< void(void)> &on_terminate) {
-    impl_->setOnTerminateCallback(on_terminate);
+void MacApplication::setOnUpdateCallback(const std::function<void(void)> &on_update) {
+    properties_->on_update = on_update;
 }
 
-Int32 Application::run() { return impl_->run(); }
+void MacApplication::setOnTerminateCallback(const std::function<void(void)> &on_terminate) {
+    properties_->on_terminate = on_terminate;
+}
 
-void Application::exit() { return impl_->exit(); }
+temp::Int32 MacApplication::run() {
+    auto delegate = [[WindowDelegate alloc] init];
+    properties_->window_handle = [[NSWindow alloc]
+        initWithContentRect:NSMakeRect(0, 0, 1080, 720)
+                    styleMask:NSWindowStyleMaskTitled
+                            | NSWindowStyleMaskMiniaturizable
+                            | NSWindowStyleMaskClosable
+                    backing:NSBackingStoreBuffered
+                        defer:NO];
+    [properties_->window_handle setTitle:@"てんぷら"];
+    [properties_->window_handle center];
+    [properties_->window_handle setDelegate:delegate];
+    [properties_->window_handle makeKeyWindow];
+    NSWindowCollectionBehavior behavior = [properties_->window_handle collectionBehavior];
+    behavior |= NSWindowCollectionBehaviorManaged
+                | NSWindowCollectionBehaviorParticipatesInCycle
+                | NSWindowCollectionBehaviorFullScreenPrimary;
+    [properties_->window_handle setCollectionBehavior:behavior];
+    [properties_->window_handle orderFrontRegardless];
+
+    properties_->on_initialize();
+
+    auto future = properties_->main_thread->pushTask(0, [this](){mainLoop(); });
+    [properties_->app run];
+    properties_->exit_flag = 1;
+    future.wait();
+
+    properties_->on_terminate();
+
+    return 0;
+}
+
+void MacApplication::exit() {
+    properties_->exit_flag = 1;
+    [properties_->app stop:properties_->app];
+}
+
+void* MacApplication::getNativeWindowHandle() {
+    return properties_->window_handle;
+}
+
+void MacApplication::mainLoop() {
+    while (!properties_->exit_flag) {
+        properties_->on_update();
+    }
+}
     
+}
 }
 }

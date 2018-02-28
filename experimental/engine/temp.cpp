@@ -1,8 +1,10 @@
-﻿#define TEMP_EXPORT
+#include <memory>
+#define TEMP_EXPORT
 #include "temp.h"
-#ifdef TEMP_PLATFORM_WINDOWS
+#if defined(TEMP_PLATFORM_WINDOWS)
 #include "temp/app/windows/windows_application.h"
-#else
+#elif defined(TEMP_PLATFORM_MAC)
+#include "temp/app/mac/mac_application.h"
 #endif
 
 namespace temp {
@@ -12,13 +14,13 @@ class TempuraImpl : public Tempura {
   void update(){/*core::Logger::trace("Tempura", "update");*/};
 };
 
-TEMP_DECLSPEC TempUPtr create() { return std::make_unique<TempuraImpl>(); }
+TEMP_DECLSPEC TempSPtr create() { return std::make_shared<TempuraImpl>(); }
 
-TEMP_DECLSPEC temp::app::ApplicationUPtr createApplication() {
-#ifdef TEMP_PLATFORM_WINDOWS
-  return std::make_unique<temp::app::windows::WindowsApplication>();
-#else
-  return nullptr;
+TEMP_DECLSPEC temp::app::ApplicationSPtr createApplication() {
+#if defined(TEMP_PLATFORM_WINDOWS)
+  return std::make_shared<temp::app::windows::WindowsApplication>();
+#elif defined(TEMP_PLATFORM_MAC)
+  return std::make_shared<temp::app::mac::MacApplication>();
 #endif
 }
 }  // namespace temp

@@ -1,4 +1,4 @@
-﻿#include "temp/app/application.h"
+#include "temp/app/application.h"
 #include "temp/common/common.h"
 #include "temp/core/core.h"
 #include "temp/graphics/graphics.h"
@@ -13,9 +13,9 @@ class Tempura {
   virtual void update() = 0;
 };
 
-using TempUPtr = std::unique_ptr<Tempura>;
+using TempSPtr = std::shared_ptr<Tempura>;
 
-TEMP_DECLSPEC TempUPtr create();
-TEMP_DECLSPEC temp::app::ApplicationUPtr createApplication();
+TEMP_DECLSPEC TempSPtr create();
+TEMP_DECLSPEC temp::app::ApplicationSPtr createApplication();
 
 }  // namespace temp

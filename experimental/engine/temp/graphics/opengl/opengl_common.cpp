@@ -1,8 +1,8 @@
-﻿#include "temp/graphics/opengl/opengl_common.h"
+#include "temp/graphics/opengl/opengl_common.h"
 #include "temp/core/logger.h"
 
 #if defined(TEMP_PLATFORM_MAC)
-#include "temp/graphics/opengl/mac/opengl_mac.h"
+#include "temp/graphics/opengl/mac/mac_opengl.h"
 #elif defined(TEMP_PLATFORM_WINDOWS)
 #include "temp/graphics/opengl/windows/windows_opengl.h"
 #elif defined(TEMP_PLATFORM_LINUX)

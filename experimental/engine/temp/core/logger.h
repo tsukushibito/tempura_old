@@ -1,8 +1,6 @@
 ﻿#pragma once
 #include <mutex>
-#include "temp/common/container.h"
-#include "temp/common/define.h"
-#include "temp/common/type.h"
+#include "temp/common/common.h"
 
 namespace temp {
 namespace core {

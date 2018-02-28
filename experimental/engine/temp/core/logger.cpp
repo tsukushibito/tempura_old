@@ -14,7 +14,11 @@ void Logger::log(const String &tag, const String &msg, LogLevel level) {
   auto now_time = std::chrono::system_clock::to_time_t(now);
   StringStream time_tag_stream;
   tm local_now;
+#if defined(TEMP_PLATFORM_WINDOWS)
   localtime_s(&local_now, &now_time);
+#elif defined(TEMP_PLATFORM_MAC)
+  localtime_r(&now_time, &local_now);
+#endif
   time_tag_stream << "[" << std::put_time(&local_now, "%Y-%m-%d %X") << "]";
   String time_tag = time_tag_stream.str();
 

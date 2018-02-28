@@ -1,7 +1,7 @@
+#include "temp/core/thread_pool.h"
 namespace temp {
 namespace core {
-
-ThreadPool::ThreadPool(const String &name, Size thread_count)
+inline ThreadPool::ThreadPool(const String &name, Size thread_count)
     : name_(name), worker_thread_list_(thread_count), stopped_(false) {
   for (Int32 i = 0; i < thread_count; ++i) {
     auto worker_function = [this, i]() {
@@ -32,7 +32,7 @@ ThreadPool::ThreadPool(const String &name, Size thread_count)
   }
 }
 
-ThreadPool::~ThreadPool() {
+inline ThreadPool::~ThreadPool() {
   for (auto &&set : worker_thread_list_) {
     set.mutex_.lock();
   }
@@ -87,7 +87,7 @@ auto ThreadPool::pushTask(Int32 thread_index, Task &&task, Args &&... args)
   return result;
 }
 
-ThreadPool::PackagedTaskType ThreadPool::popTask(Int32 thread_index) {
+inline ThreadPool::PackagedTaskType ThreadPool::popTask(Int32 thread_index) {
   Int32 index = 0;
   if (thread_index >= worker_thread_list_.size() || thread_index < 0) {
     Size task_count_max = 0;
@@ -113,7 +113,7 @@ ThreadPool::PackagedTaskType ThreadPool::popTask(Int32 thread_index) {
   return pack;
 }
 
-Size ThreadPool::taskCount(Int32 thread_index) const {
+inline Size ThreadPool::taskCount(Int32 thread_index) const {
   if (thread_index >= worker_thread_list_.size()) {
     return 0;
   } else if (thread_index < 0) {
@@ -127,7 +127,7 @@ Size ThreadPool::taskCount(Int32 thread_index) const {
   }
 }
 
-Bool ThreadPool::taskEmpty(Int32 thread_index) const {
+inline Bool ThreadPool::taskEmpty(Int32 thread_index) const {
   if (thread_index >= worker_thread_list_.size()) {
     return true;
   } else if (thread_index < 0) {
