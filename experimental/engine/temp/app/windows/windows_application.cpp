@@ -22,11 +22,11 @@ LRESULT CALLBACK wndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 }  // namespace
 
 WindowsApplication::WindowsApplication() {
-	core::Logger::trace("WindowsApplication", "created");
+  core::Logger::trace("WindowsApplication", "created");
 }
 
 WindowsApplication::~WindowsApplication() {
-	core::Logger::trace("WindowsApplication", "destroied");
+  core::Logger::trace("WindowsApplication", "destroied");
 }
 
 void WindowsApplication::setOnInitializeCallback(
@@ -50,22 +50,32 @@ Int32 WindowsApplication::run() {
 
   MSG msg;
   {
-    while (GetMessage(&msg, NULL, 0, 0)) {
-      TranslateMessage(&msg);
-      DispatchMessage(&msg);
+    while (true) {
+      if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
+        if (msg.message == WM_QUIT) {
+          break;
+        }
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+      } else {
+        on_update_();
+      }
     }
   }
 
+  on_terminate_();
   term();
 
   return static_cast<Int32>(msg.wParam);
 }
 
-void WindowsApplication::exit() {}
+void WindowsApplication::exit() { SendMessage(window_handle_, WM_QUIT, 0, 0); }
 
 void *WindowsApplication::getNativeWindowHandle() { return window_handle_; }
 
 void WindowsApplication::init() {
+  core::Logger::trace("WindowsApplication", "init");
+
   WNDCLASSEX wndclass;
   HINSTANCE instance_handle = GetModuleHandle(NULL);
 
@@ -102,7 +112,10 @@ void WindowsApplication::init() {
   UpdateWindow(window_handle_);
 }
 
-void WindowsApplication::term() { DestroyWindow(window_handle_); }
+void WindowsApplication::term() {
+  core::Logger::trace("WindowsApplication", "term");
+  DestroyWindow(window_handle_);
+}
 
 }  // namespace windows
 }  // namespace app
