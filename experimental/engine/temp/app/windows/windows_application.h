@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include "temp/app/application.h"
-#include "temp/common/define.h"
-#include "temp/common/type.h"
+#include "temp/common/common.h"
 #ifdef TEMP_PLATFORM_WINDOWS
 #include <Windows.h>
 

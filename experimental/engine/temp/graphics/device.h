@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "temp/common/type.h"
+#include "temp/graphics/graphics_common.h"
 
 namespace temp {
 namespace graphics {
@@ -16,6 +16,8 @@ class VertexBuffer;
 using VertexBufferSPtr = std::shared_ptr<VertexBuffer>;
 class VertexShader;
 using VertexShaderSPtr = std::shared_ptr<VertexShader>;
+
+using ByteData = Vector<UInt8>;
 
 class Device : Uncopyable {
  public:

@@ -1,7 +1,8 @@
-﻿#include "temp/common/define.h"
+﻿#include "temp/app/windows/windows_application.h"
 #ifdef TEMP_PLATFORM_WINDOWS
 #include <Windows.h>
-#include "temp/app/windows/windows_application.h"
+
+#include "temp/core/logger.h"
 
 namespace temp {
 namespace app {
@@ -20,9 +21,13 @@ LRESULT CALLBACK wndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 }
 }  // namespace
 
-WindowsApplication::WindowsApplication() {}
+WindowsApplication::WindowsApplication() {
+	core::Logger::trace("WindowsApplication", "created");
+}
 
-WindowsApplication::~WindowsApplication() {}
+WindowsApplication::~WindowsApplication() {
+	core::Logger::trace("WindowsApplication", "destroied");
+}
 
 void WindowsApplication::setOnInitializeCallback(
     const std::function<void(void)> &on_initialize) {

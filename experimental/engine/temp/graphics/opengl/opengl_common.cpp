@@ -1,5 +1,5 @@
-﻿#include <iostream>
-#include "temp/graphics/opengl/opengl_common.h"
+﻿#include "temp/graphics/opengl/opengl_common.h"
+#include "temp/core/logger.h"
 
 #if defined(TEMP_PLATFORM_MAC)
 #include "temp/graphics/opengl/mac/opengl_mac.h"
@@ -120,7 +120,7 @@ void APIENTRY debugProc(GLenum source, GLenum type, GLuint id, GLenum severity,
   }
   ss << "---------------------opengl-callback-end--------------" << endl;
 
-  std::cout << ss.str() << std::endl;
+  core::Logger::debug("OpenGL", ss.str());
 #endif
 }
 
@@ -153,8 +153,9 @@ void checkError() {
         break;
     }
 
-	using namespace std;
-    cout << "OpenGL ERROR : 0x" << hex << error_code << ": " << msg << endl;
+    StringStream ss;
+    ss << "0x" << std::hex << error_code << ": " << msg;
+    core::Logger::error("OpenGL", ss.str());
 
     error_code = glGetError();
   } while (error_code != GL_NO_ERROR);
@@ -165,8 +166,9 @@ void printShaderCompileInfoLog(GLuint shader) {
   GLint result;
   glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
   // if(result == GL_FALSE) debugLog("[ERROR] GLSL faled to compile.");
-  if (result == GL_FALSE)
-    std::cout << "[ERROR] GLSL faled to compile." << std::endl;
+  if (result == GL_FALSE) {
+    core::Logger::error("OpenGL", "GLSL faled to compile.");
+  }
   GLint buf_size = 0;
   glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &buf_size);
 
@@ -177,8 +179,10 @@ void printShaderCompileInfoLog(GLuint shader) {
 
     /* シェーダのコンパイル時のログの内容を取得する */
     glGetShaderInfoLog(shader, buf_size, &length, &infoLog[0]);
-	std::cout << "ShaderInfoLog:" << std::endl;
-	std::cout << infoLog << std::endl;
+    StringStream ss;
+    ss << "ShaderInfoLog:" << std::endl;
+    ss << infoLog << std::endl;
+    core::Logger::info("OpenGL", ss.str());
   }
 }
 
@@ -191,8 +195,10 @@ void printProgramInfoLog(GLuint program) {
   String infoLog("", length);
   glCallWithErrorCheck(glGetProgramInfoLog, program, length, &length,
                        (GLchar*)&infoLog[0]);
-  std::cout << "ProgramInfoLog:" << std::endl;
-  std::cout << infoLog << std::endl;
+  StringStream ss;
+  ss << "ProgramInfoLog:" << std::endl;
+  ss << infoLog << std::endl;
+  core::Logger::info("OpenGL", ss.str());
 }
 
 GLenum renderTargetFormatToGlFormat(RenderTargetFormat format) {

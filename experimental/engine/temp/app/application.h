@@ -22,5 +22,8 @@ class Application {
   virtual void exit() = 0;
   virtual void *getNativeWindowHandle() = 0;
 };
+
+using ApplicationUPtr = std::unique_ptr<Application>;
+
 }  // namespace app
 }  // namespace temp

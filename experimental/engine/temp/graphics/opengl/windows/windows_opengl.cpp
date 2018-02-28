@@ -4,10 +4,10 @@
 
 #include <Windows.h>
 
-#include <iostream>
 #include <mutex>
 
 #include "temp/common/container.h"
+#include "temp/core/logger.h"
 #include "temp/graphics/opengl/opengl_common.h"
 
 namespace temp {
@@ -16,6 +16,7 @@ namespace opengl {
 namespace windows {
 
 namespace {
+const String kOpenglTag = "OpenGL";
 
 // ダミーウィンドウ作成
 HWND createDummyWindow() {
@@ -92,21 +93,29 @@ OpenGLContextHandle createContextImpl(HDC hdc,
   // OpenGL情報取得
   auto vendor = glGetString(GL_VENDOR);
   if (vendor != nullptr) {
-    std::cout << "[OpenGL] vendor : " << vendor << std::endl;
+    StringStream msg;
+    msg << "vendor : " << vendor;
+    core::Logger::info(kOpenglTag, msg.str());
   }
   auto render = glGetString(GL_RENDER);
   if (render != nullptr) {
-    std::cout << "[OpenGL] renderer : " << render << std::endl;
+    StringStream msg;
+    msg << "render : " << render;
+    core::Logger::info(kOpenglTag, msg.str());
   }
   auto version = glGetString(GL_VERSION);
   if (version != nullptr) {
-    std::cout << "[OpenGL] version : " << version << std::endl;
+    StringStream msg;
+    msg << "version : " << version;
+    core::Logger::info(kOpenglTag, msg.str());
   }
   auto extensions = glGetString(GL_EXTENSIONS);
   if (extensions != nullptr) {
     String extensionsStr = reinterpret_cast<const Char*>(extensions);
     // std::replace(extensionsStr.begin(), extensionsStr.end(), ' ', '\n');
-    std::cout << "[OpenGL] extensions : " << extensionsStr << std::endl;
+    StringStream msg;
+    msg << "extensions : " << extensionsStr;
+    core::Logger::info(kOpenglTag, msg.str());
   }
   String version_string = reinterpret_cast<const char*>(version);
   StringStream ss(version_string);
@@ -213,7 +222,9 @@ OpenGLContextHandle createContextImpl(HDC hdc,
     result = wglShareLists(context, shared_context);
     if (result == FALSE) {
       auto err = GetLastError();
-      std::cout << "wglShareLists failed. " << err << std::endl;
+      StringStream msg;
+      msg << "wglShareLists failed. " << err;
+      core::Logger::fatal(kOpenglTag, msg.str());
     }
   }
 
