@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import urllib
+import urllib.request
 import re
 
 registry_url = 'http://www.opengl.org/registry/api/GL/'
@@ -9,7 +9,7 @@ temp_opengl_dir = 'third_party/opengl/gl_ext/'
 
 def download_extension_files():
     for file_name in extension_files:
-        urllib.urlretrieve(registry_url + file_name, opengl_dir + file_name)
+        urllib.request.urlretrieve(registry_url + file_name, opengl_dir + file_name)
 
 def create_opengl_link_file():
     # ファイルに応じたパターンを作成
