@@ -1,17 +1,7 @@
-﻿/**
- * @file opengl_common.h
- * @brief
- * @author tsukushibito
- * @version 0.0.1
- * @date 2017-09-21
- */
-#pragma once
-#ifndef GUARD_bcaddb8fb51741eab37a374bc9208879
-#define GUARD_bcaddb8fb51741eab37a374bc9208879
+﻿#pragma once
 
-#include "temp/define.h"
-
-#include "temp/graphics/graphics_common.h"
+#include "temp/common/define.h"
+#include "temp/graphics/graphics.h"
 
 #ifdef TEMP_PLATFORM_WINDOWS
 #include <Windows.h>
@@ -38,7 +28,6 @@
 #include <OpenGL/gl3ext.h>
 #endif  // defined(TEMP_PLATFORM_WINDOWS) || defined(TEMP_PLATFORM_LINUX)
 
-
 namespace temp {
 namespace graphics {
 namespace opengl {
@@ -49,7 +38,7 @@ using OpenGLContextHandle = void*;
 using OpenGLContextHandle = HGLRC;
 #endif
 
-OpenGLContextHandle createContext(WindowHandle        window_handle,
+OpenGLContextHandle createContext(WindowHandle window_handle,
                                   OpenGLContextHandle shared_context = nullptr);
 
 void deleteContext(OpenGLContextHandle context);
@@ -83,38 +72,36 @@ void printProgramInfoLog(GLuint program);
 
 template <typename ReturnType, typename F, typename... Args>
 struct glCallWithErrorCheck_Impl {
-    static ReturnType call(F&& function, Args&&... args) {
-        ReturnType result = function(args...);
+  static ReturnType call(F&& function, Args&&... args) {
+    ReturnType result = function(args...);
 #ifndef TEMP_OPENGL_WITHOUT_CHECK_ERROR
-        checkError();
+    checkError();
 #endif
-        return std::move(result);
-    }
+    return std::move(result);
+  }
 };
 
 template <typename F, typename... Args>
 struct glCallWithErrorCheck_Impl<void, F, Args...> {
-    static void call(F&& function, Args&&... args) {
-        function(args...);
+  static void call(F&& function, Args&&... args) {
+    function(args...);
 #ifndef TEMP_OPENGL_WITHOUT_CHECK_ERROR
-        checkError();
+    checkError();
 #endif
-    }
+  }
 };
 
 template <typename F, typename... Args>
 auto glCallWithErrorCheck(F&& function, Args&&... args)
     -> decltype(function(args...)) {
-    return glCallWithErrorCheck_Impl<decltype(function(args...)), F,
-                                     Args...>::call(std::forward<F>(function),
-                                                    std::forward<Args>(
-                                                        args)...);
+  return glCallWithErrorCheck_Impl<decltype(function(args...)), F,
+                                   Args...>::call(std::forward<F>(function),
+                                                  std::forward<Args>(args)...);
 }
 
 GLenum renderTargetFormatToGlFormat(RenderTargetFormat format);
 
 GLenum textureFormatToGlFormat(TextureFormat format);
 }
-}
-}
-#endif  // GUARD_bcaddb8fb51741eab37a374bc9208879
+}  // namespace graphics
+}  // namespace temp

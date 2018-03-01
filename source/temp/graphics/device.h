@@ -1,14 +1,4 @@
-/**
- * @file device.h
- * @brief
- * @author tsukushibito
- * @version 0.0.1
- * @date 2017-09-20
- */
-#pragma once
-#ifndef GUARD_370b844fb9fe4437a22331593738745b
-#define GUARD_370b844fb9fe4437a22331593738745b
-
+﻿#pragma once
 #include "temp/graphics/graphics_common.h"
 
 namespace temp {
@@ -27,147 +17,145 @@ using VertexBufferSPtr = std::shared_ptr<VertexBuffer>;
 class VertexShader;
 using VertexShaderSPtr = std::shared_ptr<VertexShader>;
 
+using ByteData = Vector<UInt8>;
+
 class Device : Uncopyable {
-public:
-    using SPtr = std::shared_ptr<Device>;
-    using WPtr = std::weak_ptr<Device>;
-    using UPtr = std::unique_ptr<Device>;
+ public:
+  using SPtr = std::shared_ptr<Device>;
+  using WPtr = std::weak_ptr<Device>;
+  using UPtr = std::unique_ptr<Device>;
 
-    virtual ~Device() = default;
+  virtual ~Device() = default;
 
-    virtual RenderTargetSPtr createRenderTarget(const RenderTargetDesc& desc)
-        = 0;
+  virtual RenderTargetSPtr createRenderTarget(const RenderTargetDesc& desc) = 0;
 
-    virtual TextureSPtr createTexture(const TextureDesc& desc, const void* data)
-        = 0;
+  virtual TextureSPtr createTexture(const TextureDesc& desc,
+                                    const void* data) = 0;
 
-    virtual VertexBufferSPtr createVertexBuffer(const VertexBufferDesc& desc,
-                                                const void*             data)
-        = 0;
+  virtual VertexBufferSPtr createVertexBuffer(const VertexBufferDesc& desc,
+                                              const void* data) = 0;
 
-    virtual IndexBufferSPtr createIndexBuffer(const IndexBufferDesc& desc,
-                                              const void*            data)
-        = 0;
+  virtual IndexBufferSPtr createIndexBuffer(const IndexBufferDesc& desc,
+                                            const void* data) = 0;
 
-    virtual PixelShaderSPtr createPixelShader(const ShaderCode& code) = 0;
+  virtual PixelShaderSPtr createPixelShader(const ShaderCode& code) = 0;
 
-    virtual VertexShaderSPtr createVertexShader(const ShaderCode& code) = 0;
+  virtual VertexShaderSPtr createVertexShader(const ShaderCode& code) = 0;
 
-    virtual GraphicsAPI api() const = 0;
+  virtual GraphicsAPI api() const = 0;
 };
 
 class IndexBuffer : Uncopyable {
-public:
-    using SPtr = std::shared_ptr<IndexBuffer>;
-    using WPtr = std::weak_ptr<IndexBuffer>;
-    using UPtr = std::unique_ptr<IndexBuffer>;
+ public:
+  using SPtr = std::shared_ptr<IndexBuffer>;
+  using WPtr = std::weak_ptr<IndexBuffer>;
+  using UPtr = std::unique_ptr<IndexBuffer>;
 
-protected:
-    IndexBuffer() = default;
+ protected:
+  IndexBuffer() = default;
 
-public:
-    virtual ~IndexBuffer() = default;
+ public:
+  virtual ~IndexBuffer() = default;
 
-    const IndexBufferDesc& desc() const { return desc_; }
+  const IndexBufferDesc& desc() const { return desc_; }
 
-    virtual const ByteData data() = 0;
+  virtual const ByteData data() = 0;
 
-protected:
-    IndexBufferDesc desc_;
+ protected:
+  IndexBufferDesc desc_;
 };
 
 class PixelShader : Uncopyable {
-public:
-    using SPtr = std::shared_ptr<PixelShader>;
-    using WPtr = std::weak_ptr<PixelShader>;
-    using UPtr = std::unique_ptr<PixelShader>;
+ public:
+  using SPtr = std::shared_ptr<PixelShader>;
+  using WPtr = std::weak_ptr<PixelShader>;
+  using UPtr = std::unique_ptr<PixelShader>;
 
-protected:
-    PixelShader() = default;
+ protected:
+  PixelShader() = default;
 
-public:
-    virtual ~PixelShader() = default;
+ public:
+  virtual ~PixelShader() = default;
 
-    const ShaderCode& code() const { return code_; }
+  const ShaderCode& code() const { return code_; }
 
-protected:
-    ShaderCode code_;
+ protected:
+  ShaderCode code_;
 };
 
 class RenderTarget : Uncopyable {
-public:
-    using SPtr = std::shared_ptr<RenderTarget>;
-    using WPtr = std::weak_ptr<RenderTarget>;
-    using UPtr = std::unique_ptr<RenderTarget>;
+ public:
+  using SPtr = std::shared_ptr<RenderTarget>;
+  using WPtr = std::weak_ptr<RenderTarget>;
+  using UPtr = std::unique_ptr<RenderTarget>;
 
-protected:
-    RenderTarget() = default;
+ protected:
+  RenderTarget() = default;
 
-public:
-    virtual ~RenderTarget() = default;
+ public:
+  virtual ~RenderTarget() = default;
 
-    const RenderTargetDesc& desc() const { return desc_; }
+  const RenderTargetDesc& desc() const { return desc_; }
 
-protected:
-    RenderTargetDesc desc_;
+ protected:
+  RenderTargetDesc desc_;
 };
 
 class Texture : Uncopyable {
-public:
-    using SPtr = std::shared_ptr<Texture>;
-    using WPtr = std::weak_ptr<Texture>;
-    using UPtr = std::unique_ptr<Texture>;
+ public:
+  using SPtr = std::shared_ptr<Texture>;
+  using WPtr = std::weak_ptr<Texture>;
+  using UPtr = std::unique_ptr<Texture>;
 
-protected:
-    Texture() = default;
+ protected:
+  Texture() = default;
 
-public:
-    virtual ~Texture() = default;
+ public:
+  virtual ~Texture() = default;
 
-    const TextureDesc& desc() const { return desc_; }
+  const TextureDesc& desc() const { return desc_; }
 
-protected:
-    TextureDesc desc_;
+ protected:
+  TextureDesc desc_;
 };
 
 class VertexBuffer : Uncopyable {
-public:
-    using SPtr = std::shared_ptr<VertexBuffer>;
-    using WPtr = std::weak_ptr<VertexBuffer>;
-    using UPtr = std::unique_ptr<VertexBuffer>;
+ public:
+  using SPtr = std::shared_ptr<VertexBuffer>;
+  using WPtr = std::weak_ptr<VertexBuffer>;
+  using UPtr = std::unique_ptr<VertexBuffer>;
 
-protected:
-    VertexBuffer() = default;
+ protected:
+  VertexBuffer() = default;
 
-public:
-    virtual ~VertexBuffer() = default;
+ public:
+  virtual ~VertexBuffer() = default;
 
-    const VertexBufferDesc& desc() const { return desc_; }
+  const VertexBufferDesc& desc() const { return desc_; }
 
-    virtual const ByteData data() = 0;
+  virtual const ByteData data() = 0;
 
-protected:
-    VertexBufferDesc desc_;
+ protected:
+  VertexBufferDesc desc_;
 };
 
 class VertexShader : Uncopyable {
-public:
-    using SPtr = std::shared_ptr<VertexShader>;
-    using WPtr = std::weak_ptr<VertexShader>;
-    using UPtr = std::unique_ptr<VertexShader>;
+ public:
+  using SPtr = std::shared_ptr<VertexShader>;
+  using WPtr = std::weak_ptr<VertexShader>;
+  using UPtr = std::unique_ptr<VertexShader>;
 
-protected:
-    VertexShader() = default;
+ protected:
+  VertexShader() = default;
 
-public:
-    virtual ~VertexShader() = default;
+ public:
+  virtual ~VertexShader() = default;
 
-    const ShaderCode& code() const { return code_; }
+  const ShaderCode& code() const { return code_; }
 
-protected:
-    ShaderCode code_;
+ protected:
+  ShaderCode code_;
 };
-}
-}
 
-#endif  // GUARD_370b844fb9fe4437a22331593738745b
+}  // namespace graphics
+}  // namespace temp

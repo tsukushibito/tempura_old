@@ -1,16 +1,5 @@
-/**
- * @file opengl_device.h
- * @brief
- * @author tsukushibito
- * @version 0.0.1
- * @date 2017-09-21
- */
-#pragma once
-#ifndef GUARD_8709bf1374084e08b7ff2ce4964967e9
-#define GUARD_8709bf1374084e08b7ff2ce4964967e9
-
-#include "temp/system/thread_pool.h"
-
+﻿#pragma once
+#include "temp/core/thread_pool.h"
 #include "temp/graphics/device.h"
 #include "temp/graphics/opengl/opengl_common.h"
 
@@ -18,169 +7,161 @@ namespace temp {
 namespace graphics {
 namespace opengl {
 
-/**
- * @brief 
- */
 class OpenGLDevice : public Device {
-public:
-    static Device::SPtr create(WindowHandle                    window_handle,
-                               const system::ThreadPool::SPtr& render_thread,
-                               const system::ThreadPool::SPtr& load_thread);
+ public:
+  static Device::SPtr create(WindowHandle window_handle,
+                             const core::ThreadPool::SPtr& render_thread,
+                             const core::ThreadPool::SPtr& load_thread);
 
-    OpenGLDevice(WindowHandle                    window_handle,
-                 const system::ThreadPool::SPtr& render_thread,
-                 const system::ThreadPool::SPtr& load_thread);
+  OpenGLDevice(WindowHandle window_handle,
+               const core::ThreadPool::SPtr& render_thread,
+               const core::ThreadPool::SPtr& load_thread);
 
-    ~OpenGLDevice();
+  ~OpenGLDevice();
 
-    RenderTargetSPtr createRenderTarget(const RenderTargetDesc& desc);
+  RenderTargetSPtr createRenderTarget(const RenderTargetDesc& desc);
 
-    TextureSPtr createTexture(const TextureDesc& desc, const void* data);
+  TextureSPtr createTexture(const TextureDesc& desc, const void* data);
 
-    VertexBufferSPtr createVertexBuffer(const VertexBufferDesc& desc,
-                                        const void*             data);
+  VertexBufferSPtr createVertexBuffer(const VertexBufferDesc& desc,
+                                      const void* data);
 
-    IndexBufferSPtr createIndexBuffer(const IndexBufferDesc& desc,
-                                      const void*            data);
+  IndexBufferSPtr createIndexBuffer(const IndexBufferDesc& desc,
+                                    const void* data);
 
-    PixelShaderSPtr createPixelShader(const ShaderCode& code);
+  PixelShaderSPtr createPixelShader(const ShaderCode& code);
 
-    VertexShaderSPtr createVertexShader(const ShaderCode& code);
+  VertexShaderSPtr createVertexShader(const ShaderCode& code);
 
-    GraphicsAPI api() const { return GraphicsAPI::kOpenGL; }
+  GraphicsAPI api() const { return GraphicsAPI::kOpenGL; }
 
-    WindowHandle windowHandle() const { return window_handle_; }
+  WindowHandle windowHandle() const { return window_handle_; }
 
-    OpenGLContextHandle renderContext() const { return render_context_; }
+  OpenGLContextHandle renderContext() const { return render_context_; }
 
-    OpenGLContextHandle loadContext() const { return load_context_; }
+  OpenGLContextHandle loadContext() const { return load_context_; }
 
-    template <typename TaskType>
-    auto execInLoadThread(TaskType task) -> decltype(task());
+  template <typename TaskType>
+  auto execInLoadThread(TaskType task) -> decltype(task());
 
-private:
-    WindowHandle window_handle_;
+ private:
+  WindowHandle window_handle_;
 
-    OpenGLContextHandle      render_context_;
-    system::ThreadPool::SPtr render_thread_;
+  OpenGLContextHandle render_context_;
+  core::ThreadPool::SPtr render_thread_;
 
-    OpenGLContextHandle      load_context_;
-    system::ThreadPool::SPtr load_thread_;
+  OpenGLContextHandle load_context_;
+  core::ThreadPool::SPtr load_thread_;
 };
 
 /**
- * @brief 
+ * @brief
  */
 class OpenGLIndexBuffer : public IndexBuffer {
-protected:
-    OpenGLIndexBuffer(GLuint id, const IndexBufferDesc& desc,
-                      std::function<void(GLuint)> on_destroy);
+ protected:
+  OpenGLIndexBuffer(GLuint id, const IndexBufferDesc& desc,
+                    std::function<void(GLuint)> on_destroy);
 
-public:
-    ~OpenGLIndexBuffer();
+ public:
+  ~OpenGLIndexBuffer();
 
-    const ByteData data();
+  const ByteData data();
 
-    GLuint id() { return id_; }
+  GLuint id() { return id_; }
 
-private:
-    GLuint                      id_;
-    std::function<void(GLuint)> on_destroy_;
+ private:
+  GLuint id_;
+  std::function<void(GLuint)> on_destroy_;
 };
 
 /**
- * @brief 
+ * @brief
  */
 class OpenGLPixelShader : public PixelShader {
-protected:
-    OpenGLPixelShader(GLuint id, const ShaderCode& code,
-                      std::function<void(GLuint)> on_destroy);
+ protected:
+  OpenGLPixelShader(GLuint id, const ShaderCode& code,
+                    std::function<void(GLuint)> on_destroy);
 
-public:
-    ~OpenGLPixelShader();
+ public:
+  ~OpenGLPixelShader();
 
-    GLuint id() { return id_; }
+  GLuint id() { return id_; }
 
-private:
-    GLuint                      id_;
-    std::function<void(GLuint)> on_destroy_;
+ private:
+  GLuint id_;
+  std::function<void(GLuint)> on_destroy_;
 };
 
 /**
- * @brief 
+ * @brief
  */
 class OpenGLRenderTarget : public RenderTarget {
-protected:
-    OpenGLRenderTarget(GLuint id, const RenderTargetDesc& desc,
-                       std::function<void(GLuint)> on_destroy);
+ protected:
+  OpenGLRenderTarget(GLuint id, const RenderTargetDesc& desc,
+                     std::function<void(GLuint)> on_destroy);
 
-public:
-    ~OpenGLRenderTarget();
+ public:
+  ~OpenGLRenderTarget();
 
-    GLuint id() { return id_; }
+  GLuint id() { return id_; }
 
-private:
-    GLuint                      id_;
-    std::function<void(GLuint)> on_destroy_;
+ private:
+  GLuint id_;
+  std::function<void(GLuint)> on_destroy_;
 };
 
 /**
- * @brief 
+ * @brief
  */
 class OpenGLTexture : public Texture {
-protected:
-    OpenGLTexture(GLuint id, const TextureDesc& desc,
-                  std::function<void(GLuint)> on_destroy);
+ protected:
+  OpenGLTexture(GLuint id, const TextureDesc& desc,
+                std::function<void(GLuint)> on_destroy);
 
-public:
-    ~OpenGLTexture();
+ public:
+  ~OpenGLTexture();
 
-    GLuint id() { return id_; }
+  GLuint id() { return id_; }
 
-private:
-    GLuint                      id_;
-    std::function<void(GLuint)> on_destroy_;
+ private:
+  GLuint id_;
+  std::function<void(GLuint)> on_destroy_;
 };
 
 /**
- * @brief 
+ * @brief
  */
 class OpenGLVertexBuffer : public VertexBuffer {
-protected:
-    OpenGLVertexBuffer(GLuint id, const VertexBufferDesc& desc,
-                       std::function<void(GLuint)> on_destroy);
+ protected:
+  OpenGLVertexBuffer(GLuint id, const VertexBufferDesc& desc,
+                     std::function<void(GLuint)> on_destroy);
 
-public:
-    ~OpenGLVertexBuffer();
+ public:
+  ~OpenGLVertexBuffer();
 
-    const ByteData data();
+  const ByteData data();
 
-    GLuint id() { return id_; }
+  GLuint id() { return id_; }
 
-private:
-    GLuint                      id_;
-    std::function<void(GLuint)> on_destroy_;
+ private:
+  GLuint id_;
+  std::function<void(GLuint)> on_destroy_;
 };
 
-/**
- * @brief 
- */
 class OpenGLVertexShader : public VertexShader {
-protected:
-    OpenGLVertexShader(GLuint id, const ShaderCode& code,
-                       std::function<void(GLuint)> on_destroy);
+ protected:
+  OpenGLVertexShader(GLuint id, const ShaderCode& code,
+                     std::function<void(GLuint)> on_destroy);
 
-public:
-    ~OpenGLVertexShader();
+ public:
+  ~OpenGLVertexShader();
 
-    GLuint id() { return id_; }
+  GLuint id() { return id_; }
 
-private:
-    GLuint                      id_;
-    std::function<void(GLuint)> on_destroy_;
+ private:
+  GLuint id_;
+  std::function<void(GLuint)> on_destroy_;
 };
-}
-}
-}
-
-#endif  // GUARD_8709bf1374084e08b7ff2ce4964967e9
+}  // namespace opengl
+}  // namespace graphics
+}  // namespace temp

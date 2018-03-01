@@ -1,26 +1,21 @@
-/**
- * @file tempura.h
- * @brief tempura includes
- * @author tsukushibito
- * @version 0.0.1
- * @date 2016-02-20
- */
+#include "temp/app/application.h"
+#include "temp/common/common.h"
+#include "temp/core/core.h"
+#include "temp/graphics/graphics.h"
 
-#include "temp/container.h"
-#include "temp/define.h"
-#include "temp/temp_assert.h"
-#include "temp/temp_math.h"
-#include "temp/type.h"
+namespace temp {
 
-#include "temp/system/application.h"
-#include "temp/system/file_system.h"
-#include "temp/system/logger.h"
-#include "temp/system/thread_pool.h"
-#include "temp/system/timer.h"
-#include "temp/system/window.h"
+class Tempura {
+ public:
+  Tempura() = default;
+  ~Tempura() = default;
 
-#include "temp/graphics_/graphics.h"
+  virtual void update() = 0;
+};
 
-#include "temp/resource_old/resource.h"
+using TempSPtr = std::shared_ptr<Tempura>;
 
-#include "temp/render_old/render.h"
+TEMP_DECLSPEC TempSPtr create();
+TEMP_DECLSPEC temp::app::ApplicationSPtr createApplication();
+
+}  // namespace temp

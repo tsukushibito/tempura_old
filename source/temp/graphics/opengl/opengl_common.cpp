@@ -1,70 +1,69 @@
-﻿/**
- * @file opengl_common.cpp
- * @brief
- * @author tsukushibito
- * @version 0.0.1
- * @date 2017-09-22
- */
-
-#include "temp/temp_assert.h"
-
-#include "temp/system/logger.h"
-
-#include "temp/graphics/opengl/opengl_common.h"
+﻿#include "temp/graphics/opengl/opengl_common.h"
+#include "temp/core/logger.h"
 
 #if defined(TEMP_PLATFORM_MAC)
-#include "temp/graphics/opengl/mac/opengl_mac.h"
+#include "temp/graphics/opengl/mac/mac_opengl.h"
 #elif defined(TEMP_PLATFORM_WINDOWS)
-#include "temp/graphics/opengl/windows/opengl_windows.h"
+#include "temp/graphics/opengl/windows/windows_opengl.h"
 #elif defined(TEMP_PLATFORM_LINUX)
+#endif
+
+#if defined(TEMP_PLATFORM_WINDOWS) || defined(TEMP_PLATFORM_LINUX)
+#define TEMP_OPENGL_EXTENSION_LINK(func, name) func name;
+#include <gl_ext/temp_glext_link.inl>
+#if defined(TEMP_PLATFORM_LINUX)
+#elif defined(TEMP_PLATFORM_WINDOWS)
+#include <gl_ext/temp_wglext_link.inl>
+#endif
+#undef TEMP_OPENGL_EXTENSION_LINK
 #endif
 
 namespace temp {
 namespace graphics {
 namespace opengl {
 
-OpenGLContextHandle createContext(WindowHandle        window_handle,
+OpenGLContextHandle createContext(WindowHandle window_handle,
                                   OpenGLContextHandle shared_context) {
 #if defined(TEMP_PLATFORM_MAC)
-    return mac::createContext(window_handle, shared_context);
+  return mac::createContext(window_handle, shared_context);
 #elif defined(TEMP_PLATFORM_WINDOWS)
-    return windows::createContext(window_handle, shared_context);
+  return windows::createContext(window_handle, shared_context);
 #elif defined(TEMP_PLATFORM_LINUX)
 #endif
 }
 
 void deleteContext(OpenGLContextHandle context) {
 #if defined(TEMP_PLATFORM_MAC)
-    return mac::deleteContext(context);
+  return mac::deleteContext(context);
 #elif defined(TEMP_PLATFORM_WINDOWS)
-    return windows::deleteContext(context);
+  return windows::deleteContext(context);
 #elif defined(TEMP_PLATFORM_LINUX)
 #endif
 }
 
 void makeCurrent(WindowHandle window_handle, OpenGLContextHandle context) {
 #if defined(TEMP_PLATFORM_MAC)
-    return mac::makeCurrent(window_handle, context);
+  return mac::makeCurrent(window_handle, context);
 #elif defined(TEMP_PLATFORM_WINDOWS)
-    return windows::makeCurrent(window_handle, context);
+  return windows::makeCurrent(window_handle, context);
 #elif defined(TEMP_PLATFORM_LINUX)
 #endif
 }
 
 void swapBuffers(OpenGLContextHandle context) {
 #if defined(TEMP_PLATFORM_MAC)
-    return mac::swapBuffers(context);
+  return mac::swapBuffers(context);
 #elif defined(TEMP_PLATFORM_WINDOWS)
-    return windows::swapBuffers(context);
+  return windows::swapBuffers(context);
 #elif defined(TEMP_PLATFORM_LINUX)
 #endif
 }
 
 OpenGLContextHandle createSharedContext(OpenGLContextHandle context) {
 #if defined(TEMP_PLATFORM_MAC)
-    return mac::createSharedContext(context);
+  return mac::createSharedContext(context);
 #elif defined(TEMP_PLATFORM_WINDOWS)
-    return windows::createSharedContext(context);
+  return windows::createSharedContext(context);
 #elif defined(TEMP_PLATFORM_LINUX)
 #endif
 }
@@ -73,170 +72,178 @@ void APIENTRY debugProc(GLenum source, GLenum type, GLuint id, GLenum severity,
                         GLsizei length, const GLchar* message,
                         const void* user_param) {
 #ifndef TEMP_PLATFORM_MAC
-    using namespace std;
-    ostringstream ss;
-    ss << "---------------------opengl-callback-start------------" << endl;
-    ss << "message: " << message << endl;
-    ss << "type: ";
-    switch (type) {
+  using namespace std;
+  StringStream ss;
+  ss << "---------------------opengl-callback-start------------" << endl;
+  ss << "message: " << message << endl;
+  ss << "type: ";
+  switch (type) {
     case GL_DEBUG_TYPE_ERROR:
-        ss << "ERROR";
-        break;
+      ss << "ERROR";
+      break;
     case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
-        ss << "DEPRECATED_BEHAVIOR";
-        break;
+      ss << "DEPRECATED_BEHAVIOR";
+      break;
     case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
-        ss << "UNDEFINED_BEHAVIOR";
-        break;
+      ss << "UNDEFINED_BEHAVIOR";
+      break;
     case GL_DEBUG_TYPE_PORTABILITY:
-        ss << "PORTABILITY";
-        break;
+      ss << "PORTABILITY";
+      break;
     case GL_DEBUG_TYPE_PERFORMANCE:
-        ss << "PERFORMANCE";
-        break;
+      ss << "PERFORMANCE";
+      break;
     case GL_DEBUG_TYPE_OTHER:
-        ss << "OTHER";
-        break;
-    }
-    ss << endl;
+      ss << "OTHER";
+      break;
+  }
+  ss << endl;
 
-    ss << "id: " << id << endl;
-    ss << "severity: ";
-    switch (severity) {
+  ss << "id: " << id << endl;
+  ss << "severity: ";
+  switch (severity) {
     case GL_DEBUG_SEVERITY_LOW:
-        ss << "LOW";
-        break;
+      ss << "LOW";
+      break;
     case GL_DEBUG_SEVERITY_MEDIUM:
-        ss << "MEDIUM";
-        break;
+      ss << "MEDIUM";
+      break;
     case GL_DEBUG_SEVERITY_HIGH:
-        ss << "HIGH";
-        break;
-    }
-    ss << endl;
-    ss << "source: " << source << endl;
-    ss << "length: " << length << endl;
-    if (user_param != nullptr) {
-        ss << "user_param" << user_param << endl;
-    }
-    ss << "---------------------opengl-callback-end--------------" << endl;
+      ss << "HIGH";
+      break;
+  }
+  ss << endl;
+  ss << "source: " << source << endl;
+  ss << "length: " << length << endl;
+  if (user_param != nullptr) {
+    ss << "user_param" << user_param << endl;
+  }
+  ss << "---------------------opengl-callback-end--------------" << endl;
 
-    temp::system::Logger::trace(ss.str().c_str());
+  core::Logger::debug("OpenGL", ss.str());
 #endif
 }
 
 void checkError() {
-    GLenum errorCode = glGetError();
-    if (errorCode == GL_NO_ERROR) {
-        return;
+  GLenum error_code = glGetError();
+  if (error_code == GL_NO_ERROR) {
+    return;
+  }
+
+  do {
+    const char* msg = "";
+    switch (error_code) {
+      case GL_INVALID_ENUM:
+        msg = "INVALID_ENUM";
+        break;
+      case GL_INVALID_VALUE:
+        msg = "INVALID_VALUE";
+        break;
+      case GL_INVALID_OPERATION:
+        msg = "INVALID_OPERATION";
+        break;
+      case GL_OUT_OF_MEMORY:
+        msg = "OUT_OF_MEMORY";
+        break;
+      case GL_INVALID_FRAMEBUFFER_OPERATION:
+        msg = "INVALID_FRAMEBUFFER_OPERATION";
+        break;
+      default:
+        msg = "Unknown";
+        break;
     }
 
-    do {
-        const char* msg = "";
-        switch (errorCode) {
-        case GL_INVALID_ENUM:
-            msg = "INVALID_ENUM";
-            break;
-        case GL_INVALID_VALUE:
-            msg = "INVALID_VALUE";
-            break;
-        case GL_INVALID_OPERATION:
-            msg = "INVALID_OPERATION";
-            break;
-        case GL_OUT_OF_MEMORY:
-            msg = "OUT_OF_MEMORY";
-            break;
-        case GL_INVALID_FRAMEBUFFER_OPERATION:
-            msg = "INVALID_FRAMEBUFFER_OPERATION";
-            break;
-        default:
-            msg = "Unknown";
-            break;
-        }
+    StringStream ss;
+    ss << "0x" << std::hex << error_code << ": " << msg;
+    core::Logger::error("OpenGL", ss.str());
 
-        system::Logger::error("OpenGL ERROR : 0x{0:x}'{1}'\n", errorCode, msg);
-
-        errorCode = glGetError();
-    } while (errorCode != GL_NO_ERROR);
-    TEMP_ASSERT(false, "OpenGL ERROR");
+    error_code = glGetError();
+  } while (error_code != GL_NO_ERROR);
+  TEMP_ASSERT(false, "OpenGL ERROR");
 }
 
 void printShaderCompileInfoLog(GLuint shader) {
-    GLint result;
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
-    // if(result == GL_FALSE) debugLog("[ERROR] GLSL faled to compile.");
-    if (result == GL_FALSE)
-        system::Logger::error("[ERROR] GLSL faled to compile.");
-    GLint bufSize = 0;
-    glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &bufSize);
+  GLint result;
+  glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
+  // if(result == GL_FALSE) debugLog("[ERROR] GLSL faled to compile.");
+  if (result == GL_FALSE) {
+    core::Logger::error("OpenGL", "GLSL faled to compile.");
+  }
+  GLint buf_size = 0;
+  glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &buf_size);
 
-    if (bufSize > 1) {
-        std::string infoLog(bufSize, '\n');
+  if (buf_size > 1) {
+    String infoLog(buf_size, '\n');
 
-        GLsizei length;
+    GLsizei length;
 
-        /* シェーダのコンパイル時のログの内容を取得する */
-        glGetShaderInfoLog(shader, bufSize, &length, &infoLog[0]);
-        // debugLog("ShaderInfoLog:\n%s\n\n", infoLog.c_str());
-        system::Logger::error("ShaderInfoLog:\n{0}\n\n", infoLog.c_str());
-    }
+    /* シェーダのコンパイル時のログの内容を取得する */
+    glGetShaderInfoLog(shader, buf_size, &length, &infoLog[0]);
+    StringStream ss;
+    ss << "ShaderInfoLog:" << std::endl;
+    ss << infoLog << std::endl;
+    core::Logger::info("OpenGL", ss.str());
+  }
 }
 
 void printProgramInfoLog(GLuint program) {
-    GLsizei length;
+  GLsizei length;
 
-    glCallWithErrorCheck(glGetProgramiv, program, GL_INFO_LOG_LENGTH, &length);
-    if (length <= 1) return;
+  glCallWithErrorCheck(glGetProgramiv, program, GL_INFO_LOG_LENGTH, &length);
+  if (length <= 1) return;
 
-    String infoLog("", length);
-    glCallWithErrorCheck(glGetProgramInfoLog, program, length, &length,
-                         (GLchar*)&infoLog[0]);
-    system::Logger::info("ProgramInfoLog:\n{0}\n\n", infoLog.c_str());
+  String infoLog("", length);
+  glCallWithErrorCheck(glGetProgramInfoLog, program, length, &length,
+                       (GLchar*)&infoLog[0]);
+  StringStream ss;
+  ss << "ProgramInfoLog:" << std::endl;
+  ss << infoLog << std::endl;
+  core::Logger::info("OpenGL", ss.str());
 }
 
 GLenum renderTargetFormatToGlFormat(RenderTargetFormat format) {
-    GLenum gl_format = GL_RGBA8;
+  GLenum gl_format = GL_RGBA8;
 
-    switch (format) {
+  switch (format) {
     case RenderTargetFormat::kRGBA32:
-        gl_format = GL_RGBA8;
-        break;
+      gl_format = GL_RGBA8;
+      break;
     case RenderTargetFormat::kRGBA64F:
-        gl_format = GL_RGBA16F;
-        break;
+      gl_format = GL_RGBA16F;
+      break;
     case RenderTargetFormat::kRGBA128F:
-        gl_format = GL_RGBA32F;
-        break;
+      gl_format = GL_RGBA32F;
+      break;
     default:
-        TEMP_ASSERT(false, "invalid render target format!");
-        break;
-    }
+      TEMP_ASSERT(false, "invalid render target format!");
+      break;
+  }
 
-    return gl_format;
+  return gl_format;
 }
 
 GLenum textureFormatToGlFormat(TextureFormat format) {
-    GLenum gl_format = NULL;
+  GLenum gl_format = NULL;
 
-    switch (format) {
+  switch (format) {
     case TextureFormat::kDXT1:
-        gl_format = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
-        break;
+      gl_format = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+      break;
     case TextureFormat::kDXT5:
-        gl_format = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-        break;
+      gl_format = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+      break;
     case TextureFormat::kRGB24:
-        gl_format = GL_SRGB8;
-        break;
+      gl_format = GL_SRGB8;
+      break;
     case TextureFormat::kAlpha8:
-        gl_format = GL_R8;
-        break;
+      gl_format = GL_R8;
+      break;
     case TextureFormat::kRGBA32:
-        gl_format = GL_SRGB8_ALPHA8;
-        break;
-    }
+      gl_format = GL_SRGB8_ALPHA8;
+      break;
+  }
 
-    return gl_format;
+  return gl_format;
 }
 
 }  // namespace opengl
