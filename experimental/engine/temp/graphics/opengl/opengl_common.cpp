@@ -1,4 +1,4 @@
-#include "temp/graphics/opengl/opengl_common.h"
+﻿#include "temp/graphics/opengl/opengl_common.h"
 #include "temp/core/logger.h"
 
 #if defined(TEMP_PLATFORM_MAC)

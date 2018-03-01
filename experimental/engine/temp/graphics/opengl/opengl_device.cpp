@@ -1,4 +1,4 @@
-#include "temp/graphics/opengl/opengl_device.h"
+﻿#include "temp/graphics/opengl/opengl_device.h"
 #include "temp/core/logger.h"
 #include "temp/graphics/opengl/opengl_common.h"
 
@@ -104,7 +104,7 @@ TextureSPtr OpenGLDevice::createTexture(const TextureDesc& desc,
     auto gl_internal_format = textureFormatToGlFormat(desc.format);
     GLenum gl_type = GL_UNSIGNED_BYTE;
     GLenum gl_format;
-    Size size;
+    Size size = 0;
     switch (desc.format) {
       case TextureFormat::kDXT1:
         size = ((desc.width + 3) / 4) * ((desc.height + 3) / 4) * 8;
