@@ -7,7 +7,7 @@ namespace graphics {
 namespace opengl {
 
 namespace {
-const String kOpenGLDeviceTag = "OpenGLDevice";
+const Char* kOpenGLDeviceTag = "OpenGLDevice";
 }
 
 Device::SPtr OpenGLDevice::create(WindowHandle window_handle,

@@ -16,7 +16,7 @@ namespace opengl {
 namespace windows {
 
 namespace {
-const String kOpenglTag = "OpenGL";
+const Char* kOpenglTag = "OpenGL";
 
 // ダミーウィンドウ作成
 HWND createDummyWindow() {

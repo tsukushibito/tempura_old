@@ -4,6 +4,18 @@
 #define _CRTDBG_MAP_ALLOC
 #include <cstdlib>
 #include <crtdbg.h>
+namespace {
+
+struct Debug {
+  Debug() {
+    // _CrtSetBreakAlloc(177);
+  }
+};
+
+Debug debug;
+
+}
+
 BOOL WINAPI DllMain(HINSTANCE hinstDLL,  // DLL モジュールのハンドル
                     DWORD fdwReason,     // 関数を呼び出す理由
                     LPVOID lpvReserved   // 予約済み
