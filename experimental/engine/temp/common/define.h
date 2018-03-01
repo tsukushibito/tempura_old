@@ -12,6 +12,14 @@
 #else
 #define TEMP_DECLSPEC __declspec(dllimport)
 #endif
+
+#ifdef _DEBUG 
+#ifndef DBG_NEW 
+#define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ ) 
+#define new DBG_NEW 
+#endif 
+#endif  // _DEBUG  
+
 #elif defined __APPLE__
 #define TEMP_PLATFORM_MAC
 #define TEMP_DECLSPEC

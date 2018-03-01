@@ -1,6 +1,9 @@
 ﻿#include "temp/common/define.h"
 #ifdef TEMP_PLATFORM_WINDOWS
 #include <Windows.h>
+#define _CRTDBG_MAP_ALLOC
+#include <cstdlib>
+#include <crtdbg.h>
 BOOL WINAPI DllMain(HINSTANCE hinstDLL,  // DLL モジュールのハンドル
                     DWORD fdwReason,     // 関数を呼び出す理由
                     LPVOID lpvReserved   // 予約済み
@@ -16,6 +19,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL,  // DLL モジュールのハンドル
     case DLL_THREAD_DETACH:
       break;
     case DLL_PROCESS_DETACH:
+		_CrtDumpMemoryLeaks();
       break;
   }
   return TRUE;
