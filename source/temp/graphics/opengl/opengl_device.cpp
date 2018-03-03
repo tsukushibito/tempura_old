@@ -75,7 +75,7 @@ RenderTargetSPtr OpenGLDevice::createRenderTarget(
   GLuint id = execInLoadThread(task);
   StringStream ss;
   ss << "render_target has created. id: " << id;
-  Logger::trace(kOpenGLDeviceTag, ss.str());
+  TEMP_LOG_TRACE(kOpenGLDeviceTag, ss.str());
 
   struct Creator : OpenGLRenderTarget {
     Creator(GLuint id, const RenderTargetDesc& desc,
@@ -88,7 +88,7 @@ RenderTargetSPtr OpenGLDevice::createRenderTarget(
     execInLoadThread(task);
     StringStream ss;
     ss << "render_target has deleted. id: " << id;
-    Logger::trace(kOpenGLDeviceTag, ss.str());
+    TEMP_LOG_TRACE(kOpenGLDeviceTag, ss.str());
   });
 }
 
@@ -141,7 +141,7 @@ TextureSPtr OpenGLDevice::createTexture(const TextureDesc& desc,
   GLuint id = execInLoadThread(task);
   StringStream ss;
   ss << "texture has created. id: " << id;
-  Logger::trace(kOpenGLDeviceTag, ss.str());
+  TEMP_LOG_TRACE(kOpenGLDeviceTag, ss.str());
 
   struct Creator : OpenGLTexture {
     Creator(GLuint id, const TextureDesc& desc,
@@ -154,7 +154,7 @@ TextureSPtr OpenGLDevice::createTexture(const TextureDesc& desc,
     execInLoadThread(task);
     StringStream ss;
     ss << "texture has deleted. id: " << id;
-    Logger::trace(kOpenGLDeviceTag, ss.str());
+    TEMP_LOG_TRACE(kOpenGLDeviceTag, ss.str());
   });
 }
 
@@ -175,7 +175,7 @@ VertexBufferSPtr OpenGLDevice::createVertexBuffer(const VertexBufferDesc& desc,
   GLuint id = execInLoadThread(task);
   StringStream ss;
   ss << "vertex buffer has created. id: " << id;
-  Logger::trace(kOpenGLDeviceTag, ss.str());
+  TEMP_LOG_TRACE(kOpenGLDeviceTag, ss.str());
 
   struct Creator : OpenGLVertexBuffer {
     Creator(GLuint id, const VertexBufferDesc& desc,
@@ -188,7 +188,7 @@ VertexBufferSPtr OpenGLDevice::createVertexBuffer(const VertexBufferDesc& desc,
     execInLoadThread(task);
     StringStream ss;
     ss << "vertex buffer has deleted. id: " << id;
-    Logger::trace(kOpenGLDeviceTag, ss.str());
+    TEMP_LOG_TRACE(kOpenGLDeviceTag, ss.str());
   });
 }
 
@@ -209,7 +209,7 @@ IndexBufferSPtr OpenGLDevice::createIndexBuffer(const IndexBufferDesc& desc,
   GLuint id = execInLoadThread(task);
   StringStream ss;
   ss << "index buffer has created. id: " << id;
-  Logger::trace(kOpenGLDeviceTag, ss.str());
+  TEMP_LOG_TRACE(kOpenGLDeviceTag, ss.str());
 
   struct Creator : OpenGLIndexBuffer {
     Creator(GLuint id, const IndexBufferDesc& desc,
@@ -222,7 +222,7 @@ IndexBufferSPtr OpenGLDevice::createIndexBuffer(const IndexBufferDesc& desc,
     execInLoadThread(task);
     StringStream ss;
     ss << "index buffer has deleted. id: " << id;
-    Logger::trace(kOpenGLDeviceTag, ss.str());
+    TEMP_LOG_TRACE(kOpenGLDeviceTag, ss.str());
   });
 }
 
@@ -231,9 +231,9 @@ PixelShaderSPtr OpenGLDevice::createPixelShader(const ShaderCode& code) {
 
   auto task = [this, code]() {
     GLuint id = glCallWithErrorCheck(glCreateShader, GL_FRAGMENT_SHADER);
-    if (!code.is_binary_) {
-      const GLchar* p_code = code.code_.c_str();
-      GLint length = static_cast<GLint>(code.code_.size());
+    if (!code.is_binary) {
+      const GLchar* p_code = reinterpret_cast<const GLchar*>(&code.code[0]);
+      GLint length = static_cast<GLint>(code.code.size());
       glCallWithErrorCheck(glShaderSource, id, 1, &p_code, &length);
       glCallWithErrorCheck(glCompileShader, id);
       printShaderCompileInfoLog(id);
@@ -246,7 +246,7 @@ PixelShaderSPtr OpenGLDevice::createPixelShader(const ShaderCode& code) {
   GLuint id = execInLoadThread(task);
   StringStream ss;
   ss << "fragment shader has created. id: " << id;
-  Logger::trace(kOpenGLDeviceTag, ss.str());
+  TEMP_LOG_TRACE(kOpenGLDeviceTag, ss.str());
 
   struct Creator : OpenGLPixelShader {
     Creator(GLuint id, const ShaderCode& code,
@@ -259,7 +259,7 @@ PixelShaderSPtr OpenGLDevice::createPixelShader(const ShaderCode& code) {
     execInLoadThread(task);
     StringStream ss;
     ss << "fragment shader has deleted. id: " << id;
-    Logger::trace(kOpenGLDeviceTag, ss.str());
+    TEMP_LOG_TRACE(kOpenGLDeviceTag, ss.str());
   });
 }
 
@@ -268,9 +268,9 @@ VertexShaderSPtr OpenGLDevice::createVertexShader(const ShaderCode& code) {
 
   auto task = [this, code]() {
     GLuint id = glCallWithErrorCheck(glCreateShader, GL_VERTEX_SHADER);
-    if (!code.is_binary_) {
-      const GLchar* p_code = code.code_.c_str();
-      GLint length = static_cast<GLint>(code.code_.size());
+    if (!code.is_binary) {
+      const GLchar* p_code = reinterpret_cast<const GLchar*>(&code.code[0]);
+      GLint length = static_cast<GLint>(code.code.size());
       glCallWithErrorCheck(glShaderSource, id, 1, &p_code, &length);
       glCallWithErrorCheck(glCompileShader, id);
       printShaderCompileInfoLog(id);
@@ -283,7 +283,7 @@ VertexShaderSPtr OpenGLDevice::createVertexShader(const ShaderCode& code) {
   GLuint id = execInLoadThread(task);
   StringStream ss;
   ss << "vertex shader has created. id: " << id;
-  Logger::trace(kOpenGLDeviceTag, ss.str());
+  TEMP_LOG_TRACE(kOpenGLDeviceTag, ss.str());
 
   struct Creator : OpenGLVertexShader {
     Creator(GLuint id, const ShaderCode& code,
@@ -296,7 +296,7 @@ VertexShaderSPtr OpenGLDevice::createVertexShader(const ShaderCode& code) {
     execInLoadThread(task);
     StringStream ss;
     ss << "vertex shader has deleted. id: " << id;
-    Logger::trace(kOpenGLDeviceTag, ss.str());
+    TEMP_LOG_TRACE(kOpenGLDeviceTag, ss.str());
   });
 }
 

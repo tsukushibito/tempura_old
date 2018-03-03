@@ -16,6 +16,8 @@ using WindowHandle = void*;
 using WindowHandle = HWND;
 #endif
 
+using ByteData = Vector<Int8>;
+
 enum class GraphicsAPI {
   kOpenGL,
   kVulkan,
@@ -206,8 +208,8 @@ struct SamplerDesc {
 };
 
 struct ShaderCode {
-  String code_;
-  Bool is_binary_ = false;
+  ByteData code;
+  Bool is_binary = false;
 };
 
 struct Viewport {
