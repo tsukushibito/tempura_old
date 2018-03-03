@@ -5,6 +5,18 @@
 namespace temp {
 namespace math {
 
+class Vector2;
+Bool operator==(const Vector2& lhs, const Vector2& rhs);
+Bool operator!=(const Vector2& lhs, const Vector2& rhs);
+Vector2 operator+(const Vector2& lhs, const Vector2& rhs);
+Vector2 operator-(const Vector2& lhs, const Vector2& rhs);
+Vector2 operator*(const Vector2& lhs, Float32 rhs);
+Vector2 operator*(Float32 lhs, const Vector2& rhs);
+Vector2 operator/(const Vector2& lhs, Float32 rhs);
+Float32 angle(const Vector2& lhs, const Vector2& rhs);
+Float32 distance(const Vector2& lhs, const Vector2& rhs);
+Float32 dot(const Vector2& lhs, const Vector2& rhs);
+
 class Vector2 {
  public:
   Vector2(Float32 x = 0.0f, Float32 y = 0.0f) : x_(x), y_(y) {}
@@ -54,7 +66,7 @@ class Vector2 {
 };
 
 inline Bool operator==(const Vector2& lhs, const Vector2& rhs) {
-  return lhs.x_ == rhs.x_ && lhs.y_ == rhs.y_;
+  return lhs.x() == rhs.x() && lhs.y() == rhs.y();
 }
 
 inline Bool operator!=(const Vector2& lhs, const Vector2& rhs) {
@@ -84,7 +96,7 @@ inline Vector2 operator/(const Vector2& lhs, Float32 rhs) {
 }
 
 inline Float32 angle(const Vector2& lhs, const Vector2& rhs) {
-  return std::acos(dot(lhs, rhs) / (lhs.magnitude * rhs.magnitude()));
+  return std::acos(dot(lhs, rhs) / (lhs.magnitude() * rhs.magnitude()));
 }
 
 inline Float32 distance(const Vector2& lhs, const Vector2& rhs) {
