@@ -8,7 +8,8 @@
 namespace temp {
 namespace core {
 
-void Logger::log(const String &tag, const String &msg, LogLevel level) {
+void Logger::log(const String &tag, const String &msg, LogLevel level,
+                 const char *file, int line) {
   if (level < getInstance().level_) return;
   auto now = std::chrono::system_clock::now();
   auto now_time = std::chrono::system_clock::to_time_t(now);
@@ -45,31 +46,42 @@ void Logger::log(const String &tag, const String &msg, LogLevel level) {
     default:
       break;
   }
+#ifdef TEMP_LOG_FILE_AND_LINE
+  std::cout << time_tag << level_tag << "[" << tag << "] " << msg << " : "
+            << file << " : " << line << std::endl;
+#else
   std::cout << time_tag << level_tag << "[" << tag << "] " << msg << std::endl;
+#endif
 }
 
-void Logger::trace(const String &tag, const String &msg) {
-  Logger::log(tag, msg, LogLevel::kTrace);
+void Logger::trace(const String &tag, const String &msg, const char *file,
+                   int line) {
+  Logger::log(tag, msg, LogLevel::kTrace, file, line);
 }
 
-void Logger::debug(const String &tag, const String &msg) {
-  Logger::log(tag, msg, LogLevel::kDebug);
+void Logger::debug(const String &tag, const String &msg, const char *file,
+                   int line) {
+  Logger::log(tag, msg, LogLevel::kDebug, file, line);
 }
 
-void Logger::info(const String &tag, const String &msg) {
-  Logger::log(tag, msg, LogLevel::kInfo);
+void Logger::info(const String &tag, const String &msg, const char *file,
+                  int line) {
+  Logger::log(tag, msg, LogLevel::kInfo, file, line);
 }
 
-void Logger::warn(const String &tag, const String &msg) {
-  Logger::log(tag, msg, LogLevel::kWarn);
+void Logger::warn(const String &tag, const String &msg, const char *file,
+                  int line) {
+  Logger::log(tag, msg, LogLevel::kWarn, file, line);
 }
 
-void Logger::error(const String &tag, const String &msg) {
-  Logger::log(tag, msg, LogLevel::kError);
+void Logger::error(const String &tag, const String &msg, const char *file,
+                   int line) {
+  Logger::log(tag, msg, LogLevel::kError, file, line);
 }
 
-void Logger::fatal(const String &tag, const String &msg) {
-  Logger::log(tag, msg, LogLevel::kFatal);
+void Logger::fatal(const String &tag, const String &msg, const char *file,
+                   int line) {
+  Logger::log(tag, msg, LogLevel::kFatal, file, line);
 }
 
 LogLevel Logger::getLevel() const {
