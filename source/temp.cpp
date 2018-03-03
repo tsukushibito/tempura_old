@@ -25,6 +25,8 @@ class TempuraImpl : public Tempura {
 #endif
     renderer_ =
         renderer::Renderer::makeShared(render_thread_, graphics_device_);
+    math::Vector2 vec1, vec2(1.0f, 1.0f);
+    auto d = math::dot(vec1, vec2);
   }
   void update(){/*core::Logger::trace("Tempura", "update");*/};
 
