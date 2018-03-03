@@ -33,9 +33,7 @@ struct ResourceIdHash {
   using result_type = Size;
 
   inline result_type operator()(const ResourceId& id) const {
-    auto h1 = id.hash_value;
-    auto h2 = std::hash<int>{}(id.index);
-    return h1 ^ (h2 << 1);
+    return id.hash_value;
   }
 };
 
