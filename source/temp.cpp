@@ -23,6 +23,8 @@ class TempuraImpl : public Tempura {
         window_handle, render_thread_, load_thread_);
 #else
 #endif
+    renderer_ =
+        renderer::Renderer::makeShared(render_thread_, graphics_device_);
   }
   void update(){/*core::Logger::trace("Tempura", "update");*/};
 
@@ -30,6 +32,7 @@ class TempuraImpl : public Tempura {
   core::ThreadPool::SPtr render_thread_;
   core::ThreadPool::SPtr load_thread_;
   graphics::Device::SPtr graphics_device_;
+  renderer::Renderer::SPtr renderer_;
 };
 
 TEMP_DECLSPEC TempSPtr create(void* window_handle) {

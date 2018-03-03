@@ -2,6 +2,7 @@
 #include "temp/common/common.h"
 #include "temp/core/core.h"
 #include "temp/graphics/graphics.h"
+#include "temp/renderer/renderer.h"
 
 namespace temp {
 
