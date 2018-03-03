@@ -58,12 +58,12 @@ OpenGLContextHandle createContext(WindowHandle        window_handle,
     version = glGetString(GL_VERSION);
     String msg("OpenGL version : ");
     msg += (const char*)version;
-    core::Logger::info("OpenGL", msg);
+    TEMP_LOG_INFO("OpenGL", msg);
 
     const GLubyte* glslVersion;
     glslVersion = glGetString(GL_SHADING_LANGUAGE_VERSION);
     msg         = String("GLSL version : ") + (const char*)glslVersion;
-    core::Logger::info("OpenGL", msg);
+    TEMP_LOG_INFO("OpenGL", msg);
 
     [NSOpenGLContext clearCurrentContext];
 

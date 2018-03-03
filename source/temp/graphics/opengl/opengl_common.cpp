@@ -155,7 +155,7 @@ void checkError() {
 
     StringStream ss;
     ss << "0x" << std::hex << error_code << ": " << msg;
-    core::Logger::error("OpenGL", ss.str());
+    TEMP_LOG_ERROR("OpenGL", ss.str());
 
     error_code = glGetError();
   } while (error_code != GL_NO_ERROR);
@@ -167,7 +167,7 @@ void printShaderCompileInfoLog(GLuint shader) {
   glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
   // if(result == GL_FALSE) debugLog("[ERROR] GLSL faled to compile.");
   if (result == GL_FALSE) {
-    core::Logger::error("OpenGL", "GLSL faled to compile.");
+    TEMP_LOG_ERROR("OpenGL", "GLSL faled to compile.");
   }
   GLint buf_size = 0;
   glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &buf_size);
@@ -182,7 +182,7 @@ void printShaderCompileInfoLog(GLuint shader) {
     StringStream ss;
     ss << "ShaderInfoLog:" << std::endl;
     ss << infoLog << std::endl;
-    core::Logger::info("OpenGL", ss.str());
+    TEMP_LOG_INFO("OpenGL", ss.str());
   }
 }
 
@@ -198,7 +198,7 @@ void printProgramInfoLog(GLuint program) {
   StringStream ss;
   ss << "ProgramInfoLog:" << std::endl;
   ss << infoLog << std::endl;
-  core::Logger::info("OpenGL", ss.str());
+  TEMP_LOG_INFO("OpenGL", ss.str());
 }
 
 GLenum renderTargetFormatToGlFormat(RenderTargetFormat format) {

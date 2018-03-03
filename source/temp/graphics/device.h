@@ -17,8 +17,6 @@ using VertexBufferSPtr = std::shared_ptr<VertexBuffer>;
 class VertexShader;
 using VertexShaderSPtr = std::shared_ptr<VertexShader>;
 
-using ByteData = Vector<Int8>;
-
 class Device : Uncopyable {
  public:
   using SPtr = std::shared_ptr<Device>;
