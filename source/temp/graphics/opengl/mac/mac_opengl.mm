@@ -3,6 +3,7 @@
 #import <OpenGL/gl3.h>
 #import <OpenGL/gl3ext.h>
 
+#include "temp/common/format.h"
 #include "temp/core/logger.h"
 #include "temp/graphics/opengl/mac/mac_opengl.h"
 
@@ -10,6 +11,9 @@ namespace temp {
 namespace graphics {
 namespace opengl {
 namespace mac {
+namespace {
+const char* kOpenGLTag = "OpenGL";
+}
 
 OpenGLContextHandle createContext(WindowHandle        window_handle,
                                   OpenGLContextHandle shared_context) {
@@ -56,14 +60,10 @@ OpenGLContextHandle createContext(WindowHandle        window_handle,
     // バージョン情報ログ
     const GLubyte* version;
     version = glGetString(GL_VERSION);
-    String msg("OpenGL version : ");
-    msg += (const char*)version;
-    TEMP_LOG_INFO("OpenGL", msg);
+    TEMP_LOG_INFO(kOpenGLTag, fmt::format("OpenGL version : {0}", version));
 
     const GLubyte* glslVersion;
-    glslVersion = glGetString(GL_SHADING_LANGUAGE_VERSION);
-    msg         = String("GLSL version : ") + (const char*)glslVersion;
-    TEMP_LOG_INFO("OpenGL", msg);
+    TEMP_LOG_INFO(kOpenGLTag, fmt::format("GLSL version : {0}", glslVersion));
 
     [NSOpenGLContext clearCurrentContext];
 
