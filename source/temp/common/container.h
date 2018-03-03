@@ -31,7 +31,7 @@ using Queue = std::queue<T, Deque<T>>;
 
 template <typename Key, typename Type, typename Hash = std::hash<Key>,
           typename Pred = std::equal_to<Key>>
-using HashMap =
+using HashTable =
     std::unordered_map<Key, Type, Hash, Pred,
                        core::AllocatorForStl<std::pair<const Key, Type>>>;
 }  // namespace temp
