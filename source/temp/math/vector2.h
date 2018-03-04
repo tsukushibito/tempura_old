@@ -19,7 +19,7 @@ Float32 dot(const Vector2& lhs, const Vector2& rhs);
 
 class Vector2 {
  public:
-  Vector2(Float32 x = 0.0f, Float32 y = 0.0f) : x_(x), y_(y) {}
+  explicit Vector2(Float32 x = 0.0f, Float32 y = 0.0f) : x_(x), y_(y) {}
   Vector2(const Vector2&) = default;
   Vector2& operator=(const Vector2&) = default;
 

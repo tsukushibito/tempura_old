@@ -23,8 +23,6 @@ class TempuraImpl : public Tempura {
         window_handle, render_thread_, load_thread_);
 #else
 #endif
-    math::Vector2 vec1, vec2(1.0f, 1.0f);
-    auto d = math::dot(vec1, vec2);
   }
   void update(){/*core::Logger::trace("Tempura", "update");*/};
 

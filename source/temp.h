@@ -1,3 +1,4 @@
+#pragma once
 #include "temp/app/application.h"
 #include "temp/common/common.h"
 #include "temp/core/core.h"
