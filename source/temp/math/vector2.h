@@ -16,13 +16,13 @@ Vector2 operator/(const Vector2& lhs, Float32 rhs);
 Float32 angle(const Vector2& lhs, const Vector2& rhs);
 Float32 distance(const Vector2& lhs, const Vector2& rhs);
 Float32 dot(const Vector2& lhs, const Vector2& rhs);
+Vector2 lerp(const Vector2& a, const Vector2& b, Float32 t);
 
 class Vector2 {
  public:
   explicit Vector2(Float32 x = 0.0f, Float32 y = 0.0f) : x_(x), y_(y) {}
   Vector2(const Vector2&) = default;
   Vector2& operator=(const Vector2&) = default;
-
   ~Vector2() = default;
 
   Float32& x() { return x_; }
@@ -106,6 +106,13 @@ inline Float32 distance(const Vector2& lhs, const Vector2& rhs) {
 inline Float32 dot(const Vector2& lhs, const Vector2& rhs) {
   return lhs.x() * rhs.x() + lhs.y() * rhs.y();
 }
+
+inline Vector2 lerp(const Vector2& a, const Vector2& b, Float32 t) {
+  return a * (1.0f - t) + b * t;
+}
+
+inline Vector2 vec2Zero() { return Vector2(0.0f, 0.0f); }
+inline Vector2 vec2One() { return Vector2(1.0f, 1.0f); }
 
 }  // namespace math
 }  // namespace temp

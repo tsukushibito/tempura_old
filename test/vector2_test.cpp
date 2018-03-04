@@ -86,3 +86,13 @@ TEST_F(Vector2Test, Angle) {
   r = angle(x1y0, x2y2);
   EXPECT_TRUE(0.25f * kPi - 0.0001f < r && r < 0.25f * kPi + 0.0001f);
 }
+
+TEST_F(Vector2Test, Lerp) {
+  using namespace temp::math;
+  auto r = lerp(x2y0, x0y2, 0.0f);
+  EXPECT_TRUE(r == x2y0);
+  r = lerp(x2y0, x0y2, 1.0f);
+  EXPECT_TRUE(r == x0y2);
+  r = lerp(x2y0, x0y2, 0.5f);
+  EXPECT_TRUE(r == x1y1);
+}
