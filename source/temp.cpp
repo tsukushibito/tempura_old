@@ -20,7 +20,8 @@ class TempuraImpl : public Tempura {
     load_thread_ = core::ThreadPool::makeShared("Load", 1);
 #ifdef TEMP_GRAPHICS_OPENGL
     graphics_device_ = graphics::opengl::OpenGLDevice::create(
-        static_cast<HWND>(window_handle), render_thread_, load_thread_);
+        static_cast<graphics::WindowHandle>(window_handle), render_thread_,
+        load_thread_);
 #else
 #endif
   }
