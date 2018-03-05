@@ -9,6 +9,7 @@ namespace app {
 namespace windows {
 
 namespace {
+	const char* kWinAppTag = "WindowsApplication";
 LRESULT CALLBACK wndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
   switch (msg) {
     case WM_DESTROY:
@@ -22,11 +23,11 @@ LRESULT CALLBACK wndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 }  // namespace
 
 WindowsApplication::WindowsApplication() {
-  core::Logger::trace("WindowsApplication", "created");
+  TEMP_LOG_TRACE(kWinAppTag, "created");
 }
 
 WindowsApplication::~WindowsApplication() {
-  core::Logger::trace("WindowsApplication", "destroied");
+  TEMP_LOG_TRACE(kWinAppTag, "destroied");
 }
 
 void WindowsApplication::setOnInitializeCallback(
@@ -74,7 +75,7 @@ void WindowsApplication::exit() { SendMessage(window_handle_, WM_QUIT, 0, 0); }
 void *WindowsApplication::getNativeWindowHandle() { return window_handle_; }
 
 void WindowsApplication::init() {
-  core::Logger::trace("WindowsApplication", "init");
+  TEMP_LOG_TRACE(kWinAppTag, "init");
 
   WNDCLASSEX wndclass;
   HINSTANCE instance_handle = GetModuleHandle(NULL);
@@ -113,7 +114,7 @@ void WindowsApplication::init() {
 }
 
 void WindowsApplication::term() {
-  core::Logger::trace("WindowsApplication", "term");
+  TEMP_LOG_TRACE(kWinAppTag, "term");
   DestroyWindow(window_handle_);
 }
 

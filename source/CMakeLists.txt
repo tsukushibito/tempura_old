@@ -23,7 +23,7 @@ target_link_libraries(engine ${EXTRA_LIBS})
 set_target_properties(engine PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(engine PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(engine PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/opengl)
-target_include_directories(engine PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/fmt/include)
+target_include_directories(engine PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/fmt)
 
 set(TEMP_USE_BOOST ON CACHE BOOL "To use filesystem in a environment before c++17.")
 if(TEMP_USE_BOOST)

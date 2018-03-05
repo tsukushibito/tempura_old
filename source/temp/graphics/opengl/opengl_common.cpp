@@ -123,7 +123,7 @@ void APIENTRY debugProc(GLenum source, GLenum type, GLuint id, GLenum severity,
   }
   ss << "---------------------opengl-callback-end--------------" << endl;
 
-  core::Logger::debug("OpenGL", ss.str());
+  TEMP_LOG_DEBUG(kOpenGLTag, ss.str());
 #endif
 }
 

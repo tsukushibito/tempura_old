@@ -95,19 +95,19 @@ OpenGLContextHandle createContextImpl(HDC hdc,
   if (vendor != nullptr) {
     StringStream msg;
     msg << "vendor : " << vendor;
-    core::Logger::info(kOpenglTag, msg.str());
+    TEMP_LOG_INFO(kOpenglTag, msg.str());
   }
   auto render = glGetString(GL_RENDER);
   if (render != nullptr) {
     StringStream msg;
     msg << "render : " << render;
-    core::Logger::info(kOpenglTag, msg.str());
+    TEMP_LOG_INFO(kOpenglTag, msg.str());
   }
   auto version = glGetString(GL_VERSION);
   if (version != nullptr) {
     StringStream msg;
     msg << "version : " << version;
-    core::Logger::info(kOpenglTag, msg.str());
+    TEMP_LOG_INFO(kOpenglTag, msg.str());
   }
   auto extensions = glGetString(GL_EXTENSIONS);
   if (extensions != nullptr) {
@@ -115,7 +115,7 @@ OpenGLContextHandle createContextImpl(HDC hdc,
     // std::replace(extensionsStr.begin(), extensionsStr.end(), ' ', '\n');
     StringStream msg;
     msg << "extensions : " << extensionsStr;
-    core::Logger::info(kOpenglTag, msg.str());
+    TEMP_LOG_INFO(kOpenglTag, msg.str());
   }
   String version_string = reinterpret_cast<const char*>(version);
   StringStream ss(version_string);
@@ -224,7 +224,7 @@ OpenGLContextHandle createContextImpl(HDC hdc,
       auto err = GetLastError();
       StringStream msg;
       msg << "wglShareLists failed. " << err;
-      core::Logger::fatal(kOpenglTag, msg.str());
+      TEMP_LOG_FATAL(kOpenglTag, msg.str());
     }
   }
 
