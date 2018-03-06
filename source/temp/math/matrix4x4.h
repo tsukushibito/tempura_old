@@ -4,6 +4,7 @@
 
 namespace temp {
 namespace math {
+
 class Matrix4x4 {
  public:
   Matrix4x4() : Matrix4x4(Vector4(), Vector4(), Vector4(), Vector4()) {}
@@ -41,6 +42,20 @@ class Matrix4x4 {
   const Vector4& operator[](Size i) const { return rows_[i]; }
   Float32& operator()(Size r, Size c) { return rows_[r][c]; }
   const Float32& operator()(Size r, Size c) const { return rows_[r][c]; }
+
+  Matrix4x4& operator+=(const Matrix4x4& other) {
+    for (int r = 0; r < 4; ++r) {
+      rows_[r] += other.rows_[r];
+    }
+    return *this;
+  }
+
+  Matrix4x4& operator-=(const Matrix4x4& other) {
+    for (int r = 0; r < 4; ++r) {
+      rows_[r] -= other.rows_[r];
+    }
+    return *this;
+  }
 
   Matrix4x4& operator*=(const Matrix4x4& other) {
     for (int r = 0; r < 4; ++r) {
@@ -92,6 +107,49 @@ class Matrix4x4 {
  private:
   Vector4 rows_[4];
 };
+
+inline Bool operator==(const Matrix4x4& lhs, const Matrix4x4& rhs) {
+  return lhs[0] == rhs[0] && lhs[1] == rhs[1] && lhs[2] == rhs[2] &&
+         lhs[3] == rhs[3];
+}
+
+inline Bool operator!=(const Matrix4x4& lhs, const Matrix4x4& rhs) {
+  return !(lhs == rhs);
+}
+
+inline Matrix4x4 operator+(const Matrix4x4& lhs, const Matrix4x4& rhs) {
+  auto result = lhs;
+  return result += rhs;
+}
+
+inline Matrix4x4 operator-(const Matrix4x4& lhs, const Matrix4x4& rhs) {
+  auto result = lhs;
+  return result -= rhs;
+}
+
+inline Matrix4x4 operator*(const Matrix4x4& lhs, const Matrix4x4& rhs) {
+  auto result = lhs;
+  return result *= rhs;
+}
+
+inline Matrix4x4 operator*(Float32 lhs, const Matrix4x4& rhs) {
+  auto result = rhs;
+  return result *= lhs;
+}
+
+inline Matrix4x4 operator*(const Matrix4x4& lhs, Float32 rhs) {
+  return rhs * lhs;
+}
+
+inline Vector4 operator*(const Matrix4x4& lhs, const Vector4& rhs) {
+  return Vector4(dot(lhs[0], rhs), dot(lhs[1], rhs), dot(lhs[2], rhs),
+                 dot(lhs[3], rhs));
+}
+
+inline Matrix4x4 operator/(const Matrix4x4& lhs, Float32 rhs) {
+  auto result = lhs;
+  return result /= rhs;
+}
 }  // namespace math
 }  // namespace temp
 

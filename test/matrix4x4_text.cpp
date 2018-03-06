@@ -17,3 +17,15 @@ TEST_F(Matrix4x4Test, Detarminant) {
   d = mat.determinant();
   EXPECT_TRUE(d == -16);
 }
+
+TEST_F(Matrix4x4Test, Inverse) {
+  using namespace temp::math;
+  Matrix4x4 mat = Matrix4x4::identity();
+  auto inv = mat.inversed();
+  EXPECT_TRUE(inv == mat);
+  mat = Matrix4x4(
+      Vector4(1.0f, 1.0f, 1.0f, -1.0f), Vector4(1.0f, 1.0f, -1.0f, 1.0f),
+      Vector4(1.0f, -1.0f, 1.0f, 1.0f), Vector4(-1.0f, 1.0f, 1.0f, 1.0f));
+  inv = mat.inversed();
+  EXPECT_TRUE(mat * inv == Matrix4x4::identity());
+}
