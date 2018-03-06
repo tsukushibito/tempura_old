@@ -21,8 +21,8 @@ Vector3 lerp(const Vector3& a, const Vector3& b, Float32 t);
 
 class Vector3 {
  public:
-  explicit Vector3(Float32 x = 0.0f, Float32 y = 0.0f, Float32 z = 0.0f)
-      : x_(x), y_(y), z_(z) {}
+  Vector3() : Vector3(0.0f, 0.0f, 0.0f) {}
+  explicit Vector3(Float32 x, Float32 y, Float32 z) : x_(x), y_(y), z_(z) {}
   explicit Vector3(const Vector2& vec2, Float32 z)
       : x_(vec2.x()), y_(vec2.y()), z_(z) {}
   Vector3(const Vector3&) = default;
@@ -69,6 +69,15 @@ class Vector3 {
   inline Vector3 normalized() const { return *this / magnitude(); }
 
   inline void normalize() { *this = normalized(); }
+
+  static inline Vector3 zero() { return Vector3(0.0f, 0.0f, 0.0f); }
+  static inline Vector3 one() { return Vector3(1.0f, 1.0f, 1.0f); }
+  static inline Vector3 forward() { return Vector3(0.0f, 0.0f, 1.0f); }
+  static inline Vector3 backward() { return Vector3(0.0f, 0.0f, -1.0f); }
+  static inline Vector3 right() { return Vector3(1.0f, 0.0f, 0.0f); }
+  static inline Vector3 left() { return Vector3(-1.0f, 0.0f, 0.0f); }
+  static inline Vector3 up() { return Vector3(0.0f, 1.0f, 0.0f); }
+  static inline Vector3 down() { return Vector3(0.0f, -1.0f, 0.0f); }
 
  private:
   Float32 x_;
@@ -128,13 +137,5 @@ inline Vector3 lerp(const Vector3& a, const Vector3& b, Float32 t) {
   return a * (1.0f - t) + b * t;
 }
 
-inline Vector3 vec3Zero() { return Vector3(0.0f, 0.0f, 0.0f); }
-inline Vector3 vec3One() { return Vector3(1.0f, 1.0f, 1.0f); }
-inline Vector3 vec3Forward() { return Vector3(0.0f, 0.0f, 1.0f); }
-inline Vector3 vec3Backward() { return Vector3(0.0f, 0.0f, -1.0f); }
-inline Vector3 vec3Right() { return Vector3(1.0f, 0.0f, 0.0f); }
-inline Vector3 vec3Left() { return Vector3(-1.0f, 0.0f, 0.0f); }
-inline Vector3 vec3Up() { return Vector3(0.0f, 1.0f, 0.0f); }
-inline Vector3 vec3Down() { return Vector3(0.0f, -1.0f, 0.0f); }
 }  // namespace math
 }  // namespace temp

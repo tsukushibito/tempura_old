@@ -8,53 +8,53 @@ class Vector3Test : public testing::Test {
 
 TEST_F(Vector3Test, Add) {
   using namespace temp::math;
-  auto r = vec3One() + vec3Zero();
-  EXPECT_TRUE(r == vec3One());
-  r = vec3One() + vec3One();
+  auto r = Vector3::one() + Vector3::zero();
+  EXPECT_TRUE(r == Vector3::one());
+  r = Vector3::one() + Vector3::one();
   EXPECT_TRUE(r == Vector3(2.0f, 2.0f, 2.0f));
 }
 
 TEST_F(Vector3Test, Sub) {
   using namespace temp::math;
-  auto r = vec3One() - vec3Zero();
-  EXPECT_TRUE(r == vec3One());
-  r = vec3One() - vec3One();
-  EXPECT_TRUE(r == vec3Zero());
+  auto r = Vector3::one() - Vector3::zero();
+  EXPECT_TRUE(r == Vector3::one());
+  r = Vector3::one() - Vector3::one();
+  EXPECT_TRUE(r == Vector3::zero());
 }
 
 TEST_F(Vector3Test, Mod) {
   using namespace temp::math;
-  auto r = 2 * Vector3(1.0f, 2.0f);
-  EXPECT_TRUE(r == Vector3(2.0f, 4.0f));
-  r = vec3One() * 2;
+  auto r = 2 * Vector3(1.0f, 2.0f, 0.0f);
+  EXPECT_TRUE(r == Vector3(2.0f, 4.0f, 0.0f));
+  r = Vector3::one() * 2;
   EXPECT_TRUE(r == Vector3(2.0f, 2.0f, 2.0f));
 }
 
 TEST_F(Vector3Test, Div) {
   using namespace temp::math;
   auto r = Vector3(2.0f, 2.0f, 2.0f) / 2;
-  EXPECT_TRUE(r == vec3One());
+  EXPECT_TRUE(r == Vector3::one());
 }
 
 TEST_F(Vector3Test, Dot) {
   using namespace temp::math;
-  auto r = dot(vec3Right(), vec3Up());
+  auto r = dot(Vector3::right(), Vector3::up());
   EXPECT_TRUE(r == 0);
-  r = dot(vec3Forward(), vec3Forward());
+  r = dot(Vector3::forward(), Vector3::forward());
   EXPECT_TRUE(r == 1);
 }
 
 TEST_F(Vector3Test, Cross) {
   using namespace temp::math;
-  auto r = cross(vec3Right(), vec3Up());
-  EXPECT_TRUE(r == vec3Forward());
+  auto r = cross(Vector3::right(), Vector3::up());
+  EXPECT_TRUE(r == Vector3::forward());
 }
 
 TEST_F(Vector3Test, Magnitude) {
   using namespace temp::math;
-  auto r = vec3Up().magnitude();
+  auto r = Vector3::up().magnitude();
   EXPECT_TRUE(r == 1.0f);
-  r = vec3One().magnitude();
+  r = Vector3::one().magnitude();
   EXPECT_TRUE(sqrt(3) - 0.0001f < r && r < sqrt(3) + 0.0001f);
 }
 
@@ -66,9 +66,9 @@ TEST_F(Vector3Test, Normalize) {
 
 TEST_F(Vector3Test, Angle) {
   using namespace temp::math;
-  auto r = angle(vec3Right(), vec3Up());
+  auto r = angle(Vector3::right(), Vector3::up());
   EXPECT_TRUE(0.5f * kPi - 0.0001f < r && r < 0.5f * kPi + 0.0001f);
-  r = angle(vec3Right(), Vector3(1.0f, 1.0f));
+  r = angle(Vector3::right(), Vector3(1.0f, 1.0f, 0.0f));
   EXPECT_TRUE(0.25f * kPi - 0.0001f < r && r < 0.25f * kPi + 0.0001f);
 }
 
