@@ -20,6 +20,9 @@ using StringStream =
     std::basic_stringstream<String::value_type, String::traits_type,
                             String::allocator_type>;
 
+template <typename T, Size N>
+using Array = std::array<T, N>;
+
 template <typename T>
 using Vector = std::vector<T, core::AllocatorForStl<T>>;
 
