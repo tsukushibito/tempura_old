@@ -104,6 +104,33 @@ class Matrix4x4 {
         Vector4(0.0f, 0.0f, 1.0f, 0.0f), Vector4(0.0f, 0.0f, 0.0f, 1.0f));
   }
 
+  static inline Matrix4x4 perspectiveFov(Float32 fov_y_degree, Float32 aspect,
+                                         Float32 znear, Float32 zfar) {
+    auto fov_y_rad = degreeToRadian(fov_y_degree);
+    auto scale_y = 1.0f / std::tan(fov_y_rad / 2.0f);
+    auto scale_x = scale_y / aspect;
+    return Matrix4x4(                                                         //
+        scale_x, 0.0f, 0.0f, 0.0f,                                            //
+        0.0f, scale_y, 0.0f, 0.0f,                                            //
+        0.0f, 0.0f, zfar / (zfar - znear), -(znear * zfar) / (zfar - znear),  //
+        0.0f, 0.0f, 1.0f, 0.0f);
+  }
+
+  static inline Matrix4x4 perspectiveFovReverseDepth(Float32 fov_y_degree,
+                                                     Float32 aspect,
+                                                     Float32 znear,
+                                                     Float32 zfar) {
+    auto fov_y_rad = degreeToRadian(fov_y_degree);
+    auto scale_y = 1.0f / std::tan(fov_y_rad / 2.0f);
+    auto scale_x = scale_y / aspect;
+    return Matrix4x4(               //
+        scale_x, 0.0f, 0.0f, 0.0f,  //
+        0.0f, scale_y, 0.0f, 0.0f,  //
+        0.0f, 0.0f, -(zfar / (zfar - znear)) - 1.0f,
+        (znear * zfar) / (zfar - znear),  //
+        0.0f, 0.0f, 1.0f, 0.0f);
+  }
+
  private:
   Vector4 rows_[4];
 };
