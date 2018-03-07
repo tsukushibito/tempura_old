@@ -20,13 +20,10 @@ class TempuraImpl : public Tempura {
     load_thread_ = core::ThreadPool::makeShared("Load", 1);
 #ifdef TEMP_GRAPHICS_OPENGL
     graphics_device_ = graphics::opengl::OpenGLDevice::create(
-        window_handle, render_thread_, load_thread_);
+        static_cast<graphics::WindowHandle>(window_handle), render_thread_,
+        load_thread_);
 #else
 #endif
-    renderer_ =
-        renderer::Renderer::makeShared(render_thread_, graphics_device_);
-    math::Vector2 vec1, vec2(1.0f, 1.0f);
-    auto d = math::dot(vec1, vec2);
   }
   void update(){/*core::Logger::trace("Tempura", "update");*/};
 

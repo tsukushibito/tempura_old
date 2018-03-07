@@ -1,6 +1,9 @@
-#include "temp/resource/resource_object.h"
+#include <fstream>
 #include <functional>
+
 #include "temp/resource/resource_manager.h"
+#include "temp/resource/resource_object.h"
+
 namespace temp {
 namespace resource {
 
