@@ -116,10 +116,9 @@ class Matrix4x4 {
         0.0f, 0.0f, 1.0f, 0.0f);
   }
 
-  static inline Matrix4x4 perspectiveFovReverseDepth(Float32 fov_y_degree,
-                                                     Float32 aspect,
-                                                     Float32 znear,
-                                                     Float32 zfar) {
+  static inline Matrix4x4 perspectiveFovReversedZ(Float32 fov_y_degree,
+                                                  Float32 aspect, Float32 znear,
+                                                  Float32 zfar) {
     auto fov_y_rad = degreeToRadian(fov_y_degree);
     auto scale_y = 1.0f / std::tan(fov_y_rad / 2.0f);
     auto scale_x = scale_y / aspect;
