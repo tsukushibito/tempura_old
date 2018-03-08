@@ -31,6 +31,7 @@ class TempuraImpl : public Tempura {
   core::ThreadPool::SPtr render_thread_;
   core::ThreadPool::SPtr load_thread_;
   graphics::Device::SPtr graphics_device_;
+  renderer::Renderer::SPtr renderer_;
 };
 
 TEMP_DECLSPEC TempSPtr create(void* window_handle) {

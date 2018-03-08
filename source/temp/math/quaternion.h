@@ -4,21 +4,22 @@
 
 namespace temp {
 namespace math {
-class Quaternion {
+
+template <typename T>
+class QuaternionBase {
  public:
-  Quaternion() = default;
-  explicit Quaternion(Float32 x, Float32 y, Float32 z, Float32 w)
-      : element_(x, y, z, w) {
+  QuaternionBase() = default;
+  explicit QuaternionBase(T x, T y, T z, T w) : element_(x, y, z, w) {
     normalize();
   }
 
-  Quaternion(const Quaternion&) = default;
-  Quaternion& operator=(const Quaternion&) = default;
+  QuaternionBase(const QuaternionBase&) = default;
+  QuaternionBase& operator=(const QuaternionBase&) = default;
 
-  Quaternion& operator*=(const Quaternion& other) {
+  QuaternionBase& operator*=(const QuaternionBase& other) {
     auto&& q = *this;
     auto&& p = other;
-    *this = Quaternion(                                                 //
+    *this = QuaternionBase(                                             //
         q.x() * p.w() + q.w() * p.x() - q.z() * p.y() + q.y() * p.z(),  //
         q.y() * p.w() + q.z() * p.x() + q.w() * p.y() - q.x() * p.z(),  //
         q.z() * p.w() - q.y() * p.x() + q.x() * p.y() + q.w() * p.z(),  //
@@ -27,16 +28,16 @@ class Quaternion {
     return *this;
   }
 
-  Vector3 eulerAngles() const {
-    Vector3 angles;
+  Vector3Base<T> eulerAngles() const {
+    Vector3Base<T> angles;
     auto mat = toMatrix();
-    const Float32 threshold = 0.000001f;
+    const T threshold = static_cast<T>(0.000001);
 
-    if (std::abs(mat(1, 2) + 1.0f) < threshold) {  // sin(x) == 1
+    if (std::abs(mat(1, 2) + static_cast<T>(1)) < threshold) {  // sin(x) == 1
       angles.x() = kPi_2;
       angles.y() = 0.0f;
       angles.z() = -std::atan2(mat(0, 1), mat(0, 0));
-    } else if (std::abs(mat(1, 2) - 1.0f) < threshold) {  // sin(x) == -1
+    } else if (std::abs(mat(1, 2) - static_cast<T>(1)) < threshold) {  // sin(x) == -1
       angles.x() = -kPi_2;
       angles.y() = 0.0f;
       angles.z() = -std::atan2(mat(0, 1), mat(0, 0));
@@ -52,14 +53,16 @@ class Quaternion {
     return angles;
   }
 
-  Float32 magnitude() const { return element_.magnitude(); }
-  Quaternion normalized() const {
+  T magnitude() const { return element_.magnitude(); }
+  QuaternionBase normalized() const {
     auto result = *this;
     result.element_.normalize();
     return result;
   }
   void normalize() { element_.normalize(); }
-  Quaternion conjugate() const { return Quaternion(-x(), -y(), -z(), w()); }
+  QuaternionBase conjugate() const {
+    return QuaternionBase(-x(), -y(), -z(), w());
+  }
 
   Matrix4x4 toMatrix() const {
     auto c = conjugate();
@@ -79,50 +82,61 @@ class Quaternion {
         0, 0, 0, 1);
   }
 
-  Float32& x() { return element_.x(); }
-  Float32& y() { return element_.y(); }
-  Float32& z() { return element_.z(); }
-  Float32& w() { return element_.w(); }
-  const Float32& x() const { return element_.x(); }
-  const Float32& y() const { return element_.y(); }
-  const Float32& z() const { return element_.z(); }
-  const Float32& w() const { return element_.w(); }
+  inline T& x() { return element_.x(); }
+  inline T& y() { return element_.y(); }
+  inline T& z() { return element_.z(); }
+  inline T& w() { return element_.w(); }
+  inline const T& x() const { return element_.x(); }
+  inline const T& y() const { return element_.y(); }
+  inline const T& z() const { return element_.z(); }
+  inline const T& w() const { return element_.w(); }
 
-  static inline Quaternion identity() {
-    return Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
+  static inline QuaternionBase identity() {
+    return QuaternionBase(static_cast<T>(0), static_cast<T>(0),
+                          static_cast<T>(0), static_cast<T>(1));
   }
 
-  static inline Quaternion fromXAxisAngle(Float32 deg) {
-    auto rad = degreeToRadian(deg);
+  template <typename U>
+  static inline QuaternionBase fromXAxisAngle(U deg) {
+    auto rad = degreeToRadian(static_cast<Float32>(deg));
     auto angle = 0.5f * rad;
-    return Quaternion(std::sin(angle), 0.0f, 0.0f, std::cos(angle));
+    return QuaternionBase(std::sin(angle), 0.0f, 0.0f, std::cos(angle));
   }
 
-  static inline Quaternion fromYAxisAngle(Float32 deg) {
-    auto rad = degreeToRadian(deg);
+  template <typename U>
+  static inline QuaternionBase fromYAxisAngle(U deg) {
+    auto rad = degreeToRadian(static_cast<Float32>(deg));
     auto angle = 0.5f * rad;
-    return Quaternion(0.0f, std::sin(angle), 0.0f, std::cos(angle));
+    return QuaternionBase(0.0f, std::sin(angle), 0.0f, std::cos(angle));
   }
 
-  static inline Quaternion fromZAxisAngle(Float32 deg) {
-    auto rad = degreeToRadian(deg);
+  template <typename U>
+  static inline QuaternionBase fromZAxisAngle(U deg) {
+    auto rad = degreeToRadian(static_cast<Float32>(deg));
     auto angle = 0.5f * rad;
-    return Quaternion(0.0f, 0.0f, std::sin(angle), std::cos(angle));
+    return QuaternionBase(0.0f, 0.0f, std::sin(angle), std::cos(angle));
   }
 
  private:
-  Vector4 element_;
+  Vector4Base<T> element_;
 };
 
-inline Quaternion operator*(const Quaternion& lhs, const Quaternion& rhs) {
+template <typename T>
+inline QuaternionBase<T> operator*(const QuaternionBase<T>& lhs,
+                                   const QuaternionBase<T>& rhs) {
   auto result = lhs;
   return result *= rhs;
 }
 
-inline Vector3 operator*(const Quaternion& lhs, const Vector3& rhs) {
-  auto pos = Quaternion(rhs.x(), rhs.y(), rhs.z(), 0.0f);
+template <typename T>
+inline Vector3Base<T> operator*(const QuaternionBase<T>& lhs,
+                                const Vector3Base<T>& rhs) {
+  auto pos = QuaternionBase<T>(rhs.x(), rhs.y(), rhs.z(), static_cast<T>(0));
   auto r = lhs * pos * lhs.conjugate();
-  return Vector3(r.x(), r.y(), r.z());
+  return Vector3Base<T>(r.x(), r.y(), r.z());
 }
+
+using Quaternion = QuaternionBase<Float32>;
+using QuaternionF64 = QuaternionBase<Float64>;
 }  // namespace math
 }  // namespace temp

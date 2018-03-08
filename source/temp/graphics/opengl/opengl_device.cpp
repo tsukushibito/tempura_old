@@ -29,8 +29,10 @@ OpenGLDevice::OpenGLDevice(WindowHandle window_handle,
     : window_handle_(window_handle),
       render_thread_(render_thread),
       load_thread_(load_thread) {
-  // 各スレッド用コンテキストを作成
+  // Create contexts for threads
+  TEMP_LOG_INFO(kOpenGLDeviceTag, "create context for render thread");
   render_context_ = createContext(window_handle_, nullptr);
+  TEMP_LOG_INFO(kOpenGLDeviceTag, "create context for load thread");
   load_context_ = createContext(window_handle_, render_context_);
 
   {

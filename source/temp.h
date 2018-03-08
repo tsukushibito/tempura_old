@@ -4,6 +4,7 @@
 #include "temp/core/core.h"
 #include "temp/graphics/graphics.h"
 #include "temp/math/math.h"
+#include "temp/renderer/renderer.h"
 
 namespace temp {
 
