@@ -59,7 +59,40 @@ class ThreadPool : public SmartPointerObject<ThreadPool> {
   Bool stopped_;
 };
 
+template <typename Task, typename... Args>
+auto ThreadPool::pushTask(Int32 thread_index, Task &&task, Args &&... args)
+    -> std::future<typename std::result_of<Task(Args...)>::type> {
+  using ReturnType = typename std::result_of<Task(Args...)>::type;
+  using PackagedTask = std::packaged_task<ReturnType()>;
+
+  auto pack = std::make_shared<PackagedTask>(
+      std::bind(std::forward<Task>(task), std::forward<Args>(args)...));
+  std::future<ReturnType> result = pack->get_future();
+
+  Int32 index = 0;
+  if (thread_index >= worker_thread_list_.size() || thread_index < 0) {
+    Size task_count_min = (Size)(-1);
+    for (Int32 i = 0; i < worker_thread_list_.size(); ++i) {
+      auto &&task_queue = worker_thread_list_[i].task_queue_;
+      if (task_queue.size() < task_count_min) {
+        task_count_min = task_queue.size();
+        index = i;
+      }
+    }
+  } else {
+    index = thread_index;
+  }
+
+  std::unique_lock<std::mutex> lock(worker_thread_list_[index].mutex_);
+  if (stopped_) {
+    return result;
+  }
+
+  worker_thread_list_[index].task_queue_.emplace([pack]() { (*pack)(); });
+  worker_thread_list_[index].condition_.notify_all();
+
+  return result;
+}
+
 }  // namespace core
 }  // namespace temp
-
-#include "temp/core/thread_pool_detail.h"

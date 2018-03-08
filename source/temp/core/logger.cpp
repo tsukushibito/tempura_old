@@ -1,4 +1,4 @@
-﻿#include <chrono>
+#include <chrono>
 #include <ctime>
 #include <iomanip>
 #include <iostream>
@@ -50,8 +50,8 @@ void Logger::log(const char *tag, const char *msg, LogLevel level,
   std::cout << time_tag << level_tag << "[" << tag << "] " << msg << " : "
             << file << " : " << line << std::endl;
 #else
-  (void*)file;
-  (void*)(Size)line;
+  (void)file;
+  (void)(Size)line;
   std::cout << time_tag << level_tag << "[" << tag << "] " << msg << std::endl;
 #endif
 }

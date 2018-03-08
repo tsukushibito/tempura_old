@@ -9,7 +9,7 @@ template <typename T>
 class Matrix4x4Base {
  public:
   Matrix4x4Base()
-      : Matrix4x4Base(Vector4Base<T>(), Vector4Base<T> Base<T>(),
+      : Matrix4x4Base(Vector4Base<T>(), Vector4Base<T>(),
                       Vector4Base<T>(), Vector4Base<T>()) {}
   explicit Matrix4x4Base(const Vector4Base<T>& row0, const Vector4Base<T>& row1,
                          const Vector4Base<T>& row2,
@@ -316,7 +316,7 @@ Matrix4x4Base<T> Matrix4x4Base<T>::inversed() const {
               - m(0, 0) * m(1, 2) * m(2, 1))  //
              / d;
 
-  return Matrix4x4(_00, _01, _02, _03,  //
+  return Matrix4x4Base(_00, _01, _02, _03,  //
                    _10, _11, _12, _13,  //
                    _20, _21, _22, _23,  //
                    _30, _31, _32, _33);
