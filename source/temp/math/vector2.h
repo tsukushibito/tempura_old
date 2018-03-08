@@ -5,118 +5,129 @@
 namespace temp {
 namespace math {
 
-class Vector2;
-Bool operator==(const Vector2& lhs, const Vector2& rhs);
-Bool operator!=(const Vector2& lhs, const Vector2& rhs);
-Vector2 operator+(const Vector2& lhs, const Vector2& rhs);
-Vector2 operator-(const Vector2& lhs, const Vector2& rhs);
-Vector2 operator*(const Vector2& lhs, Float32 rhs);
-Vector2 operator*(Float32 lhs, const Vector2& rhs);
-Vector2 operator/(const Vector2& lhs, Float32 rhs);
-Float32 angle(const Vector2& lhs, const Vector2& rhs);
-Float32 distance(const Vector2& lhs, const Vector2& rhs);
-Float32 dot(const Vector2& lhs, const Vector2& rhs);
-Vector2 lerp(const Vector2& a, const Vector2& b, Float32 t);
-
-class Vector2 {
+template <typename T>
+class Vector2Base {
  public:
-  Vector2() : Vector2(0.0f, 0.0f) {}
-  explicit Vector2(Float32 x, Float32 y) { elements_[0] = x, elements_[1] = y; }
-  Vector2(const Array<Float32, 2> e) : Vector2(e[0], e[1]) {}
-  Vector2(const Vector2&) = default;
-  Vector2& operator=(const Vector2&) = default;
-  ~Vector2() = default;
+  inline Vector2Base() : Vector2Base(static_cast<T>(0), static_cast<T>(0)) {}
+  inline explicit Vector2Base(T x, T y) { elements_[0] = x, elements_[1] = y; }
+  inline Vector2Base(const Array<T, 2> e) : Vector2Base(e[0], e[1]) {}
+  Vector2Base(const Vector2Base&) = default;
+  Vector2Base& operator=(const Vector2Base&) = default;
+  ~Vector2Base() = default;
 
-  Float32& operator[](Size i) { return elements_[i]; }
-  const Float32& operator[](Size i) const { return elements_[i]; }
+  inline T& operator[](Size i) { return elements_[i]; }
+  inline const T& operator[](Size i) const { return elements_[i]; }
 
-  inline Vector2& operator+=(const Vector2& rhs) {
+  inline Vector2Base& operator+=(const Vector2Base& rhs) {
     elements_[0] += rhs.elements_[0];
     elements_[1] += rhs.elements_[1];
     return *this;
   }
 
-  inline Vector2& operator-=(const Vector2& rhs) {
+  inline Vector2Base& operator-=(const Vector2Base& rhs) {
     elements_[0] -= rhs.elements_[0];
     elements_[1] -= rhs.elements_[1];
     return *this;
   }
 
-  inline Vector2& operator*=(Float32 scalar) {
+  template <typename U>
+  inline Vector2Base& operator*=(U scalar) {
     elements_[0] *= scalar;
     elements_[1] *= scalar;
     return *this;
   }
 
-  inline Vector2& operator/=(Float32 scalar) {
+  template <typename U>
+  inline Vector2Base& operator/=(U scalar) {
     elements_[0] /= scalar;
     elements_[1] /= scalar;
     return *this;
   }
 
-  Float32& x() { return elements_[0]; }
-  Float32& y() { return elements_[1]; }
-  const Float32& x() const { return elements_[0]; }
-  const Float32& y() const { return elements_[1]; }
+  inline T& x() { return elements_[0]; }
+  inline T& y() { return elements_[1]; }
+  inline const T& x() const { return elements_[0]; }
+  inline const T& y() const { return elements_[1]; }
 
-  inline Float32 magnitude() const { return std::sqrt(sqrMagnitude()); }
-  inline Float32 sqrMagnitude() const { return x() * x() + y() * y(); }
-  inline Vector2 normalized() const { return *this / magnitude(); }
+  inline T magnitude() const { return std::sqrt(sqrMagnitude()); }
+  inline T sqrMagnitude() const { return x() * x() + y() * y(); }
+  inline Vector2Base normalized() const { return *this / magnitude(); }
 
   inline void normalize() { *this = normalized(); }
 
-  static inline Vector2 zero() { return Vector2(0.0f, 0.0f); }
-  static inline Vector2 one() { return Vector2(1.0f, 1.0f); }
+  static inline Vector2Base zero() { return Vector2Base(); }
+  static inline Vector2Base one() {
+    return Vector2Base(static_cast<T>(1), static_cast<T>(1));
+  }
 
  private:
-  Float32 elements_[2];
+  T elements_[2];
 };
 
-inline Bool operator==(const Vector2& lhs, const Vector2& rhs) {
+template <typename T>
+inline Bool operator==(const Vector2Base<T>& lhs, const Vector2Base<T>& rhs) {
   return lhs.x() == rhs.x() && lhs.y() == rhs.y();
 }
 
-inline Bool operator!=(const Vector2& lhs, const Vector2& rhs) {
+template <typename T>
+inline Bool operator!=(const Vector2Base<T>& lhs, const Vector2Base<T>& rhs) {
   return !(lhs == rhs);
 }
 
-inline Vector2 operator+(const Vector2& lhs, const Vector2& rhs) {
+template <typename T>
+inline Vector2Base<T> operator+(const Vector2Base<T>& lhs,
+                                const Vector2Base<T>& rhs) {
   auto r = lhs;
   return r += rhs;
 }
 
-inline Vector2 operator-(const Vector2& lhs, const Vector2& rhs) {
+template <typename T>
+inline Vector2Base<T> operator-(const Vector2Base<T>& lhs,
+                                const Vector2Base<T>& rhs) {
   auto r = lhs;
   return r -= rhs;
 }
 
-inline Vector2 operator*(const Vector2& lhs, Float32 rhs) {
+template <typename T, typename U>
+inline Vector2Base<T> operator*(const Vector2Base<T>& lhs, U rhs) {
   auto r = lhs;
   return r *= rhs;
 }
 
-inline Vector2 operator*(Float32 lhs, const Vector2& rhs) { return rhs * lhs; }
+template <typename T, typename U>
+inline Vector2Base<T> operator*(U lhs, const Vector2Base<T>& rhs) {
+  return rhs * lhs;
+}
 
-inline Vector2 operator/(const Vector2& lhs, Float32 rhs) {
+template <typename T, typename U>
+inline Vector2Base<T> operator/(const Vector2Base<T>& lhs, U rhs) {
   auto r = lhs;
   return r /= rhs;
 }
 
-inline Float32 angle(const Vector2& lhs, const Vector2& rhs) {
+template <typename T>
+inline T angle(const Vector2Base<T>& lhs, const Vector2Base<T>& rhs) {
   return std::acos(dot(lhs, rhs) / (lhs.magnitude() * rhs.magnitude()));
 }
 
-inline Float32 distance(const Vector2& lhs, const Vector2& rhs) {
+template <typename T>
+inline T distance(const Vector2Base<T>& lhs, const Vector2Base<T>& rhs) {
   return (lhs - rhs).magnitude();
 }
 
-inline Float32 dot(const Vector2& lhs, const Vector2& rhs) {
+template <typename T>
+inline T dot(const Vector2Base<T>& lhs, const Vector2Base<T>& rhs) {
   return lhs.x() * rhs.x() + lhs.y() * rhs.y();
 }
 
-inline Vector2 lerp(const Vector2& a, const Vector2& b, Float32 t) {
-  return a * (1.0f - t) + b * t;
+template <typename T>
+inline Vector2Base<T> lerp(const Vector2Base<T>& a, const Vector2Base<T>& b,
+                           T t) {
+  return a * (static_cast<T>(1) - t) + b * t;
 }
+
+using Vector2 = Vector2Base<Float32>;
+using Vector2F64 = Vector2Base<Float64>;
 
 }  // namespace math
 }  // namespace temp

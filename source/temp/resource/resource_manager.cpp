@@ -14,7 +14,7 @@ ResourceId ResourceManager::resourceIdFromPath(const filesystem::path& path) {
 
   ResourceId id;
   id.hash_value = hash;
-  id.index = id_list.size();
+  id.index = static_cast<Int32>(id_list.size());
   id_list.push_back(id);
 
   return id;
