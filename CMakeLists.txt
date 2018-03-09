@@ -22,3 +22,4 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 add_subdirectory(source)
 add_subdirectory(test)
+add_subdirectory(third_party/flatbuffers)
