@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "temp/common/container.h"
 #include "temp/common/define.h"
 #include "temp/common/type.h"
@@ -99,7 +99,7 @@ Size indexBufferFormatSize(IndexBufferFormat format) {
   }
 }
 
-enum class VertexBufferFormat {
+enum class VertexFormat {
   kUInt8x4,
   kFloat16x2,
   kFloat16x4,
@@ -130,24 +130,29 @@ struct VertexAttributeHash {
   }
 };
 
-struct VertexBufferDesc {
-  VertexBufferFormat format;
+struct VertexElementDesc {
+  VertexFormat format;
   VertexAttribute attribute;
+};
+
+struct VertexBufferDesc {
+  Size element_count;
+  VertexElementDesc element_descs[8];
   Size size;
 };
 
-template <typename T = VertexBufferFormat>
-Size vertexBufferFormatSize(VertexBufferFormat format) {
+template <typename T = VertexFormat>
+Size vertexFormatSize(VertexFormat format) {
   switch (format) {
-    case VertexBufferFormat::kUInt8x4:
+    case VertexFormat::kUInt8x4:
       return 4;
-    case VertexBufferFormat::kFloat16x2:
+    case VertexFormat::kFloat16x2:
       return 4;
-    case VertexBufferFormat::kFloat16x4:
+    case VertexFormat::kFloat16x4:
       return 8;
-    case VertexBufferFormat::kFloat32x2:
+    case VertexFormat::kFloat32x2:
       return 8;
-    case VertexBufferFormat::kFloat32x4:
+    case VertexFormat::kFloat32x4:
       return 16;
     default:
       return 0;
