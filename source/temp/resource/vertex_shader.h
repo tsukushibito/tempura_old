@@ -22,6 +22,10 @@ class VertexShader : public ResourceObject {
  public:
   ~VertexShader();
 
+  graphics::VertexShader::SPtr graphicsVertexShader() const {
+    return vertex_shader_;
+  }
+
  private:
   void prepare(const ByteData& byte_data) override;
 

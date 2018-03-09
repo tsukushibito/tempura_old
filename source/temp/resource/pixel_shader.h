@@ -22,6 +22,10 @@ class PixelShader : public ResourceObject {
  public:
   ~PixelShader();
 
+  graphics::PixelShader::SPtr graphicsPixelShader() const {
+    return pixel_shader_;
+  }
+
  private:
   void prepare(const ByteData& byte_data) override;
 
