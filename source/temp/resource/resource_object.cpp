@@ -60,7 +60,7 @@ void ResourceObject::loadImpl(Bool is_reload) {
 
   ByteData byte_data(beg, end);
 
-  prepare(byte_data);
+  deserialize(byte_data);
 }
 
 void ResourceObject::execTaskInLoadThreadSync(std::function<void(void)> task) {

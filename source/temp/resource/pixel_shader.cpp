@@ -21,7 +21,9 @@ PixelShader::PixelShader(const filesystem::path& path, ResourceManager* manager,
 
 PixelShader::~PixelShader() {}
 
-void PixelShader::prepare(const ByteData& byte_data) {
+ByteData PixelShader::serialize() { return ByteData(); }
+
+void PixelShader::deserialize(const ByteData& byte_data) {
   auto&& graphicsDevice = manager()->graphicsDevice();
   graphics::ShaderCode code;
   code.code = ByteData(byte_data.begin(), byte_data.end());

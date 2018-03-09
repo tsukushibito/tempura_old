@@ -22,7 +22,9 @@ VertexShader::VertexShader(const filesystem::path& path,
 
 VertexShader::~VertexShader() {}
 
-void VertexShader::prepare(const ByteData& byte_data) {
+ByteData VertexShader::serialize() { return ByteData(); }
+
+void VertexShader::deserialize(const ByteData& byte_data) {
   auto&& graphicsDevice = manager()->graphicsDevice();
   graphics::ShaderCode code;
   code.code = ByteData(byte_data.begin(), byte_data.end());

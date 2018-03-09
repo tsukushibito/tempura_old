@@ -67,7 +67,8 @@ class ResourceObject {
 
   void execTaskInLoadThreadSync(std::function<void(void)> task);
 
-  virtual void prepare(const ByteData& byte_data) = 0;
+  virtual ByteData serialize() = 0;
+  virtual void deserialize(const ByteData&) = 0;
 
  private:
   std::mutex mutex_;

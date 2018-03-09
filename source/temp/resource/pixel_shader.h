@@ -27,7 +27,8 @@ class PixelShader : public ResourceObject {
   }
 
  private:
-  void prepare(const ByteData& byte_data) override;
+  ByteData serialize() override;
+  void deserialize(const ByteData& byte_data) override;
 
  private:
   graphics::PixelShader::SPtr pixel_shader_;

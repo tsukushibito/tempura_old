@@ -25,7 +25,7 @@ class Mesh : public ResourceObject {
   ~Mesh();
 
   graphics::VertexBuffer::SPtr graphicsVertexBuffer() const {
-    return vartex_buffer_;
+    return vertex_buffer_;
   }
 
   graphics::IndexBuffer::SPtr graphicsIndexBuffer() const {
@@ -33,7 +33,8 @@ class Mesh : public ResourceObject {
   }
 
  private:
-  void prepare(const ByteData& byte_data) override;
+  ByteData serialize() override;
+  void deserialize(const ByteData& byte_data) override;
 
  private:
   graphics::VertexBuffer::SPtr vertex_buffer_;

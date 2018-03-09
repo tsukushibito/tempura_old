@@ -2,9 +2,10 @@
 
 namespace temp {
 namespace resource {
-static SPtr Mesh::makeShared(const filesystem::path& path,
-                             ResourceManager* manager,
-                             std::function<void(void)> on_destroy) {
+
+Mesh::SPtr Mesh::makeShared(const filesystem::path& path,
+                            ResourceManager* manager,
+                            std::function<void(void)> on_destroy) {
   struct Creator : Mesh {
     Creator(const filesystem::path& path, ResourceManager* manager,
             std::function<void(void)> on_destroy)
@@ -20,7 +21,9 @@ Mesh::Mesh(const filesystem::path& path, ResourceManager* manager,
 
 Mesh::~Mesh() {}
 
-void Mesh::prepare(const ByteData& byte_data) {
+ByteData Mesh::serialize() { return ByteData(); }
+
+void Mesh::deserialize(const ByteData& byte_data) {
   // TODO: implemant
 }
 
