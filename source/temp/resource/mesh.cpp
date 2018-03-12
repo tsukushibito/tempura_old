@@ -87,6 +87,7 @@ ByteData Mesh::serialize() {
 void Mesh::deserialize(const ByteData& byte_data) {
   using namespace temp::graphics;
   Size index = 0;
+  // Mesh signature
   auto result = std::memcmp(&byte_data[index], kMeshSignature,
                             sizeof(kMeshSignature) - 1);
   if (result != 0) {
@@ -94,18 +95,43 @@ void Mesh::deserialize(const ByteData& byte_data) {
                    fmt::format("Not mesh file: {0}", path().string()));
     return;
   }
-
   index += sizeof(kMeshSignature) - 1;
-  auto desc = *reinterpret_cast<const VertexBufferDesc*>(&byte_data[index]);
-  index += sizeof(VertexBufferDesc);
-  if (desc.size > byte_data.size() - index) {
+
+  // VB signature
+  result =
+      std::memcmp(&byte_data[index], kVBSignature, sizeof(kVBSignature) - 1);
+  if (result != 0) {
     TEMP_LOG_ERROR(kMeshTag,
-                   fmt::format("Invalid data. file: {0}", path().string()));
+                   fmt::format("Invalid mesh file: {0}", path().string()));
     return;
   }
+  index += sizeof(kVBSignature) - 1;
 
+  // VB desc
+  auto vb_desc = *reinterpret_cast<const VertexBufferDesc*>(&byte_data[index]);
+  index += sizeof(VertexBufferDesc);
+
+  // VB data
   auto&& device = manager()->graphicsDevice();
-  vertex_buffer_ = device->createVertexBuffer(desc, &byte_data[index]);
+  vertex_buffer_ = device->createVertexBuffer(vb_desc, &byte_data[index]);
+  index += vb_desc.size;
+
+  // IB signature
+  result =
+      std::memcmp(&byte_data[index], kIBSignature, sizeof(kIBSignature) - 1);
+  if (result != 0) {
+    TEMP_LOG_ERROR(kIBSignature,
+                   fmt::format("Invalid mesh file: {0}", path().string()));
+  }
+  index += sizeof(kIBSignature) - 1;
+
+  // IB desc
+  auto ib_desc = *reinterpret_cast<const IndexBufferDesc*>(&byte_data[index]);
+  index += sizeof(IndexBufferDesc);
+
+  // IB data
+  index_buffer_ = device->createIndexBuffer(ib_desc, &byte_data[index]);
+  index += ib_desc.size;
 }
 
 }  // namespace resource
