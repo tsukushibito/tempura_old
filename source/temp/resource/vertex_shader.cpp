@@ -5,10 +5,10 @@ namespace temp {
 namespace resource {
 VertexShader::SPtr VertexShader::makeShared(
     const filesystem::path& path, ResourceManager* manager,
-    std::function<void(void)> on_destroy) {
+    std::function<void(const ResourceId&)> on_destroy) {
   struct Creator : VertexShader {
     Creator(const filesystem::path& path, ResourceManager* manager,
-            std::function<void(void)> on_destroy)
+            std::function<void(const ResourceId&)> on_destroy)
         : VertexShader(path, manager, on_destroy) {}
   };
 
@@ -17,7 +17,7 @@ VertexShader::SPtr VertexShader::makeShared(
 
 VertexShader::VertexShader(const filesystem::path& path,
                            ResourceManager* manager,
-                           std::function<void(void)> on_destroy)
+                           std::function<void(const ResourceId&)> on_destroy)
     : ResourceObject(path, manager, on_destroy) {}
 
 VertexShader::~VertexShader() {}

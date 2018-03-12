@@ -7,17 +7,17 @@
 namespace temp {
 namespace resource {
 
-ResourceObject::ResourceObject(const filesystem::path& path,
-                               ResourceManager* manager,
-                               std::function<void(void)> on_destroy)
+ResourceObject::ResourceObject(
+    const filesystem::path& path, ResourceManager* manager,
+    std::function<void(const ResourceId&)> on_destroy)
     : manager_(manager),
       path_(path),
       state_(ResourceState::kNotLoaded),
       on_destroy_(on_destroy) {
-  // id_ = std::hash<std::string>()(path_.string());
+  id_ = manager->resourceIdFromPath(path_);
 }
 
-ResourceObject::~ResourceObject() { on_destroy_(); }
+ResourceObject::~ResourceObject() { on_destroy_(id_); }
 
 void ResourceObject::load(Bool is_sync) {
   if (state_ != ResourceState::kNotLoaded) return;
@@ -39,12 +39,17 @@ void ResourceObject::reload(Bool is_sync) {
   }
 }
 
+void ResourceObject::save() {
+  execTaskInLoadThreadSync([this]() {
+    auto lock = std::unique_lock<std::mutex>(mutex_);
+    auto byte_data = serialize();
+    std::ofstream ofs(path_.string(), std::ios::binary);
+    ofs.write(reinterpret_cast<char*>(&byte_data[0]), byte_data.size());
+  });
+}
+
 void ResourceObject::loadImpl(Bool is_reload) {
   auto lock = std::unique_lock<std::mutex>(mutex_);
-
-  if (is_reload) {
-    on_destroy_();
-  }
 
   state_ = ResourceState::kLoading;
 

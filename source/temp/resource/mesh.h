@@ -16,10 +16,10 @@ class Mesh : public ResourceObject {
 
  private:
   static SPtr makeShared(const filesystem::path& path, ResourceManager* manager,
-                         std::function<void(void)> on_destroy);
+                         std::function<void(const ResourceId&)> on_destroy);
 
   Mesh(const filesystem::path& path, ResourceManager* manager,
-       std::function<void(void)> on_destroy);
+       std::function<void(const ResourceId&)> on_destroy);
 
  public:
   ~Mesh();

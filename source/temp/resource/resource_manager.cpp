@@ -3,19 +3,34 @@
 namespace temp {
 namespace resource {
 
+namespace {
+const Char* kResourceManagerTag = "ResourceManager";
+}
+
 ResourceManager::ResourceManager(const core::ThreadPool::SPtr& load_thread,
                                  const graphics::Device::SPtr& graphics_device)
     : load_thread_(load_thread), graphics_device_(graphics_device) {}
 
+ResourceManager::~ResourceManager() {
+  auto size = resource_table_.size();
+    TEMP_LOG_DEBUG(kResourceManagerTag, fmt::format("unloaded resource count {0}", size));
+}
+
 ResourceId ResourceManager::resourceIdFromPath(const filesystem::path& path) {
   auto hash = std::hash<std::string>{}(path.string());
 
-  auto&& id_list = resource_id_table_[hash];
+  auto&& path_list = hash_to_path_table_[hash];
+
+  auto&& iter = std::find(path_list.begin(), path_list.end(), path);
 
   ResourceId id;
   id.hash_value = hash;
-  id.index = static_cast<Int32>(id_list.size());
-  id_list.push_back(id);
+  if (iter == path_list.end()) {
+    id.index = static_cast<Int32>(path_list.size());
+    path_list.push_back(path);
+  } else {
+    id.index = std::distance(path_list.begin(), iter);
+  }
 
   return id;
 }

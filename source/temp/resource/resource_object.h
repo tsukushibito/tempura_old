@@ -48,13 +48,15 @@ class ResourceObject {
   using WPtr = std::weak_ptr<ResourceObject>;
 
   ResourceObject(const filesystem::path& path, ResourceManager* manager,
-                 std::function<void(void)> on_destroy);
+                 std::function<void(const ResourceId&)> on_destroy);
 
   virtual ~ResourceObject();
 
   void load(Bool is_sync = false);
 
   void reload(Bool is_sync = false);
+
+  void save();
 
   auto manager() -> ResourceManager* const { return manager_; }
 
@@ -76,7 +78,7 @@ class ResourceObject {
   ResourceId id_;
   filesystem::path path_;
   ResourceState state_;
-  std::function<void(void)> on_destroy_;
+  std::function<void(const ResourceId&)> on_destroy_;
 };
 }  // namespace resource
 }  // namespace temp

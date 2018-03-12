@@ -14,10 +14,10 @@ class PixelShader : public ResourceObject {
 
  private:
   static SPtr makeShared(const filesystem::path& path, ResourceManager* manager,
-                         std::function<void(void)> on_destroy);
+                         std::function<void(const ResourceId&)> on_destroy);
 
   PixelShader(const filesystem::path& path, ResourceManager* manager,
-              std::function<void(void)> on_destroy);
+              std::function<void(const ResourceId&)> on_destroy);
 
  public:
   ~PixelShader();

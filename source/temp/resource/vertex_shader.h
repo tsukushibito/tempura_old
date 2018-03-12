@@ -14,10 +14,10 @@ class VertexShader : public ResourceObject {
 
  private:
   static SPtr makeShared(const filesystem::path& path, ResourceManager* manager,
-                         std::function<void(void)> on_destroy);
+                         std::function<void(const ResourceId&)> on_destroy);
 
   VertexShader(const filesystem::path& path, ResourceManager* manager,
-               std::function<void(void)> on_destroy);
+               std::function<void(const ResourceId&)> on_destroy);
 
  public:
   ~VertexShader();

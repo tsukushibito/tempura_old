@@ -13,7 +13,12 @@ class ResourceManager : public temp::SmartPointerObject<ResourceManager> {
   ResourceManager(const core::ThreadPool::SPtr& load_thread,
                   const graphics::Device::SPtr& graphics_device);
 
+  ~ResourceManager();
+
   ResourceId resourceIdFromPath(const filesystem::path& path);
+
+  template <typename T>
+  std::shared_ptr<T> create(const filesystem::path& path);
 
   template <typename T>
   std::shared_ptr<T> createAndLoad(const filesystem::path& path);
@@ -27,15 +32,14 @@ class ResourceManager : public temp::SmartPointerObject<ResourceManager> {
   core::ThreadPool::SPtr load_thread_;
   graphics::Device::SPtr graphics_device_;
 
-  HashTable<Size, Vector<ResourceId>> resource_id_table_;
+  HashTable<Size, Vector<filesystem::path>> hash_to_path_table_;
 
   std::mutex resource_table_mutex_;
   HashTable<ResourceId, ResourceObject::WPtr, ResourceIdHash> resource_table_;
 };
 
 template <typename T>
-std::shared_ptr<T> ResourceManager::createAndLoad(
-    const filesystem::path& path) {
+std::shared_ptr<T> ResourceManager::create(const filesystem::path& path) {
   std::unique_lock<std::mutex> lock(resource_table_mutex_);
 
   auto id = resourceIdFromPath(path);
@@ -46,25 +50,29 @@ std::shared_ptr<T> ResourceManager::createAndLoad(
     TEMP_ASSERT(res != null, "");
     res->load();
 
-    return res;
+    return std::static_pointer_cast<T>(res);
 
   } else {
     auto remove_from_table = [this](const ResourceId id) {
       std::unique_lock<std::mutex> lock(resource_table_mutex_);
       auto iter = resource_table_.find(id);
       TEMP_ASSERT(iter != resource_table_.end(), "");
-      auto res = iter->second.lock();
-      if (res.use_count() == 1) {
         resource_table_.erase(id);
-      }
     };
 
-    auto res =
-        T::makeShared(path, load_thread_, graphics_device_, remove_from_table);
-    res->load();
+    auto res = T::makeShared(path, this, remove_from_table);
+    resource_table_[id] = res;
 
-    return res;
+    return std::static_pointer_cast<T>(res);
   }
+}
+
+template <typename T>
+std::shared_ptr<T> ResourceManager::createAndLoad(
+    const filesystem::path& path) {
+  auto res = create<T>(path);
+  res->load();
+  return res;
 }
 
 }  // namespace resource

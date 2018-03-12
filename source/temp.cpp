@@ -24,13 +24,24 @@ class TempuraImpl : public Tempura {
         load_thread_);
 #else
 #endif
+    resource_manager_ =
+        resource::ResourceManager::makeShared(load_thread_, graphics_device_);
+    auto mesh = resource_manager_->create<resource::Mesh>("test.tmsh");
+    mesh->save();
   }
   void update(){/*core::Logger::trace("Tempura", "update");*/};
+
+  graphics::Device::SPtr graphicsDevice() { return graphics_device_; }
+
+  resource::ResourceManager::SPtr resourceManager() {
+    return resource_manager_;
+  }
 
  private:
   core::ThreadPool::SPtr render_thread_;
   core::ThreadPool::SPtr load_thread_;
   graphics::Device::SPtr graphics_device_;
+  resource::ResourceManager::SPtr resource_manager_;
   renderer::Renderer::SPtr renderer_;
 };
 

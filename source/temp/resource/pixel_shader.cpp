@@ -5,10 +5,10 @@ namespace temp {
 namespace resource {
 PixelShader::SPtr PixelShader::makeShared(
     const filesystem::path& path, ResourceManager* manager,
-    std::function<void(void)> on_destroy) {
+    std::function<void(const ResourceId&)> on_destroy) {
   struct Creator : PixelShader {
     Creator(const filesystem::path& path, ResourceManager* manager,
-            std::function<void(void)> on_destroy)
+            std::function<void(const ResourceId&)> on_destroy)
         : PixelShader(path, manager, on_destroy) {}
   };
 
@@ -16,7 +16,7 @@ PixelShader::SPtr PixelShader::makeShared(
 }
 
 PixelShader::PixelShader(const filesystem::path& path, ResourceManager* manager,
-                         std::function<void(void)> on_destroy)
+                         std::function<void(const ResourceId&)> on_destroy)
     : ResourceObject(path, manager, on_destroy) {}
 
 PixelShader::~PixelShader() {}

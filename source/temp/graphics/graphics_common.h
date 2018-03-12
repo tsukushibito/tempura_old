@@ -83,8 +83,8 @@ enum class PrimitiveType {
 
 struct IndexBufferDesc {
   IndexBufferFormat format;
-  Size size;
   PrimitiveType primitive_type;
+  Size size;
 };
 
 template <typename T = IndexBufferFormat>
