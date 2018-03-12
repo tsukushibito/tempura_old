@@ -1,4 +1,4 @@
-﻿#include "temp/graphics/opengl/opengl_common.h"
+#include "temp/graphics/opengl/opengl_common.h"
 #include "temp/core/logger.h"
 
 #if defined(TEMP_PLATFORM_MAC)
@@ -229,20 +229,20 @@ GLenum textureFormatToGlFormat(TextureFormat format) {
   GLenum gl_format = NULL;
 
   switch (format) {
-    case TextureFormat::kDXT1:
-      gl_format = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+    case TextureFormat::kRGBX32:
+      gl_format = GL_SRGB8_ALPHA8;
       break;
-    case TextureFormat::kDXT5:
-      gl_format = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-      break;
-    case TextureFormat::kRGB24:
-      gl_format = GL_SRGB8;
+    case TextureFormat::kRGBA32:
+      gl_format = GL_SRGB8_ALPHA8;
       break;
     case TextureFormat::kAlpha8:
       gl_format = GL_R8;
       break;
-    case TextureFormat::kRGBA32:
-      gl_format = GL_SRGB8_ALPHA8;
+    case TextureFormat::kBC1:
+      gl_format = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+      break;
+    case TextureFormat::kBC3:
+      gl_format = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
       break;
   }
 

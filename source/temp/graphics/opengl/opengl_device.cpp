@@ -1,4 +1,4 @@
-﻿#include "temp/graphics/opengl/opengl_device.h"
+#include "temp/graphics/opengl/opengl_device.h"
 #include "temp/core/logger.h"
 #include "temp/graphics/opengl/opengl_common.h"
 
@@ -108,25 +108,25 @@ TextureSPtr OpenGLDevice::createTexture(const TextureDesc& desc,
     GLenum gl_format;
     Size size = 0;
     switch (desc.format) {
-      case TextureFormat::kDXT1:
-        size = ((desc.width + 3) / 4) * ((desc.height + 3) / 4) * 8;
-        break;
-      case TextureFormat::kDXT5:
-        size = ((desc.width + 3) / 4) * ((desc.height + 3) / 4) * 16;
-        break;
-      case TextureFormat::kRGB24:
+      case TextureFormat::kRGBX32:
         gl_format = GL_RGB;
-        break;
-      case TextureFormat::kAlpha8:
-        gl_format = GL_RED;
         break;
       case TextureFormat::kRGBA32:
         gl_format = GL_RGBA;
         break;
+      case TextureFormat::kAlpha8:
+        gl_format = GL_RED;
+        break;
+      case TextureFormat::kBC1:
+        size = ((desc.width + 3) / 4) * ((desc.height + 3) / 4) * 8;
+        break;
+      case TextureFormat::kBC3:
+        size = ((desc.width + 3) / 4) * ((desc.height + 3) / 4) * 16;
+        break;
     }
 
-    if (desc.format == TextureFormat::kDXT1 ||
-        desc.format == TextureFormat::kDXT5) {
+    if (desc.format == TextureFormat::kBC1 ||
+        desc.format == TextureFormat::kBC3) {
       glCallWithErrorCheck(glCompressedTexImage2D, GL_TEXTURE_2D, 0,
                            gl_internal_format, (GLsizei)desc.width,
                            (GLsizei)desc.height, 0, (GLsizei)size, data);

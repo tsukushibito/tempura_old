@@ -26,39 +26,6 @@ enum class GraphicsAPI {
   kMetal,
 };
 
-enum class TextureFormat {
-  kDXT1,
-  kDXT5,
-  kRGB24,
-  kAlpha8,
-  kRGBA32,
-};
-
-struct TextureDesc {
-  TextureFormat format;
-  Size width;
-  Size height;
-  Int32 mipLevel;
-};
-
-template <typename T = TextureFormat>
-Size textureFormatBitPerPixel(TextureFormat format) {
-  switch (format) {
-    case TextureFormat::kDXT1:
-      return 4;
-    case TextureFormat::kDXT5:
-      return 8;
-    case TextureFormat::kRGB24:
-      return 24;
-    case TextureFormat::kAlpha8:
-      return 8;
-    case TextureFormat::kRGBA32:
-      return 32;
-    default:
-      return 0;
-  }
-}
-
 enum class RenderTargetFormat {
   kRGBA32,    // 各チャネル8ビット整数のRGBA4チャネル
   kRGBA64F,   // 各チャネル16ビット浮動小数のRGBA4チャネル
@@ -224,6 +191,42 @@ struct Viewport {
   Float32 right;
 
   Viewport() : top(0.0f), left(0.0f), bottom(1.0f), right(1.0f) {}
+};
+
+enum class TextureFormat {
+  kRGBX32,
+  kRGBA32,
+  kAlpha8,
+  kBC1,
+  kBC3,
+  kBC7,
+};
+
+template <typename T = TextureFormat>
+Size textureFormatBitPerPixel(TextureFormat format) {
+  switch (format) {
+    case TextureFormat::kRGBX32:
+      return 32;
+    case TextureFormat::kRGBA32:
+      return 32;
+    case TextureFormat::kAlpha8:
+      return 8;
+    case TextureFormat::kBC1:
+      return 4;
+    case TextureFormat::kBC3:
+      return 8;
+    case TextureFormat::kBC7:
+      return 8;
+    default:
+      return 0;
+  }
+}
+
+struct TextureDesc {
+  TextureFormat format;
+  Size width;
+  Size height;
+  Int32 mipLevel;
 };
 
 enum class TextureAttribute {
