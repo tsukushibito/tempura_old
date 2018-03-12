@@ -11,6 +11,37 @@ int main(int argc, char **argv) {
   auto engine = create(app->getNativeWindowHandle());
   auto res_manager = engine->resourceManager();
   auto mesh = res_manager->create<resource::Mesh>("test.tmsh");
+  mesh->load(true);
+  /*
+  auto graphics_device = engine->graphicsDevice();
+  Float32 vertices[] = {
+      -1.0f, -1.0f, -1.0f, 0.0f,  //
+      -1.0f, 1.0f,  -1.0f, 0.0f,  //
+      1.0f,  -1.0f, -1.0f, 0.0f,  //
+      1.0f,  1.0f,  -1.0f, 0.0f,  //
+      1.0f,  1.0f,  1.0f,  0.0f,  //
+      1.0f,  -1.0f, 1.0f,  0.0f,  //
+      -1.0f, 1.0f,  1.0f,  0.0f,  //
+      -1.0f, -1.0f, 1.0f,  0.0f,  //
+  };
+  graphics::VertexBufferDesc vb_desc;
+  vb_desc.element_count = 1;
+  vb_desc.element_descs[0].format = graphics::VertexFormat::kFloat32x4;
+  vb_desc.element_descs[0].attribute = graphics::VertexAttribute::kPosition;
+  vb_desc.size = sizeof(vertices);
+  auto vb = graphics_device->createVertexBuffer(vb_desc, vertices);
+  mesh->replaceVertexBuffer(vb);
+  Float32 indices[] = {
+      0, 1, 2, 3, 4, 5, 6, 7, 0, 1,
+  };
+  graphics::IndexBufferDesc ib_desc;
+  ib_desc.format = graphics::IndexBufferFormat::kUInt16;
+  ib_desc.primitive_type = graphics::PrimitiveType::kTriangleStrip;
+  ib_desc.size = sizeof(indices);
+  auto ib = graphics_device->createIndexBuffer(ib_desc, indices);
+  mesh->replaceIndexBuffer(ib);
+  mesh->save();
+  */
   app->setOnUpdateCallback([&engine]() { engine->update(); });
   auto exit_code = app->run();
   return exit_code;

@@ -24,12 +24,16 @@ class Mesh : public ResourceObject {
  public:
   ~Mesh();
 
-  graphics::VertexBuffer::SPtr graphicsVertexBuffer() const {
-    return vertex_buffer_;
+  graphics::VertexBuffer::SPtr vertexBuffer() const { return vertex_buffer_; }
+
+  graphics::IndexBuffer::SPtr indexBuffer() const { return index_buffer_; }
+
+  void replaceVertexBuffer(const graphics::VertexBuffer::SPtr& vertex_buffer) {
+    vertex_buffer_ = vertex_buffer;
   }
 
-  graphics::IndexBuffer::SPtr graphicsIndexBuffer() const {
-    return index_buffer_;
+  void replaceIndexBuffer(const graphics::IndexBuffer::SPtr& index_buffer) {
+    index_buffer_ = index_buffer;
   }
 
  private:

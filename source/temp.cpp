@@ -26,8 +26,6 @@ class TempuraImpl : public Tempura {
 #endif
     resource_manager_ =
         resource::ResourceManager::makeShared(load_thread_, graphics_device_);
-    auto mesh = resource_manager_->create<resource::Mesh>("test.tmsh");
-    mesh->save();
   }
   void update(){/*core::Logger::trace("Tempura", "update");*/};
 

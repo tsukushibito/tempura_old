@@ -60,8 +60,8 @@ void ResourceObject::loadImpl(Bool is_reload) {
 
   std::ifstream ifs(path_.string());
 
-  std::istreambuf_iterator<ByteData::value_type> beg;
-  std::istreambuf_iterator<ByteData::value_type> end;
+  std::istreambuf_iterator<char> beg(ifs);
+  std::istreambuf_iterator<char> end;
 
   ByteData byte_data(beg, end);
 

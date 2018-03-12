@@ -39,23 +39,23 @@ ByteData Mesh::serialize() {
   }
 
   auto&& vb_desc = vertex_buffer_->desc();
-  auto&& ib_desc = index_buffer->desc();
-  Size size = (sizeof(kMeshSignature) - 1) + (sizeof(kVerticesSignature) - 1) +
+  auto&& ib_desc = index_buffer_->desc();
+  Size size = (sizeof(kMeshSignature) - 1) + (sizeof(kVBSignature) - 1) +
               sizeof(VertexBufferDesc) + vb_desc.size +
-              (sizeof(kIndicesSignature) - 1) + sizeof(IndexBufferDesc) +
+              (sizeof(kIBSignature) - 1) + sizeof(IndexBufferDesc) +
               ib_desc.size;
   auto byte_data = ByteData(size);
 
   // Mesh signature
   Size index = 0;
-  for (auto i = index; i < sizeof(kMeshSignature) - 1; ++i) {
-    byte_data[i] = kMeshSignature[i];
+  for (auto i = 0; i < sizeof(kMeshSignature) - 1; ++i) {
+    byte_data[index + i] = kMeshSignature[i];
   }
   index += sizeof(kMeshSignature) - 1;
 
   // VB signature
-  for (auto i = index; i < sizeof(kVBSignature) - 1; ++i) {
-    byte_data[i] = kVBSignature[i];
+  for (auto i = 0; i < sizeof(kVBSignature) - 1; ++i) {
+    byte_data[index + i] = kVBSignature[i];
   }
   index += sizeof(kVBSignature) - 1;
 
@@ -69,7 +69,7 @@ ByteData Mesh::serialize() {
 
   // IB signature
   for (auto i = 0; i < sizeof(kIBSignature) - 1; ++i) {
-    byte_data[i] = kIBSignature[i];
+    byte_data[index + i] = kIBSignature[i];
   }
   index += sizeof(kIBSignature) - 1;
 
@@ -78,7 +78,7 @@ ByteData Mesh::serialize() {
   index += sizeof(IndexBufferDesc);
 
   // IB data
-  memcpy(&byte_data[index], &index_buffer->data()[0], ib_desc.size);
+  memcpy(&byte_data[index], &index_buffer_->data()[0], ib_desc.size);
   index += ib_desc.size;
 
   return byte_data;

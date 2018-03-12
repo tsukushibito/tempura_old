@@ -24,6 +24,13 @@ using Bool = bool;
 using Char = char;
 using Size = size_t;
 
+struct Color {
+  Float32 red;
+  Float32 green;
+  Float32 blue;
+  Float32 alpha;
+};
+
 class Uncopyable {
  protected:
   Uncopyable() = default;
