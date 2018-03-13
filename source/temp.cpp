@@ -43,11 +43,11 @@ class TempuraImpl : public Tempura {
   renderer::Renderer::SPtr renderer_;
 };
 
-TEMP_DECLSPEC TempSPtr create(void* window_handle) {
+TempSPtr create(void* window_handle) {
   return std::make_shared<TempuraImpl>(window_handle);
 }
 
-TEMP_DECLSPEC temp::app::ApplicationSPtr createApplication() {
+temp::app::ApplicationSPtr createApplication() {
 #if defined(TEMP_PLATFORM_WINDOWS)
   return std::make_shared<temp::app::windows::WindowsApplication>();
 #elif defined(TEMP_PLATFORM_MAC)

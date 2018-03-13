@@ -21,8 +21,8 @@ class Tempura {
 
 using TempSPtr = std::shared_ptr<Tempura>;
 
-TEMP_DECLSPEC TempSPtr create(void* window_handle);
+TempSPtr create(void* window_handle);
 
-TEMP_DECLSPEC temp::app::ApplicationSPtr createApplication();
+temp::app::ApplicationSPtr createApplication();
 
 }  // namespace temp
