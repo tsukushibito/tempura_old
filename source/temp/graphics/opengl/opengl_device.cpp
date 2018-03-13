@@ -123,6 +123,9 @@ TextureSPtr OpenGLDevice::createTexture(const TextureDesc& desc,
       case TextureFormat::kBC3:
         size = ((desc.width + 3) / 4) * ((desc.height + 3) / 4) * 16;
         break;
+      case TextureFormat::kBC7:
+            // TODO:
+        break;
     }
 
     if (desc.format == TextureFormat::kBC1 ||

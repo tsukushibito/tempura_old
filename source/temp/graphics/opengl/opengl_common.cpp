@@ -244,6 +244,9 @@ GLenum textureFormatToGlFormat(TextureFormat format) {
     case TextureFormat::kBC3:
       gl_format = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
       break;
+    case TextureFormat::kBC7:
+          // TODO:
+      break;
   }
 
   return gl_format;

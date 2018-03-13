@@ -18,7 +18,7 @@ elseif(WIN32)
     set(EXTRA_LIBS "OpenGL32.lib")
 endif(APPLE)
 
-add_library(engine SHARED ${engine_source_list})
+add_library(engine ${engine_source_list})
 target_link_libraries(engine ${EXTRA_LIBS})
 set_target_properties(engine PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(engine PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})

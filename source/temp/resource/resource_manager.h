@@ -57,7 +57,8 @@ std::shared_ptr<T> ResourceManager::create(const filesystem::path& path) {
       std::unique_lock<std::mutex> lock(resource_table_mutex_);
       auto iter = resource_table_.find(id);
       TEMP_ASSERT(iter != resource_table_.end(), "");
-        resource_table_.erase(id);
+      if(iter == resource_table_.end()) return;
+      resource_table_.erase(id);
     };
 
     auto res = T::makeShared(path, this, remove_from_table);
