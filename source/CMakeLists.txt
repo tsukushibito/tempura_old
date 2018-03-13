@@ -26,6 +26,7 @@ target_include_directories(engine PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../third_p
 target_include_directories(engine PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/fmt)
 
 set(TEMP_USE_BOOST ON CACHE BOOL "To use filesystem in a environment before c++17.")
+set(BOOST_ROOT CACHE PATH)
 if(TEMP_USE_BOOST)
 find_package(Boost COMPONENTS system filesystem) 
     if(Boost_FOUND)
