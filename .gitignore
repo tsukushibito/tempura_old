@@ -8,9 +8,9 @@ build_old/
 *.sdf
 *.suo
 *.vscode
+*.code-worksace
 
 *.opendb
-build/TempuraTest.vcxproj.user
 *.pyc
 
 .DS_Store
