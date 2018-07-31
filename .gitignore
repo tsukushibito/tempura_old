@@ -8,7 +8,7 @@ build_old/
 *.sdf
 *.suo
 *.vscode
-*.code-worksace
+*.code-workspace
 
 *.opendb
 *.pyc
