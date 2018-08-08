@@ -1,0 +1,22 @@
+#pragma once
+#include <iostream>
+
+#include "temp/core/define.h"
+#include "temp/core/type.h"
+
+namespace temp {
+inline void ReportAssertion(const Char *msg, const Char *file, Size line) {
+#ifdef TEMP_PLATFORM_WINDOWS
+  StringStream log;
+  log << file << " : line[" << line << "] : " << msg << std::endl;
+  OutputDebugStringA(log.str().c_str());
+  // DebugBreak();
+#else
+  std::cout << file << " : line[" << line << "] : " << msg << std::endl;
+  __builtin_trap();
+#endif
+}
+}  // namespace temp
+
+#define TEMP_ASSERT(expr, msg) \
+  (void)((!!(expr)) || (temp::ReportAssertion(msg, __FILE__, __LINE__), 0))
