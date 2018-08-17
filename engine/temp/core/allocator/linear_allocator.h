@@ -13,10 +13,6 @@ class LinearAllocator : public AllocatorBase<LinearAllocator> {
   void Clear();
 
  private:
-  LinearAllocator(const LinearAllocator&);
-
-  LinearAllocator& operator=(const LinearAllocator&);
-
   void* current_pos_;
 };
 };  // namespace temp

@@ -1,3 +1,4 @@
+#pragma once
 #include <new>
 
 #include "temp/core/assertion.h"
@@ -5,7 +6,7 @@
 
 namespace temp {
 template <class T>
-class AllocatorBase {
+class AllocatorBase : private Uncopyable {
   static const int kDefaultAlignment = 8;
 
  public:
@@ -117,5 +118,13 @@ inline UInt8 AlignForwardAdjustmentWithHeader(const void* address,
   }
 
   return adjustment;
+}
+
+inline void* AddPointer(void* p, Size x) {
+  return (void*)(reinterpret_cast<UIntPtr>(p) + x);
+}
+
+inline const void* AddPointer(const void* p, Size x) {
+  return (const void*)(reinterpret_cast<UIntPtr>(p) + x);
 }
 }  // namespace temp

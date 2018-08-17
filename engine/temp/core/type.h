@@ -76,4 +76,49 @@ class Optional {
   bool is_engaged_;
   T value_;
 };
-}
+
+template <typename T>
+class SmartPointerType : private Uncopyable {
+ public:
+  using UPtr = std::unique_ptr<T>;
+  using SPtr = std::shared_ptr<T>;
+  using WPtr = std::weak_ptr<T>;
+
+  template <typename Allocator, typename... Args>
+  static SPtr allocateShared(const Allocator &allocator, Args... args) {
+    struct Creator : public T {
+      Creator(Args... args) : T(args...) {}
+    };
+
+    return std::allocate_shared<Creator>(allocator, args...);
+  }
+
+  template <typename... Args>
+  static UPtr makeUnique(Args... args) {
+    struct Creator : public T {
+      Creator(Args... args) : T(args...) {}
+    };
+    return std::unique_ptr<T>(new Creator(args...));
+  }
+
+  template <typename Allocator, typename... Args>
+  static UPtr allocateUnique(const Allocator &allocator, Args... args) {
+    struct Creator : public T {
+      Creator(Args... args) : T(args...) {}
+
+      static void *operator new(std::size_t size) {
+        typename Allocator::template rebind<UInt8>::other allocator;
+        return allocator.allocate(size);
+      }
+      static void operator delete(void *p, std::size_t size) {
+        typename Allocator::template rebind<UInt8>::other allocator;
+        allocator.deallocate(reinterpret_cast<UInt8 *>(p), size);
+      }
+    };
+    return std::unique_ptr<T>(new Creator(args...));
+  }
+
+ protected:
+  SmartPointerType() = default;
+};
+}  // namespace temp

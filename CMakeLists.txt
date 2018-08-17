@@ -17,3 +17,4 @@ endfunction(add_source_group)
 
 add_subdirectory(engine)
 add_subdirectory(application)
+add_subdirectory(test)
