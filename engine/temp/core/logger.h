@@ -1,3 +1,4 @@
+#pragma once
 #include "temp/core/container.h"
 #include "temp/core/type.h"
 

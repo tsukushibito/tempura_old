@@ -48,7 +48,7 @@ class Singleton : Uncopyable {
   virtual ~Singleton() = default;
 
  public:
-  static T &Instance() {
+  static T &instance() {
     static T instance;
     return instance;
   }
@@ -85,7 +85,7 @@ class SmartPointerType : private Uncopyable {
   using WPtr = std::weak_ptr<T>;
 
   template <typename Allocator, typename... Args>
-  static SPtr allocateShared(const Allocator &allocator, Args... args) {
+  static SPtr AllocateShared(const Allocator &allocator, Args... args) {
     struct Creator : public T {
       Creator(Args... args) : T(args...) {}
     };
@@ -94,15 +94,15 @@ class SmartPointerType : private Uncopyable {
   }
 
   template <typename... Args>
-  static UPtr makeUnique(Args... args) {
+  static UPtr MakeUnique(Args &&... args) {
     struct Creator : public T {
-      Creator(Args... args) : T(args...) {}
+      Creator(Args &&... args) : T(args...) {}
     };
     return std::unique_ptr<T>(new Creator(args...));
   }
 
   template <typename Allocator, typename... Args>
-  static UPtr allocateUnique(const Allocator &allocator, Args... args) {
+  static UPtr AllocateUnique(const Allocator &allocator, Args... args) {
     struct Creator : public T {
       Creator(Args... args) : T(args...) {}
 

@@ -11,7 +11,7 @@ namespace temp {
 
 void Logger::Log(const char *tag, const char *msg, LogLevel level,
                  const char *file, int line) {
-  if (level < Instance().level_) return;
+  if (level < instance().level_) return;
 
   auto now = std::chrono::system_clock::now();
   auto now_time = std::chrono::system_clock::to_time_t(now);
@@ -48,6 +48,8 @@ void Logger::Log(const char *tag, const char *msg, LogLevel level,
     default:
       break;
   }
+
+  std::unique_lock<std::mutex> lock(instance().mutex_);
 #ifdef TEMP_LOG_FILE_AND_LINE
   std::cout << time_tag << level_tag << "[" << tag << "] " << msg << " : "
             << file << " : " << line << std::endl;
