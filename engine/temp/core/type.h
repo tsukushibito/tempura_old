@@ -2,6 +2,8 @@
 #include <cstddef>
 #include <cstdint>
 
+#include <memory>
+
 namespace temp {
 
 using Int8 = std::int8_t;
@@ -84,6 +86,15 @@ class SmartPointerType : private Uncopyable {
   using SPtr = std::shared_ptr<T>;
   using WPtr = std::weak_ptr<T>;
 
+  template <typename... Args>
+  static SPtr MakeShared(Args... args) {
+    struct Creator : public T {
+      Creator(Args... args) : T(args...) {}
+    };
+
+    return std::make_shared<Creator>(args...);
+  }
+
   template <typename Allocator, typename... Args>
   static SPtr AllocateShared(const Allocator &allocator, Args... args) {
     struct Creator : public T {
@@ -94,9 +105,9 @@ class SmartPointerType : private Uncopyable {
   }
 
   template <typename... Args>
-  static UPtr MakeUnique(Args &&... args) {
+  static UPtr MakeUnique(Args... args) {
     struct Creator : public T {
-      Creator(Args &&... args) : T(args...) {}
+      Creator(Args... args) : T(args...) {}
     };
     return std::unique_ptr<T>(new Creator(args...));
   }
