@@ -4,10 +4,15 @@
 #include "temp/core/define.h"
 #include "temp/core/type.h"
 
+#if defined(TEMP_PLATFORM_WINDOWS)
+#include <Windows.h>
+#include <sstream>
+#endif
+
 namespace temp {
 inline void ReportAssertion(const Char *msg, const Char *file, Size line) {
 #ifdef TEMP_PLATFORM_WINDOWS
-  StringStream log;
+  std::stringstream log;
   log << file << " : line[" << line << "] : " << msg << std::endl;
   OutputDebugStringA(log.str().c_str());
   // DebugBreak();

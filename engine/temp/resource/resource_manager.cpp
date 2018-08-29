@@ -35,7 +35,7 @@ ResourceId ResourceManager::ResourceIdFromPath(const filesystem::path& path) {
     id.index = static_cast<Int32>(path_list.size());
     path_list.push_back(path);
   } else {
-    id.index = std::distance(path_list.begin(), iter);
+    id.index = static_cast<Int32>(std::distance(path_list.begin(), iter));
   }
 
   return id;

@@ -25,6 +25,7 @@ void* LinearAllocator::Allocate(Size size, UInt8 alignment) {
 }
 
 void LinearAllocator::Deallocate(void* p) {
+  (void)p;
   TEMP_ASSERT(false, "Use clear() instead");
 }
 

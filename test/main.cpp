@@ -1,5 +1,4 @@
 #include <temp/tempura.h>
-#include <unistd.h>
 #include <cstdlib>
 
 int main(int argc, char* argv[]) {

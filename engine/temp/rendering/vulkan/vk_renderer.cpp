@@ -68,9 +68,9 @@ vk::UniqueInstance CreateInstance() {
   }
   vk::ApplicationInfo app_info(kAppName, 1, kEngineName, 1, VK_API_VERSION_1_1);
   vk::InstanceCreateInfo create_info({}, &app_info);
-  create_info.enabledLayerCount = kValidationLayers.size();
+  create_info.enabledLayerCount = static_cast<uint32_t>(kValidationLayers.size());
   create_info.ppEnabledLayerNames = &kValidationLayers[0];
-  create_info.enabledExtensionCount = kExtensions.size();
+  create_info.enabledExtensionCount = static_cast<uint32_t>(kExtensions.size());
   create_info.ppEnabledExtensionNames = &kExtensions[0];
 
   return vk::createInstanceUnique(create_info);
