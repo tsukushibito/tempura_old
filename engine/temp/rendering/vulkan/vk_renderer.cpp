@@ -11,9 +11,25 @@ const char* kVkRendererTag = "VkRenderer";
 const char* kAppName = "TempuraEngine";
 const char* kEngineName = "Tempura";
 const std::array<const char*, 1> kValidationLayers = {
-    {"VK_LAYER_LUNARG_standard_validation"}};
-const std::array<const char*, 1> kExtensions = {
-    {VK_EXT_DEBUG_UTILS_EXTENSION_NAME}};
+    "VK_LAYER_LUNARG_standard_validation",
+};
+const std::array<const char*, 3> kExtensions = {
+    VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
+    VK_KHR_SURFACE_EXTENSION_NAME,
+#ifdef __ANDROID__
+    VK_KHR_ANDROID_SURFACE_EXTENSION_NAME,
+#elif defined(_WIN32)
+    VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
+#elif defined(VK_USE_PLATFORM_IOS_MVK)
+    VK_MVK_IOS_SURFACE_EXTENSION_NAME,
+#elif defined(VK_USE_PLATFORM_MACOS_MVK)
+    VK_MVK_MACOS_SURFACE_EXTENSION_NAME,
+#elif defined(VK_USE_PLATFORM_WAYLAND_KHR)
+    VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME,
+#else
+    VK_KHR_XCB_SURFACE_EXTENSION_NAME,
+#endif
+};
 
 VKAPI_ATTR VkBool32 VKAPI_CALL
 DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
@@ -193,12 +209,12 @@ Renderer::Impl::Impl(Renderer& parent, vk::UniqueInstance& instance,
       instance_(std::move(instance)),
       device_(std::move(device)),
       messenger_(std::move(messenger)),
-      dispatch_loader_dynamic_(std::move(dispatch)) {}
+      dispatch_(std::move(dispatch)) {}
 
 Renderer::Impl::~Impl() {
   messenger_.reset(nullptr);
   device_.reset(nullptr);
-  dispatch_loader_dynamic_.reset(nullptr);
+  dispatch_.reset(nullptr);
   instance_.reset(nullptr);
 }
 

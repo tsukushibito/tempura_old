@@ -49,11 +49,7 @@ MacApplication::MacApplication()
     [properties_->app setActivationPolicy:NSApplicationActivationPolicyRegular];
 
     properties_->exit_flag = 0;
-}
 
-MacApplication::~MacApplication() { [properties_->app terminate:properties_->app]; }
-
-temp::Int32 MacApplication::Run() {
     auto delegate = [[WindowDelegate alloc] init];
     properties_->window_handle = [[NSWindow alloc]
         initWithContentRect:NSMakeRect(0, 0, 1080, 720)
@@ -73,6 +69,12 @@ temp::Int32 MacApplication::Run() {
     [properties_->window_handle setCollectionBehavior:behavior];
     [properties_->window_handle orderFrontRegardless];
 
+    native_window_handle_ = properties_->window_handle;
+}
+
+MacApplication::~MacApplication() { [properties_->app terminate:properties_->app]; }
+
+temp::Int32 MacApplication::Run() {
     on_initialize()();
 
     auto future = properties_->main_thread->PushTask([this](){ MainLoop(); });

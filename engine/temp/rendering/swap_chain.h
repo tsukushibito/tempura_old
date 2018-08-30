@@ -1,14 +1,16 @@
 #pragma once
 #include "temp/core/core.h"
-#include "temp/rendering/renderer.h"
 
 namespace temp {
 namespace rendering {
 
+class Renderer;
+
 class SwapChain : public SmartPointerType<SwapChain> {
   friend class SmartPointerType<SwapChain>;
+  using RendererSPtr = std::shared_ptr<Renderer>;
 
-  SwapChain(Renderer& renderer);
+  SwapChain(const RendererSPtr& renderer, void* native_window_handle);
 
  public:
   void Present();

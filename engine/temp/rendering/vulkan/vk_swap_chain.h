@@ -10,14 +10,14 @@ namespace rendering {
 
 class SwapChain::Impl {
  public:
-  Impl(SwapChain& parent, vk::UniqueSurfaceKHR surface);
+  Impl(SwapChain& parent, vk::UniqueSurfaceKHR& surface);
   ~Impl();
 
   void Present();
 
   SwapChain& parent_;
 
-  vk::UniqueSurfaceKHR surface;
+  vk::UniqueSurfaceKHR surface_;
 };
 }  // namespace rendering
 }  // namespace temp

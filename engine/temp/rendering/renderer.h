@@ -2,20 +2,21 @@
 #include "temp/core/core.h"
 
 namespace temp {
-
 class TaskManager;
-
-namespace resource {
-
-class ResourceManager;
 }
 
-namespace rendering {
+namespace temp {
+namespace resource {
+class ResourceManager;
+}
+}  // namespace temp
 
-class SwapChain;
+namespace temp {
+namespace rendering {
 
 class Renderer : public SmartPointerType<Renderer> {
   friend class SmartPointerType<Renderer>;
+  friend class SwapChain;
   using TaskManagerSPtr = std::shared_ptr<TaskManager>;
   using ResourceManagerSPtr = std::shared_ptr<resource::ResourceManager>;
 

@@ -28,7 +28,7 @@ class Renderer::Impl {
   vk::UniqueInstance instance_;
   vk::UniqueDevice device_;
   UniqueDebugUtilsMessengerEXT messenger_;
-  DispatchLoaderDynamicUPtr dispatch_loader_dynamic_;
+  DispatchLoaderDynamicUPtr dispatch_;
 };
 
 }  // namespace rendering
