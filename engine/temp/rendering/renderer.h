@@ -12,6 +12,8 @@ class ResourceManager;
 
 namespace rendering {
 
+class SwapChain;
+
 class Renderer : public SmartPointerType<Renderer> {
   friend class SmartPointerType<Renderer>;
   using TaskManagerSPtr = std::shared_ptr<TaskManager>;

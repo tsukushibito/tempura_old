@@ -3,10 +3,10 @@
 #include <new>
 #include "temp/core/core.h"
 #include "temp/rendering/vulkan/vk_renderer.h"
+#include "temp/rendering/vulkan/vk_swap_chain.h"
 
-namespace temp {
-namespace rendering {
 namespace {
+
 const char* kVkRendererTag = "VkRenderer";
 const char* kAppName = "TempuraEngine";
 const char* kEngineName = "Tempura";
@@ -37,6 +37,7 @@ DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
 }
 
 bool IsValidationLayerSupported() {
+  using namespace temp;
   auto available_layers = vk::enumerateInstanceLayerProperties();
 
   String msg = "Supported layers:\n";
@@ -78,8 +79,8 @@ vk::UniqueInstance CreateInstance() {
   return vk::createInstanceUnique(create_info);
 }
 
-UniqueDebugUtilsMessengerEXT CreateMessenger(
-    vk::UniqueInstance& instance, vk::DispatchLoaderDynamic& loader) {
+temp::rendering::UniqueDebugUtilsMessengerEXT CreateMessenger(
+    vk::UniqueInstance& instance, const vk::DispatchLoaderDynamic& loader) {
   vk::DebugUtilsMessengerCreateFlagsEXT create_flags;
   vk::DebugUtilsMessageSeverityFlagsEXT message_severity =
       vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose |
@@ -96,7 +97,9 @@ UniqueDebugUtilsMessengerEXT CreateMessenger(
                                                       loader);
 }
 
-UInt32 RatePhysicalDevice(const vk::PhysicalDevice& physical_device) {
+temp::UInt32 RatePhysicalDevice(const vk::PhysicalDevice& physical_device) {
+  using namespace temp;
+
   UInt32 score = 0;
 
   auto device_properties = physical_device.getProperties();
@@ -126,9 +129,11 @@ UInt32 RatePhysicalDevice(const vk::PhysicalDevice& physical_device) {
   }
 
   return score;
-}  // namespace
+}
 
 vk::PhysicalDevice PickPhysicalDevice(const vk::UniqueInstance& instance) {
+  using namespace temp;
+
   auto physical_devices = instance->enumeratePhysicalDevices();
   TEMP_ASSERT(!physical_devices.empty(), "Not found physical devices.");
 
@@ -176,6 +181,9 @@ vk::UniqueDevice CreateDevice(const vk::PhysicalDevice& physical_device) {
 }
 
 }  // namespace
+
+namespace temp {
+namespace rendering {
 
 Renderer::Impl::Impl(Renderer& parent, vk::UniqueInstance& instance,
                      vk::UniqueDevice& device,
@@ -225,7 +233,7 @@ Renderer::Renderer(const TaskManagerSPtr& task_manager,
 
 Renderer::~Renderer() { impl_->~Impl(); }
 
-void Renderer::Render() {}
+void Renderer::Render() { return impl_->Render(); }
 
 }  // namespace rendering
 }  // namespace temp

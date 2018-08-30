@@ -10,7 +10,7 @@ namespace rendering {
 
 class SwapChain::Impl {
  public:
-  Impl(SwapChain& parent);
+  Impl(SwapChain& parent, vk::UniqueSurfaceKHR surface);
   ~Impl();
 
   void Present();

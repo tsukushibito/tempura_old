@@ -1,11 +1,14 @@
 #pragma once
 #include "temp/core/core.h"
+#include "temp/rendering/renderer.h"
+
 namespace temp {
 namespace rendering {
 
 class SwapChain : public SmartPointerType<SwapChain> {
   friend class SmartPointerType<SwapChain>;
-  friend class Renderer;
+
+  SwapChain(Renderer& renderer);
 
  public:
   void Present();
