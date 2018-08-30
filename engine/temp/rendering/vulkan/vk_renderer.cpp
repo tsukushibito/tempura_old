@@ -187,7 +187,12 @@ Renderer::Impl::Impl(Renderer& parent, vk::UniqueInstance& instance,
       messenger_(std::move(messenger)),
       dispatch_loader_dynamic_(std::move(dispatch)) {}
 
-Renderer::Impl::~Impl() {}
+Renderer::Impl::~Impl() {
+  messenger_.reset(nullptr);
+  device_.reset(nullptr);
+  dispatch_loader_dynamic_.reset(nullptr);
+  instance_.reset(nullptr);
+}
 
 void Renderer::Impl::Render() {}
 
