@@ -177,26 +177,15 @@ vk::UniqueDevice CreateDevice(const vk::PhysicalDevice& physical_device) {
 
 }  // namespace
 
-Renderer::Impl::Impl(Renderer& parent) : parent_(parent) {
-  try {
-    auto instance = CreateInstance();
-    dispatch_loader_dynamic_.init(*instance);
-    auto messenger = CreateMessenger(instance, dispatch_loader_dynamic_);
-    auto physical_device = PickPhysicalDevice(instance);
-    auto device = CreateDevice(physical_device);
-
-    h_.reset(new Holder(instance, device, messenger));
-
-  } catch (vk::SystemError err) {
-    TEMP_LOG_FATAL(kVkRendererTag,
-                   fmt::format("vk::SystemError: {0}", err.what()));
-    exit(-1);
-
-  } catch (...) {
-    TEMP_LOG_FATAL(kVkRendererTag, "unknown error");
-    exit(-1);
-  }
-}
+Renderer::Impl::Impl(Renderer& parent, vk::UniqueInstance& instance,
+                     vk::UniqueDevice& device,
+                     UniqueDebugUtilsMessengerEXT& messenger,
+                     DispatchLoaderDynamicUPtr& dispatch)
+    : parent_(parent),
+      instance_(std::move(instance)),
+      device_(std::move(device)),
+      messenger_(std::move(messenger)),
+      dispatch_loader_dynamic_(std::move(dispatch)) {}
 
 Renderer::Impl::~Impl() {}
 
@@ -207,8 +196,26 @@ Renderer::Renderer(const TaskManagerSPtr& task_manager,
     : task_manager_(task_manager), resource_manager_(resource_manager) {
   static_assert(sizeof(impl_strage_) >= sizeof(Impl),
                 "ImplStorage size must be greater than Impl size.");
-  impl_ = reinterpret_cast<Impl*>(&impl_strage_);
-  new (impl_) Impl(*this);
+
+  try {
+    auto instance = CreateInstance();
+    auto dispatch = DispatchLoaderDynamicUPtr(new vk::DispatchLoaderDynamic());
+    dispatch->init(*instance);
+    auto messenger = CreateMessenger(instance, *dispatch);
+    auto physical_device = PickPhysicalDevice(instance);
+    auto device = CreateDevice(physical_device);
+    impl_ = reinterpret_cast<Impl*>(&impl_strage_);
+    new (impl_) Impl(*this, instance, device, messenger, dispatch);
+
+  } catch (vk::SystemError err) {
+    TEMP_LOG_FATAL(kVkRendererTag,
+                   fmt::format("vk::SystemError: {0}", err.what()));
+    exit(-1);
+
+  } catch (...) {
+    TEMP_LOG_FATAL(kVkRendererTag, "unknown error");
+    exit(-1);
+  }
 }
 
 Renderer::~Renderer() { impl_->~Impl(); }

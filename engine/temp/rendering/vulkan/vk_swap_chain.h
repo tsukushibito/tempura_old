@@ -4,4 +4,22 @@
 #include <vulkan/vulkan.hpp>
 #include "temp/core/core.h"
 #include "temp/rendering/swap_chain.h"
+
+namespace temp {
+namespace rendering {
+
+class SwapChain::Impl {
+ public:
+  Impl(SwapChain& parent);
+  ~Impl();
+
+  void Present();
+
+  SwapChain& parent_;
+
+  vk::UniqueSurfaceKHR surface;
+};
+}  // namespace rendering
+}  // namespace temp
+
 #endif
