@@ -1,10 +1,11 @@
-#include "temp/rendering/vulkan/vk_renderer.h"
+#include "temp/core/define.h"
 #ifdef TEMP_GRAPHICS_VULKAN
-#include "temp/rendering/vulkan/vk_swap_chain.h"
+#include <new>
+#include "temp/core/core.h"
+#include "temp/rendering/vulkan/vk_renderer.h"
 
 namespace temp {
 namespace rendering {
-namespace vulkan {
 namespace {
 const char* kVkRendererTag = "VkRenderer";
 const char* kAppName = "TempuraEngine";
@@ -68,7 +69,8 @@ vk::UniqueInstance CreateInstance() {
   }
   vk::ApplicationInfo app_info(kAppName, 1, kEngineName, 1, VK_API_VERSION_1_1);
   vk::InstanceCreateInfo create_info({}, &app_info);
-  create_info.enabledLayerCount = static_cast<uint32_t>(kValidationLayers.size());
+  create_info.enabledLayerCount =
+      static_cast<uint32_t>(kValidationLayers.size());
   create_info.ppEnabledLayerNames = &kValidationLayers[0];
   create_info.enabledExtensionCount = static_cast<uint32_t>(kExtensions.size());
   create_info.ppEnabledExtensionNames = &kExtensions[0];
@@ -174,16 +176,16 @@ vk::UniqueDevice CreateDevice(const vk::PhysicalDevice& physical_device) {
 }
 
 }  // namespace
-VkRenderer::VkRenderer(const TaskManager::SPtr& task_manager,
-                       const resource::ResourceManager::SPtr& resource_manager)
-    : task_manager_(task_manager), resource_manager_(resource_manager) {
+
+Renderer::Impl::Impl(Renderer& parent) : parent_(parent) {
   try {
-    instance_.reset(CreateInstance().release());
-    dispatch_loader_dynamic_.init(*instance_);
-    messenger_.reset(
-        CreateMessenger(instance_, dispatch_loader_dynamic_).release());
-    auto physical_device = PickPhysicalDevice(instance_);
-    device_.reset(CreateDevice(physical_device).release());
+    auto instance = CreateInstance();
+    dispatch_loader_dynamic_.init(*instance);
+    auto messenger = CreateMessenger(instance, dispatch_loader_dynamic_);
+    auto physical_device = PickPhysicalDevice(instance);
+    auto device = CreateDevice(physical_device);
+
+    h_.reset(new Holder(instance, device, messenger));
 
   } catch (vk::SystemError err) {
     TEMP_LOG_FATAL(kVkRendererTag,
@@ -196,9 +198,23 @@ VkRenderer::VkRenderer(const TaskManager::SPtr& task_manager,
   }
 }
 
-void VkRenderer::Render() {}
+Renderer::Impl::~Impl() {}
 
-}  // namespace vulkan
+void Renderer::Impl::Render() {}
+
+Renderer::Renderer(const TaskManagerSPtr& task_manager,
+                   const ResourceManagerSPtr& resource_manager)
+    : task_manager_(task_manager), resource_manager_(resource_manager) {
+  static_assert(sizeof(impl_strage_) >= sizeof(Impl),
+                "ImplStorage size must be greater than Impl size.");
+  impl_ = reinterpret_cast<Impl*>(&impl_strage_);
+  new (impl_) Impl(*this);
+}
+
+Renderer::~Renderer() { impl_->~Impl(); }
+
+void Renderer::Render() {}
+
 }  // namespace rendering
 }  // namespace temp
 #endif

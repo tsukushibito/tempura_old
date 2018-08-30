@@ -3,43 +3,41 @@
 #if defined(TEMP_GRAPHICS_VULKAN)
 #include <utility>
 #include <vulkan/vulkan.hpp>
-#include "temp/core/core.h"
-#include "temp/rendering/renderer_base.h"
-#include "temp/resource/resource_manager.h"
+#include "temp/rendering/renderer.h"
 
 namespace temp {
 namespace rendering {
-namespace vulkan {
 
 using UniqueDebugUtilsMessengerEXT =
     vk::UniqueHandle<vk::DebugUtilsMessengerEXT, vk::DispatchLoaderDynamic>;
 using UniqueSurfaceKHR =
     vk::UniqueHandle<vk::SurfaceKHR, vk::DispatchLoaderDynamic>;
 
-class VkRenderer : public RendererBase<VkRenderer> {
-  friend class SmartPointerType<VkRenderer>;
-
- private:
-  VkRenderer(const TaskManager::SPtr& task_manager,
-             const resource::ResourceManager::SPtr& resource_manager);
-
+class Renderer::Impl {
  public:
+  Impl(Renderer& parent);
+  ~Impl();
+
   void Render();
 
- private:
-  TaskManager::SPtr task_manager_;
-  resource::ResourceManager::SPtr resource_manager_;
+  Renderer& parent_;
 
-  const void* window_handle_;
+  struct Holder {
+    vk::UniqueInstance instance;
+    vk::UniqueDevice device;
+    UniqueDebugUtilsMessengerEXT messenger;
 
-  vk::UniqueInstance instance_;
-  vk::UniqueDevice device_;
+    Holder(vk::UniqueInstance& i, vk::UniqueDevice& d,
+           UniqueDebugUtilsMessengerEXT& m)
+        : instance(std::move(i)),
+          device(std::move(d)),
+          messenger(std::move(m)) {}
+  };
+
+  std::unique_ptr<Holder> h_;
+
   vk::DispatchLoaderDynamic dispatch_loader_dynamic_;
-  UniqueDebugUtilsMessengerEXT messenger_;
-  UniqueSurfaceKHR surface_;
 };
-}  // namespace vulkan
-using Renderer = RendererBase<vulkan::VkRenderer>;
 
 }  // namespace rendering
 }  // namespace temp
