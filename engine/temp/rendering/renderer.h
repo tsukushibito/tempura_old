@@ -1,5 +1,5 @@
 #pragma once
-#include "temp/core/core.h"
+#include <memory>
 
 namespace temp {
 class TaskManager;
@@ -14,32 +14,41 @@ class ResourceManager;
 namespace temp {
 namespace rendering {
 
-class Renderer : public SmartPointerType<Renderer> {
-  friend class SmartPointerType<Renderer>;
-  friend class SwapChain;
-  using TaskManagerSPtr = std::shared_ptr<TaskManager>;
-  using ResourceManagerSPtr = std::shared_ptr<resource::ResourceManager>;
+enum class GraphicsApi {
+  kVulkan,
+  kOpenGl,
+  kD3d12,
+  kD3d11,
+};
 
- private:
+using TaskManagerSPtr = std::shared_ptr<TaskManager>;
+using ResourceManagerSPtr = std::shared_ptr<resource::ResourceManager>;
+
+class SwapChain;
+using SwapChainSPtr = std::shared_ptr<SwapChain>;
+
+class Renderer {
+ public:
   Renderer(const TaskManagerSPtr& task_manager,
-           const ResourceManagerSPtr& resource_manager);
+           const ResourceManagerSPtr& resource_manager)
+      : task_manager_(task_manager), resource_manager_(resource_manager) {}
 
- public:
-  ~Renderer();
+  virtual ~Renderer() = default;
 
- public:
-  void Render();
+  virtual SwapChainSPtr CreateSwapChain(const void* window) = 0;
 
- private:
-  class Impl;
-  static const Size kImplSize = 1024 * 2 + 512;
-  static const Size kImplAlignment = std::alignment_of<std::max_align_t>::value;
-  using ImplStorage = std::aligned_storage<kImplSize, kImplAlignment>::type;
-  ImplStorage impl_strage_;
-  Impl* impl_;
+  virtual void Render() = 0;
 
+ protected:
   TaskManagerSPtr task_manager_;
   ResourceManagerSPtr resource_manager_;
 };
+
+using RendererSPtr = std::shared_ptr<Renderer>;
+
+RendererSPtr CreateRenderer(GraphicsApi api,
+                            const TaskManagerSPtr& task_manager,
+                            const ResourceManagerSPtr& resource_manager);
+
 }  // namespace rendering
 }  // namespace temp

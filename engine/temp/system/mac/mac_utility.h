@@ -3,7 +3,7 @@
 namespace temp {
 namespace system {
 namespace mac {
-void* GetViewHandle(void* window_handle, bool set_metal_layer = false);
+void* GetViewHandle(const void* window_handle, bool set_metal_layer = false);
 }  // namespace mac
 }  // namespace system
 }  // namespace temp

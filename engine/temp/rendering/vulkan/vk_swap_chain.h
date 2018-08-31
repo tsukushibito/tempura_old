@@ -7,18 +7,25 @@
 
 namespace temp {
 namespace rendering {
+namespace vulkan {
 
-class SwapChain::Impl {
+class VkRenderer;
+
+class VkSwapChain : public SwapChain, public SmartPointerType<VkSwapChain> {
+  friend class SmartPointerType<VkSwapChain>;
+
+ private:
+  VkSwapChain(const vk::UniqueInstance& instance,
+              const vk::DispatchLoaderDynamic& dispatch, const void* window);
+
  public:
-  Impl(SwapChain& parent, vk::UniqueSurfaceKHR& surface);
-  ~Impl();
+  ~VkSwapChain();
 
-  void Present();
-
-  SwapChain& parent_;
+  void Present() override;
 
   vk::UniqueSurfaceKHR surface_;
 };
+}  // namespace vulkan
 }  // namespace rendering
 }  // namespace temp
 

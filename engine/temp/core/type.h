@@ -87,35 +87,36 @@ class SmartPointerType : private Uncopyable {
   using WPtr = std::weak_ptr<T>;
 
   template <typename... Args>
-  static SPtr MakeShared(Args... args) {
+  static SPtr MakeShared(Args &&... args) {
     struct Creator : public T {
-      Creator(Args... args) : T(args...) {}
+      Creator(Args &&... args) : T(args...) {}
     };
 
-    return std::make_shared<Creator>(args...);
+    return std::make_shared<Creator>(std::forward<Args>(args)...);
   }
 
   template <typename Allocator, typename... Args>
-  static SPtr AllocateShared(const Allocator &allocator, Args... args) {
+  static SPtr AllocateShared(const Allocator &allocator, Args &&... args) {
     struct Creator : public T {
-      Creator(Args... args) : T(args...) {}
+      Creator(Args &&... args) : T(args...) {}
     };
 
-    return std::allocate_shared<Creator>(allocator, args...);
+    return std::allocate_shared<Creator>(allocator,
+                                         std::forward<Args>(args)...);
   }
 
   template <typename... Args>
-  static UPtr MakeUnique(Args... args) {
+  static UPtr MakeUnique(Args &&... args) {
     struct Creator : public T {
-      Creator(Args... args) : T(args...) {}
+      Creator(Args &&... args) : T(args...) {}
     };
-    return std::unique_ptr<T>(new Creator(args...));
+    return std::unique_ptr<T>(new Creator(std::forward<Args>(args)...));
   }
 
   template <typename Allocator, typename... Args>
-  static UPtr AllocateUnique(const Allocator &allocator, Args... args) {
+  static UPtr AllocateUnique(const Allocator &allocator, Args &&... args) {
     struct Creator : public T {
-      Creator(Args... args) : T(args...) {}
+      Creator(Args &&... args) : T(args...) {}
 
       static void *operator new(std::size_t size) {
         typename Allocator::template rebind<UInt8>::other allocator;
@@ -126,7 +127,7 @@ class SmartPointerType : private Uncopyable {
         allocator.deallocate(reinterpret_cast<UInt8 *>(p), size);
       }
     };
-    return std::unique_ptr<T>(new Creator(args...));
+    return std::unique_ptr<T>(new Creator(std::forward<Args>(args)...));
   }
 
  protected:

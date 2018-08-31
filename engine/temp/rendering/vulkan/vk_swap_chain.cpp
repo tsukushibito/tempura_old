@@ -9,7 +9,7 @@
 namespace {
 vk::UniqueSurfaceKHR CreateSurface(const vk::UniqueInstance& instance,
                                    const vk::DispatchLoaderDynamic& dispatch,
-                                   void* native_window_handle) {
+                                   const void* native_window_handle) {
 #if defined(VK_USE_PLATFORM_MACOS_MVK)
   void* view_handle =
       temp::system::mac::GetViewHandle(native_window_handle, true);
@@ -26,21 +26,18 @@ vk::UniqueSurfaceKHR CreateSurface(const vk::UniqueInstance& instance,
 
 namespace temp {
 namespace rendering {
+namespace vulkan {
 
-SwapChain::Impl::Impl(SwapChain& parent, vk::UniqueSurfaceKHR& surface)
-    : parent_(parent), surface_(std::move(surface)) {}
-
-SwapChain::Impl::~Impl() {}
-
-void SwapChain::Impl::Present() {}
-
-SwapChain::SwapChain(const RendererSPtr& renderer, void* native_window_handle) {
-  auto surface =
-      CreateSurface(renderer->impl_->instance_, *(renderer->impl_->dispatch_),
-                    native_window_handle);
-  impl_ = reinterpret_cast<Impl*>(&impl_strage_);
-  new (impl_) Impl(*this, surface);
+VkSwapChain::VkSwapChain(const vk::UniqueInstance& instance,
+                         const vk::DispatchLoaderDynamic& dispatch,
+                         const void* window) {
+  surface_ = CreateSurface(instance, dispatch, window);
 }
+
+VkSwapChain::~VkSwapChain() {}
+
+void VkSwapChain::Present() {}
+}  // namespace vulkan
 }  // namespace rendering
 }  // namespace temp
 

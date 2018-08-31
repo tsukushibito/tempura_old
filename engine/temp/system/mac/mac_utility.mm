@@ -7,7 +7,7 @@ namespace temp {
 namespace system {
 namespace mac {
 
-void* GetViewHandle(void* window_handle, bool set_metal_layer) {
+void* GetViewHandle(const void* window_handle, bool set_metal_layer) {
     TEMP_ASSERT(window_handle != nullptr, "window_handle must not be nullptr!");
     NSWindow* ns_window = (__bridge NSWindow*)window_handle;
     NSView* ns_view = [ns_window contentView];

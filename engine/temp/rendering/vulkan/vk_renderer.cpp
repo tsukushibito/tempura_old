@@ -6,6 +6,7 @@
 #include "temp/rendering/vulkan/vk_swap_chain.h"
 
 namespace {
+using namespace temp::rendering::vulkan;
 
 const char* kVkRendererTag = "VkRenderer";
 const char* kAppName = "TempuraEngine";
@@ -95,7 +96,7 @@ vk::UniqueInstance CreateInstance() {
   return vk::createInstanceUnique(create_info);
 }
 
-temp::rendering::UniqueDebugUtilsMessengerEXT CreateMessenger(
+UniqueDebugUtilsMessengerEXT CreateMessenger(
     vk::UniqueInstance& instance, const vk::DispatchLoaderDynamic& loader) {
   vk::DebugUtilsMessengerCreateFlagsEXT create_flags;
   vk::DebugUtilsMessageSeverityFlagsEXT message_severity =
@@ -200,41 +201,18 @@ vk::UniqueDevice CreateDevice(const vk::PhysicalDevice& physical_device) {
 
 namespace temp {
 namespace rendering {
+namespace vulkan {
 
-Renderer::Impl::Impl(Renderer& parent, vk::UniqueInstance& instance,
-                     vk::UniqueDevice& device,
-                     UniqueDebugUtilsMessengerEXT& messenger,
-                     DispatchLoaderDynamicUPtr& dispatch)
-    : parent_(parent),
-      instance_(std::move(instance)),
-      device_(std::move(device)),
-      messenger_(std::move(messenger)),
-      dispatch_(std::move(dispatch)) {}
-
-Renderer::Impl::~Impl() {
-  messenger_.reset(nullptr);
-  device_.reset(nullptr);
-  dispatch_.reset(nullptr);
-  instance_.reset(nullptr);
-}
-
-void Renderer::Impl::Render() {}
-
-Renderer::Renderer(const TaskManagerSPtr& task_manager,
-                   const ResourceManagerSPtr& resource_manager)
-    : task_manager_(task_manager), resource_manager_(resource_manager) {
-  static_assert(sizeof(impl_strage_) >= sizeof(Impl),
-                "ImplStorage size must be greater than Impl size.");
-
+VkRenderer::VkRenderer(const TaskManagerSPtr& task_manager,
+                       const ResourceManagerSPtr& resource_manager)
+    : Renderer(task_manager, resource_manager) {
   try {
-    auto instance = CreateInstance();
-    auto dispatch = DispatchLoaderDynamicUPtr(new vk::DispatchLoaderDynamic());
-    dispatch->init(*instance);
-    auto messenger = CreateMessenger(instance, *dispatch);
-    auto physical_device = PickPhysicalDevice(instance);
-    auto device = CreateDevice(physical_device);
-    impl_ = reinterpret_cast<Impl*>(&impl_strage_);
-    new (impl_) Impl(*this, instance, device, messenger, dispatch);
+    instance_ = CreateInstance();
+    auto physical_device = PickPhysicalDevice(instance_);
+    device_ = CreateDevice(physical_device);
+    dispatch_ = DispatchLoaderDynamicUPtr(new vk::DispatchLoaderDynamic());
+    dispatch_->init(*instance_, *device_);
+    messenger_ = CreateMessenger(instance_, *dispatch_);
 
   } catch (vk::SystemError err) {
     TEMP_LOG_FATAL(kVkRendererTag,
@@ -247,10 +225,20 @@ Renderer::Renderer(const TaskManagerSPtr& task_manager,
   }
 }
 
-Renderer::~Renderer() { impl_->~Impl(); }
+VkRenderer::~VkRenderer() {
+  messenger_.reset(nullptr);
+  dispatch_.reset(nullptr);
+  device_.reset(nullptr);
+  instance_.reset(nullptr);
+}
 
-void Renderer::Render() { return impl_->Render(); }
+SwapChainSPtr VkRenderer::CreateSwapChain(const void* window) {
+  return VkSwapChain::MakeShared(instance_, *dispatch_, window);
+}
 
+void VkRenderer::Render() {}
+
+}  // namespace vulkan
 }  // namespace rendering
 }  // namespace temp
 #endif
