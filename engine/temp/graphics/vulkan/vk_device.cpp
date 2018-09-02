@@ -2,19 +2,21 @@
 #ifdef TEMP_GRAPHICS_VULKAN
 #include <new>
 #include "temp/core/core.h"
-#include "temp/rendering/vulkan/vk_renderer.h"
-#include "temp/rendering/vulkan/vk_swap_chain.h"
+#include "temp/graphics/vulkan/vk_device.h"
+#include "temp/graphics/vulkan/vk_swap_chain.h"
 
+namespace temp {
+namespace graphics {
+namespace vulkan {
 namespace {
-using namespace temp::rendering::vulkan;
 
-const char* kVkRendererTag = "VkRenderer";
+const char* kVkDeviceTag = "VkDevice";
 const char* kAppName = "TempuraEngine";
 const char* kEngineName = "Tempura";
 const std::array<const char*, 1> kValidationLayers = {
     "VK_LAYER_LUNARG_standard_validation",
 };
-const std::array<const char*, 3> kExtensions = {
+const std::array<const char*, 3> kInstanceExtensions = {
     VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
     VK_KHR_SURFACE_EXTENSION_NAME,
 #ifdef __ANDROID__
@@ -31,6 +33,9 @@ const std::array<const char*, 3> kExtensions = {
     VK_KHR_XCB_SURFACE_EXTENSION_NAME,
 #endif
 };
+const std::array<const char*, 1> kDeviceExtensions = {
+    VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+};
 
 VKAPI_ATTR VkBool32 VKAPI_CALL
 DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
@@ -38,16 +43,16 @@ DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
               const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
               void* pUserData) {
   if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT) {
-    TEMP_LOG_ERROR(kVkRendererTag, fmt::format("validation layer: {0}",
-                                               pCallbackData->pMessage));
+    TEMP_LOG_ERROR(kVkDeviceTag, fmt::format("validation layer: {0}",
+                                             pCallbackData->pMessage));
   } else if (messageSeverity >=
              VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT) {
-    TEMP_LOG_WARN(kVkRendererTag, fmt::format("validation layer: {0}",
-                                              pCallbackData->pMessage));
+    TEMP_LOG_WARN(kVkDeviceTag, fmt::format("validation layer: {0}",
+                                            pCallbackData->pMessage));
   } else if (messageSeverity >=
              VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT) {
-    TEMP_LOG_TRACE(kVkRendererTag, fmt::format("validation layer: {0}",
-                                               pCallbackData->pMessage));
+    TEMP_LOG_TRACE(kVkDeviceTag, fmt::format("validation layer: {0}",
+                                             pCallbackData->pMessage));
   }
 
   return VK_FALSE;
@@ -61,7 +66,7 @@ bool IsValidationLayerSupported() {
   for (auto layer_property : available_layers) {
     msg += String(layer_property.layerName) + "\n";
   }
-  TEMP_LOG_INFO(kVkRendererTag, msg);
+  TEMP_LOG_INFO(kVkDeviceTag, msg);
 
   for (const char* layer_name : kValidationLayers) {
     bool is_found = false;
@@ -90,8 +95,9 @@ vk::UniqueInstance CreateInstance() {
   create_info.enabledLayerCount =
       static_cast<uint32_t>(kValidationLayers.size());
   create_info.ppEnabledLayerNames = &kValidationLayers[0];
-  create_info.enabledExtensionCount = static_cast<uint32_t>(kExtensions.size());
-  create_info.ppEnabledExtensionNames = &kExtensions[0];
+  create_info.enabledExtensionCount =
+      static_cast<uint32_t>(kInstanceExtensions.size());
+  create_info.ppEnabledExtensionNames = &kInstanceExtensions[0];
 
   return vk::createInstanceUnique(create_info);
 }
@@ -169,17 +175,23 @@ vk::PhysicalDevice PickPhysicalDevice(const vk::UniqueInstance& instance) {
               return lhs.score > rhs.score;
             });
 
-  TEMP_LOG_INFO(kVkRendererTag,
+  TEMP_LOG_INFO(kVkDeviceTag,
                 std::string("physical device name: ") +
                     pds_list[0].physical_device.getProperties().deviceName);
 
   return pds_list[0].physical_device;
 }
 
-vk::UniqueDevice CreateDevice(const vk::PhysicalDevice& physical_device) {
+struct DeviceAndQueueFamilyIndex {
+  vk::UniqueDevice device;
+  UInt32 queue_family_index;
+};
+
+DeviceAndQueueFamilyIndex
+CreateVulkanDevice(const vk::PhysicalDevice& physical_device) {
   auto queue_family_properties = physical_device.getQueueFamilyProperties();
 
-  size_t gfx_queue_family_index = std::distance(
+  Size gfx_queue_family_index = std::distance(
       queue_family_properties.begin(),
       std::find_if(queue_family_properties.begin(),
                    queue_family_properties.end(),
@@ -191,54 +203,50 @@ vk::UniqueDevice CreateDevice(const vk::PhysicalDevice& physical_device) {
   float queue_priority = 0.0f;
   vk::DeviceQueueCreateInfo create_info(
       vk::DeviceQueueCreateFlags(),
-      static_cast<uint32_t>(gfx_queue_family_index), 1, &queue_priority);
+      static_cast<UInt32>(gfx_queue_family_index), 1, &queue_priority);
 
-  return physical_device.createDeviceUnique(
+  auto device = physical_device.createDeviceUnique(
       vk::DeviceCreateInfo(vk::DeviceCreateFlags(), 1, &create_info));
+
+  return DeviceAndQueueFamilyIndex{std::move(device), static_cast<UInt32>(gfx_queue_family_index)};
 }
 
 }  // namespace
 
-namespace temp {
-namespace rendering {
-namespace vulkan {
-
-VkRenderer::VkRenderer(const TaskManagerSPtr& task_manager,
-                       const ResourceManagerSPtr& resource_manager)
-    : Renderer(task_manager, resource_manager) {
+VkDevice::VkDevice() {
   try {
     instance_ = CreateInstance();
-    auto physical_device = PickPhysicalDevice(instance_);
-    device_ = CreateDevice(physical_device);
+    physical_device_ = PickPhysicalDevice(instance_);
+    auto device_and_queue_family_index = CreateVulkanDevice(physical_device_);
+    device_ = std::move(device_and_queue_family_index.device);
+    queue_family_index_ = device_and_queue_family_index.queue_family_index;
     dispatch_ = DispatchLoaderDynamicUPtr(new vk::DispatchLoaderDynamic());
     dispatch_->init(*instance_, *device_);
     messenger_ = CreateMessenger(instance_, *dispatch_);
 
   } catch (vk::SystemError err) {
-    TEMP_LOG_FATAL(kVkRendererTag,
+    TEMP_LOG_FATAL(kVkDeviceTag,
                    fmt::format("vk::SystemError: {0}", err.what()));
     exit(-1);
 
   } catch (...) {
-    TEMP_LOG_FATAL(kVkRendererTag, "unknown error");
+    TEMP_LOG_FATAL(kVkDeviceTag, "unknown error");
     exit(-1);
   }
 }
 
-VkRenderer::~VkRenderer() {
+VkDevice::~VkDevice() {
   messenger_.reset(nullptr);
   dispatch_.reset(nullptr);
   device_.reset(nullptr);
   instance_.reset(nullptr);
 }
 
-SwapChainSPtr VkRenderer::CreateSwapChain(const void* window) {
-  return VkSwapChain::MakeShared(instance_, *dispatch_, window);
+SwapChainSPtr VkDevice::CreateSwapChain(const void* window) {
+  return VkSwapChain::MakeShared(*this, window);
 }
 
-void VkRenderer::Render() {}
-
 }  // namespace vulkan
-}  // namespace rendering
+}  // namespace graphics
 }  // namespace temp
 #endif

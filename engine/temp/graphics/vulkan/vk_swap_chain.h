@@ -3,20 +3,19 @@
 #if defined(TEMP_GRAPHICS_VULKAN)
 #include <vulkan/vulkan.hpp>
 #include "temp/core/core.h"
-#include "temp/rendering/swap_chain.h"
+#include "temp/graphics/swap_chain.h"
 
 namespace temp {
-namespace rendering {
+namespace graphics {
 namespace vulkan {
 
-class VkRenderer;
+class VkDevice;
 
 class VkSwapChain : public SwapChain, public SmartPointerType<VkSwapChain> {
   friend class SmartPointerType<VkSwapChain>;
 
  private:
-  VkSwapChain(const vk::UniqueInstance& instance,
-              const vk::DispatchLoaderDynamic& dispatch, const void* window);
+  VkSwapChain(const VkDevice& device, const void* window);
 
  public:
   ~VkSwapChain();
@@ -26,7 +25,7 @@ class VkSwapChain : public SwapChain, public SmartPointerType<VkSwapChain> {
   vk::UniqueSurfaceKHR surface_;
 };
 }  // namespace vulkan
-}  // namespace rendering
+}  // namespace graphics
 }  // namespace temp
 
 #endif

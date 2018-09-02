@@ -3,10 +3,10 @@
 #if defined(TEMP_GRAPHICS_VULKAN)
 #include <utility>
 #include <vulkan/vulkan.hpp>
-#include "temp/rendering/renderer.h"
+#include "temp/graphics/device.h"
 
 namespace temp {
-namespace rendering {
+namespace graphics {
 namespace vulkan {
 
 using UniqueDebugUtilsMessengerEXT =
@@ -16,33 +16,34 @@ using UniqueSurfaceKHR =
 
 using DispatchLoaderDynamicUPtr = std::unique_ptr<vk::DispatchLoaderDynamic>;
 
-class VkRenderer : public Renderer, public SmartPointerType<VkRenderer> {
-  friend class SmartPointerType<VkRenderer>;
+class VkDevice : public Device, public SmartPointerType<VkDevice> {
+  friend class SmartPointerType<VkDevice>;
 
  private:
-  VkRenderer(const TaskManagerSPtr& task_manager,
-             const ResourceManagerSPtr& resource_manager);
+  VkDevice();
 
  public:
-  ~VkRenderer();
+  ~VkDevice();
 
   SwapChainSPtr CreateSwapChain(const void* window) override;
 
-  void Render() override;
-
   const vk::UniqueInstance& instance() const { return instance_; }
+  const vk::PhysicalDevice& physical_device() const { return physical_device_; }
+  const UInt32 queue_family_index() const { return queue_family_index_; }
   const vk::UniqueDevice& device() const { return device_; }
   const vk::DispatchLoaderDynamic& dispatch() const { return *dispatch_; }
 
  private:
   vk::UniqueInstance instance_;
+  vk::PhysicalDevice physical_device_;
+  UInt32 queue_family_index_;
   vk::UniqueDevice device_;
   UniqueDebugUtilsMessengerEXT messenger_;
   DispatchLoaderDynamicUPtr dispatch_;
 };
 
 }  // namespace vulkan
-}  // namespace rendering
+}  // namespace graphics
 }  // namespace temp
 
 #endif

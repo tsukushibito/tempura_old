@@ -2,9 +2,7 @@
 #include <memory>
 
 namespace temp {
-namespace rendering {
-
-class Renderer;
+namespace graphics {
 
 class SwapChain {
  public:
@@ -13,5 +11,5 @@ class SwapChain {
 
 using SwapChainSPtr = std::shared_ptr<SwapChain>;
 
-}  // namespace rendering
+}  // namespace graphics
 }  // namespace temp

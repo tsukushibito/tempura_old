@@ -89,7 +89,7 @@ class SmartPointerType : private Uncopyable {
   template <typename... Args>
   static SPtr MakeShared(Args &&... args) {
     struct Creator : public T {
-      Creator(Args &&... args) : T(args...) {}
+      Creator(Args &&... args) : T(std::forward<Args>(args)...) {}
     };
 
     return std::make_shared<Creator>(std::forward<Args>(args)...);
@@ -98,7 +98,7 @@ class SmartPointerType : private Uncopyable {
   template <typename Allocator, typename... Args>
   static SPtr AllocateShared(const Allocator &allocator, Args &&... args) {
     struct Creator : public T {
-      Creator(Args &&... args) : T(args...) {}
+      Creator(Args &&... args) : T(std::forward<Args>(args)...) {}
     };
 
     return std::allocate_shared<Creator>(allocator,
@@ -108,7 +108,7 @@ class SmartPointerType : private Uncopyable {
   template <typename... Args>
   static UPtr MakeUnique(Args &&... args) {
     struct Creator : public T {
-      Creator(Args &&... args) : T(args...) {}
+      Creator(Args &&... args) : T(std::forward<Args>(args)...) {}
     };
     return std::unique_ptr<T>(new Creator(std::forward<Args>(args)...));
   }
@@ -116,7 +116,7 @@ class SmartPointerType : private Uncopyable {
   template <typename Allocator, typename... Args>
   static UPtr AllocateUnique(const Allocator &allocator, Args &&... args) {
     struct Creator : public T {
-      Creator(Args &&... args) : T(args...) {}
+      Creator(Args &&... args) : T(std::forward<Args>(args)...) {}
 
       static void *operator new(std::size_t size) {
         typename Allocator::template rebind<UInt8>::other allocator;
