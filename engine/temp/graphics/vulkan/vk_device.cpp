@@ -187,8 +187,8 @@ struct DeviceAndQueueFamilyIndex {
   UInt32 queue_family_index;
 };
 
-DeviceAndQueueFamilyIndex
-CreateVulkanDevice(const vk::PhysicalDevice& physical_device) {
+DeviceAndQueueFamilyIndex CreateVulkanDevice(
+    const vk::PhysicalDevice& physical_device) {
   auto queue_family_properties = physical_device.getQueueFamilyProperties();
 
   Size gfx_queue_family_index = std::distance(
@@ -202,18 +202,19 @@ CreateVulkanDevice(const vk::PhysicalDevice& physical_device) {
 
   float queue_priority = 0.0f;
   vk::DeviceQueueCreateInfo create_info(
-      vk::DeviceQueueCreateFlags(),
-      static_cast<UInt32>(gfx_queue_family_index), 1, &queue_priority);
+      vk::DeviceQueueCreateFlags(), static_cast<UInt32>(gfx_queue_family_index),
+      1, &queue_priority);
 
   auto device = physical_device.createDeviceUnique(
       vk::DeviceCreateInfo(vk::DeviceCreateFlags(), 1, &create_info));
 
-  return DeviceAndQueueFamilyIndex{std::move(device), static_cast<UInt32>(gfx_queue_family_index)};
+  return DeviceAndQueueFamilyIndex{std::move(device),
+                                   static_cast<UInt32>(gfx_queue_family_index)};
 }
 
 }  // namespace
 
-VkDevice::VkDevice() {
+VkDevice::VkDevice(const void* default_window) {
   try {
     instance_ = CreateInstance();
     physical_device_ = PickPhysicalDevice(instance_);
@@ -223,6 +224,8 @@ VkDevice::VkDevice() {
     dispatch_ = DispatchLoaderDynamicUPtr(new vk::DispatchLoaderDynamic());
     dispatch_->init(*instance_, *device_);
     messenger_ = CreateMessenger(instance_, *dispatch_);
+
+    default_swap_chain_ = CreateSwapChain(default_window);
 
   } catch (vk::SystemError err) {
     TEMP_LOG_FATAL(kVkDeviceTag,
@@ -236,6 +239,8 @@ VkDevice::VkDevice() {
 }
 
 VkDevice::~VkDevice() {
+  default_swap_chain_.reset();
+
   messenger_.reset(nullptr);
   dispatch_.reset(nullptr);
   device_.reset(nullptr);

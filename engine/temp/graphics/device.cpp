@@ -6,11 +6,11 @@
 
 namespace temp {
 namespace graphics {
-DeviceSPtr CreateDevice(GraphicsApi api) {
+DeviceSPtr CreateDevice(GraphicsApi api, const void* default_window) {
   switch (api) {
     case GraphicsApi::kVulkan:
 #if defined(TEMP_GRAPHICS_VULKAN)
-      return vulkan::VkDevice::MakeShared();
+      return vulkan::VkDevice::MakeShared(default_window);
 #else
       return nullptr;
 #endif

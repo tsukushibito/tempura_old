@@ -11,7 +11,8 @@ int main(int argc, char* argv[]) {
     auto load_task_manager = TaskManager::MakeShared("LoadTaskManager", 1);
     auto resource_manager =
         resource::ResourceManager::MakeShared(load_task_manager, "./");
-    auto device = graphics::CreateDevice(graphics::GraphicsApi::kVulkan);
+    auto device = graphics::CreateDevice(graphics::GraphicsApi::kVulkan,
+                                         app->native_window_handle());
 
     app->on_initialize() = []() {};
     app->on_update() = []() {};
