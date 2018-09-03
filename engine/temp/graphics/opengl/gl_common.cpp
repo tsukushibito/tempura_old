@@ -1,9 +1,9 @@
-﻿#include "temp/graphics/opengl/gl_common.h"
+#include "temp/graphics/opengl/gl_common.h"
 #if defined(TEMP_GRAPHICS_OPENGL)
 #include "temp/core/core.h"
 
 #if defined(TEMP_PLATFORM_MAC)
-#include "temp/graphics/opengl/mac/mac_opengl.h"
+#include "temp/graphics/opengl/mac/gl_mac.h"
 #elif defined(TEMP_PLATFORM_WINDOWS)
 #include "temp/graphics/opengl/windows/gl_windows.h"
 #elif defined(TEMP_PLATFORM_LINUX)
@@ -47,7 +47,7 @@ void DeleteContext(OpenGLContextHandle context) {
 
 void MakeCurrent(const void* window, OpenGLContextHandle context) {
 #if defined(TEMP_PLATFORM_MAC)
-  return mac::MakeCurrent(window_handle, context);
+  return mac::MakeCurrent(window, context);
 #elif defined(TEMP_PLATFORM_WINDOWS)
   return windows::MakeCurrent(window, context);
 #elif defined(TEMP_PLATFORM_LINUX)

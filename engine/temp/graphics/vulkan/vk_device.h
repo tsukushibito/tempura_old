@@ -16,6 +16,11 @@ using UniqueSurfaceKHR =
 
 using DispatchLoaderDynamicUPtr = std::unique_ptr<vk::DispatchLoaderDynamic>;
 
+struct QueueFamilyIndices {
+  UInt32 graphics_family = (UInt32)-1;
+  UInt32 present_family = (UInt32)-1;
+};
+
 class VkDevice : public Device, public SmartPointerType<VkDevice> {
   friend class SmartPointerType<VkDevice>;
 
@@ -31,14 +36,16 @@ class VkDevice : public Device, public SmartPointerType<VkDevice> {
 
   const vk::UniqueInstance& instance() const { return instance_; }
   const vk::PhysicalDevice& physical_device() const { return physical_device_; }
-  const UInt32 queue_family_index() const { return queue_family_index_; }
+  const QueueFamilyIndices queue_family_indices() const {
+    return queue_family_indices_;
+  }
   const vk::UniqueDevice& device() const { return device_; }
   const vk::DispatchLoaderDynamic& dispatch() const { return *dispatch_; }
 
  private:
   vk::UniqueInstance instance_;
   vk::PhysicalDevice physical_device_;
-  UInt32 queue_family_index_;
+  QueueFamilyIndices queue_family_indices_;
   vk::UniqueDevice device_;
   UniqueDebugUtilsMessengerEXT messenger_;
   DispatchLoaderDynamicUPtr dispatch_;

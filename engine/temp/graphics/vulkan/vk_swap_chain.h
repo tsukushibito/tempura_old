@@ -10,6 +10,10 @@ namespace graphics {
 namespace vulkan {
 
 class VkDevice;
+using UniqueSurfaceKHR =
+    vk::UniqueHandle<vk::SurfaceKHR, vk::DispatchLoaderDynamic>;
+using UniqueSwapchainKHR =
+    vk::UniqueHandle<vk::SwapchainKHR, vk::DispatchLoaderDynamic>;
 
 class VkSwapChain : public SwapChain, public SmartPointerType<VkSwapChain> {
   friend class SmartPointerType<VkSwapChain>;
@@ -22,7 +26,8 @@ class VkSwapChain : public SwapChain, public SmartPointerType<VkSwapChain> {
 
   void Present() override;
 
-  vk::UniqueSurfaceKHR surface_;
+  UniqueSurfaceKHR surface_;
+  UniqueSwapchainKHR swapchain_;
 };
 }  // namespace vulkan
 }  // namespace graphics
