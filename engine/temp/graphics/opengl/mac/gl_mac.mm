@@ -46,7 +46,7 @@ OpenGLContextHandle CreateContext(const void*        window,
 
     // コンテキストの作成
     NSOpenGLContext* context =
-        [[NSOpenGLContext alloc] initWithFormat:pixelFormat shareContext:share];
+        [[NSOpenGLContext alloc] initWithFormat:pixel_format shareContext:share];
 
     NSView* ns_view = [ns_window contentView];
     [context setView:ns_view];
@@ -94,7 +94,7 @@ OpenGLContextHandle CreateSharedContext(OpenGLContextHandle shared_context) {
     NSOpenGLContext* context = (__bridge NSOpenGLContext*)shared_context;
     NSView* ns_view          = [context view];
     NSWindow* ns_window      = [ns_view window];
-    return createContext(ns_window, shared_context);
+    return CreateContext(ns_window, shared_context);
 }
 }
 }

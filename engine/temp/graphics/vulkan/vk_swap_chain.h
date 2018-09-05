@@ -26,6 +26,8 @@ class VkSwapChain : public SwapChain, public SmartPointerType<VkSwapChain> {
 
   void Present() override;
 
+  GraphicsApi graphics_api() const override { return GraphicsApi::kVulkan; }
+
   UniqueSurfaceKHR surface_;
   UniqueSwapchainKHR swapchain_;
 };

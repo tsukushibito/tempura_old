@@ -9,9 +9,11 @@ GlDevice::GlDevice(const void* default_window) {
 
 GlDevice::~GlDevice() { DeleteContext(context_); }
 
-SwapChainSPtr GlDevice::CreateSwapChain(const void* window) { return nullptr; }
+SwapChainSPtr GlDevice::CreateSwapChain(const void* window) const {
+  return nullptr;
+}
 
-SwapChainSPtr GlDevice::default_swap_chain() { return nullptr; }
+SwapChainSPtr GlDevice::default_swap_chain() const { return nullptr; }
 }  // namespace opengl
 }  // namespace graphics
 }  // namespace temp

@@ -17,9 +17,11 @@ class GlDevice : public Device, public SmartPointerType<GlDevice> {
  public:
   ~GlDevice();
 
-  SwapChainSPtr CreateSwapChain(const void* window) override;
+  SwapChainSPtr CreateSwapChain(const void* window) const override;
 
-  SwapChainSPtr default_swap_chain() override;
+  SwapChainSPtr default_swap_chain() const override;
+
+  GraphicsApi graphics_api() const override { return GraphicsApi::kOpenGl; }
 
  private:
   OpenGLContextHandle context_;

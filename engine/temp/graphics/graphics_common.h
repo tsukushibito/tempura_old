@@ -7,14 +7,13 @@
 namespace temp {
 namespace graphics {
 
-using ByteData = Vector<Int8>;
+using ByteData = Vector<UInt8>;
 
-enum class GraphicsAPI {
-  kOpenGL,
+enum class GraphicsApi {
+  kOpenGl,
   kVulkan,
-  kD3D11,
-  kD3D12,
-  kMetal,
+  kD3d11,
+  kD3d12,
 };
 
 enum class RenderTargetFormat {
@@ -46,7 +45,7 @@ struct IndexBufferDesc {
 };
 
 template <typename T = IndexBufferFormat>
-Size indexBufferFormatSize(IndexBufferFormat format) {
+Size IndexBufferFormatSize(IndexBufferFormat format) {
   switch (format) {
     case IndexBufferFormat::kUInt16:
       return 2;

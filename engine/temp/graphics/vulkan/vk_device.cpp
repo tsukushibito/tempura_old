@@ -252,7 +252,7 @@ VkDevice::~VkDevice() {
   instance_.reset(nullptr);
 }
 
-SwapChainSPtr VkDevice::CreateSwapChain(const void* window) {
+SwapChainSPtr VkDevice::CreateSwapChain(const void* window) const {
   return VkSwapChain::MakeShared(*this, window);
 }
 

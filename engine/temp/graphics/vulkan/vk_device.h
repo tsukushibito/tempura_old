@@ -30,9 +30,13 @@ class VkDevice : public Device, public SmartPointerType<VkDevice> {
  public:
   ~VkDevice();
 
-  SwapChainSPtr CreateSwapChain(const void* window) override;
+  SwapChainSPtr CreateSwapChain(const void* window) const override;
 
-  SwapChainSPtr default_swap_chain() override { return default_swap_chain_; }
+  SwapChainSPtr default_swap_chain() const override {
+    return default_swap_chain_;
+  }
+
+  GraphicsApi graphics_api() const override { return GraphicsApi::kVulkan; }
 
   const vk::UniqueInstance& instance() const { return instance_; }
   const vk::PhysicalDevice& physical_device() const { return physical_device_; }

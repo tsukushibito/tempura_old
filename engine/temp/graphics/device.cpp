@@ -1,5 +1,7 @@
-#include "temp/graphics/device.h"
 #include "temp/core/core.h"
+
+#include "temp/graphics/device.h"
+
 #if defined(TEMP_GRAPHICS_VULKAN)
 #include "temp/graphics/vulkan/vk_device.h"
 #endif

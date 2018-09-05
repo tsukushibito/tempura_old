@@ -7,16 +7,12 @@
 namespace temp {
 namespace graphics {
 
-class SwapChain {
+class VertexShader {
  public:
-  virtual ~SwapChain() = default;
-
-  virtual void Present() = 0;
+  virtual ~VertexShader() = default;
 
   virtual GraphicsApi graphics_api() const = 0;
 };
-
-using SwapChainSPtr = std::shared_ptr<SwapChain>;
 
 }  // namespace graphics
 }  // namespace temp
