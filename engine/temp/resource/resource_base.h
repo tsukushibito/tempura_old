@@ -1,10 +1,8 @@
 #pragma once
-#include <mutex>
 #include <functional>
+#include <mutex>
 #include <utility>
-#include "temp/core/type.h"
-#include "temp/core/container.h"
-#include "temp/core/filesystem.h"
+#include "temp/core/core.h"
 
 namespace temp {
 namespace resource {
@@ -37,9 +35,29 @@ struct ResourceIdHash {
   }
 };
 
-using ByteData = Vector<Int8>;
+using ByteData = Vector<UInt8>;
 
 class ResourceManager;
+
+template <typename T>
+class ResourcePointer : private Uncopyable {
+  friend class ResourceManager;
+
+ public:
+  using UPtr = std::unique_ptr<T>;
+  using SPtr = std::shared_ptr<T>;
+  using WPtr = std::weak_ptr<T>;
+
+ private:
+  template <typename... Args>
+  static SPtr MakeShared(Args&&... args) {
+    struct Creator : public T {
+      Creator(Args&&... args) : T(std::forward<Args>(args)...) {}
+    };
+
+    return std::make_shared<Creator>(std::forward<Args>(args)...);
+  }
+};
 
 class ResourceBase {
  public:
@@ -47,7 +65,8 @@ class ResourceBase {
   using SPtr = std::shared_ptr<ResourceBase>;
   using WPtr = std::weak_ptr<ResourceBase>;
 
-  ResourceBase(const filesystem::path& path, ResourceManager* manager,
+  ResourceBase(const std::string& type_name, const filesystem::path& path,
+               ResourceManager* manager,
                std::function<void(const ResourceId&)> on_destroy);
 
   virtual ~ResourceBase();
@@ -58,18 +77,18 @@ class ResourceBase {
 
   void Save();
 
-  auto manager() -> ResourceManager* const { return manager_; }
+  const ResourceManager& manager() const { return *manager_; }
 
-  auto id() -> ResourceId const { return id_; }
-  auto path() -> filesystem::path const { return path_; }
-  auto state() -> ResourceState const { return state_; }
+  const ResourceId& id() const { return id_; }
+  const filesystem::path& path() const { return path_; }
+  const ResourceState& state() const { return state_; }
 
  private:
   void LoadImpl(Bool is_reload);
 
   void ExecTaskInLoadThreadSync(std::function<void(void)> task);
 
-  virtual ByteData Serialize() = 0;
+  virtual ByteData Serialize() const = 0;
   virtual void Deserialize(const ByteData&) = 0;
 
  private:

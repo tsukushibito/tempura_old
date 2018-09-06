@@ -8,14 +8,15 @@
 namespace temp {
 namespace resource {
 
-ResourceBase::ResourceBase(const filesystem::path& path,
+ResourceBase::ResourceBase(const std::string& type_name,
+                           const filesystem::path& path,
                            ResourceManager* manager,
                            std::function<void(const ResourceId&)> on_destroy)
     : manager_(manager),
       path_(path),
       state_(ResourceState::kNotLoaded),
       on_destroy_(on_destroy) {
-  id_ = manager->ResourceIdFromPath(path_);
+  id_ = manager->ResourceIdFromTypeNameAndPath(type_name, path_);
 }
 
 ResourceBase::~ResourceBase() { on_destroy_(id_); }

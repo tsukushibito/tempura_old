@@ -9,9 +9,12 @@ namespace {
 const Char* kResourceManagerTag = "ResourceManager";
 }
 
-ResourceManager::ResourceManager(const TaskManager::SPtr& task_manager,
-                                 const filesystem::path& resource_root)
-    : task_manager_(task_manager), resource_root_(resource_root) {
+ResourceManager::ResourceManager(const filesystem::path& resource_root,
+                                 const TaskManager::SPtr& task_manager,
+                                 const graphics::DeviceSPtr& graphics_device)
+    : resource_root_(resource_root),
+      task_manager_(task_manager),
+      graphics_device_(graphics_device) {
   resource_root_ = filesystem::absolute(resource_root_);
   resource_root_ = filesystem::canonical(resource_root_);
 }
@@ -22,8 +25,11 @@ ResourceManager::~ResourceManager() {
                  fmt::format("unloaded resource count {0}", size));
 }
 
-ResourceId ResourceManager::ResourceIdFromPath(const filesystem::path& path) {
-  auto hash = std::hash<std::string>{}(path.string());
+ResourceId ResourceManager::ResourceIdFromTypeNameAndPath(
+    const std::string& type_name, const filesystem::path& path) {
+  auto type_hash = std::hash<std::string>{}(type_name);
+  auto path_hash = std::hash<std::string>{}(path.string());
+  auto hash = path_hash ^ (type_hash << 1);
 
   auto&& path_list = hash_to_path_table_[hash];
 

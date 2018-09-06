@@ -3,7 +3,7 @@
 #if defined(TEMP_GRAPHICS_VULKAN)
 #include <vulkan/vulkan.hpp>
 #include "temp/core/core.h"
-#include "temp/graphics/vertex_shader.h"
+#include "temp/graphics/fragment_shader.h"
 
 namespace temp {
 namespace graphics {
@@ -11,15 +11,15 @@ namespace vulkan {
 
 class VkDevice;
 
-class VkVertexShader : public VertexShader,
-                       public SmartPointerType<VkVertexShader> {
-  friend class SmartPointerType<VkVertexShader>;
+class VkFragmentShader : public FragmentShader,
+                         public SmartPointerType<VkFragmentShader> {
+  friend class SmartPointerType<VkFragmentShader>;
 
  private:
-  VkVertexShader(const VkDevice& device, const ByteData& code);
+  VkFragmentShader(const VkDevice& device, const ByteData& code);
 
  public:
-  ~VkVertexShader();
+  ~VkFragmentShader();
 
   GraphicsApi graphics_api() const override { return GraphicsApi::kVulkan; }
 

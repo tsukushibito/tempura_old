@@ -10,6 +10,12 @@ namespace graphics {
 class SwapChain;
 using SwapChainSPtr = std::shared_ptr<SwapChain>;
 
+class VertexShader;
+using VertexShaderSPtr = std::shared_ptr<VertexShader>;
+
+class FragmentShader;
+using FragmentShaderSPtr = std::shared_ptr<FragmentShader>;
+
 class Device {
  public:
   Device() {}
@@ -17,6 +23,12 @@ class Device {
   virtual ~Device() = default;
 
   virtual SwapChainSPtr CreateSwapChain(const void* window) const = 0;
+
+  virtual VertexShaderSPtr CreateVertexShader(
+      const ByteData& byte_data) const = 0;
+
+  virtual FragmentShaderSPtr CreateFragmentShader(
+      const ByteData& byte_data) const = 0;
 
   virtual SwapChainSPtr default_swap_chain() const = 0;
 

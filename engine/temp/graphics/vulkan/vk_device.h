@@ -32,6 +32,11 @@ class VkDevice : public Device, public SmartPointerType<VkDevice> {
 
   SwapChainSPtr CreateSwapChain(const void* window) const override;
 
+  VertexShaderSPtr CreateVertexShader(const ByteData& byte_data) const override;
+
+  FragmentShaderSPtr CreateFragmentShader(
+      const ByteData& byte_data) const override;
+
   SwapChainSPtr default_swap_chain() const override {
     return default_swap_chain_;
   }

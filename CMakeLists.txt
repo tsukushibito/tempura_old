@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
+enable_testing()
 
 project(tempura)
 
@@ -18,3 +19,5 @@ endfunction(add_source_group)
 add_subdirectory(engine)
 add_subdirectory(application)
 add_subdirectory(test)
+
+add_test( NAME engine_test COMMAND $<TARGET_FILE:temp_test>)

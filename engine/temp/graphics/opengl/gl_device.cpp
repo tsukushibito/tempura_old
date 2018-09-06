@@ -13,6 +13,15 @@ SwapChainSPtr GlDevice::CreateSwapChain(const void* window) const {
   return nullptr;
 }
 
+VertexShaderSPtr GlDevice::CreateVertexShader(const ByteData& byte_data) const {
+  return nullptr;
+}
+
+FragmentShaderSPtr GlDevice::CreateFragmentShader(
+    const ByteData& byte_data) const {
+  return nullptr;
+}
+
 SwapChainSPtr GlDevice::default_swap_chain() const { return nullptr; }
 }  // namespace opengl
 }  // namespace graphics

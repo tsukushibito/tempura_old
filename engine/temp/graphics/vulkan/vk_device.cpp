@@ -3,7 +3,9 @@
 #include <new>
 #include "temp/core/core.h"
 #include "temp/graphics/vulkan/vk_device.h"
+#include "temp/graphics/vulkan/vk_fragment_shader.h"
 #include "temp/graphics/vulkan/vk_swap_chain.h"
+#include "temp/graphics/vulkan/vk_vertex_shader.h"
 
 namespace temp {
 namespace graphics {
@@ -43,16 +45,16 @@ DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
               const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
               void* pUserData) {
   if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT) {
-    TEMP_LOG_ERROR(kVkDeviceTag, fmt::format("validation layer: {0}",
-                                             pCallbackData->pMessage));
+    TEMP_LOG_ERROR(kVkDeviceTag,
+                   fmt::format("Vulkan: {0}", pCallbackData->pMessage));
   } else if (messageSeverity >=
              VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT) {
-    TEMP_LOG_WARN(kVkDeviceTag, fmt::format("validation layer: {0}",
-                                            pCallbackData->pMessage));
+    TEMP_LOG_WARN(kVkDeviceTag,
+                  fmt::format("Vulkan: {0}", pCallbackData->pMessage));
   } else if (messageSeverity >=
              VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT) {
-    TEMP_LOG_TRACE(kVkDeviceTag, fmt::format("validation layer: {0}",
-                                             pCallbackData->pMessage));
+    TEMP_LOG_TRACE(kVkDeviceTag,
+                   fmt::format("Vulkan: {0}", pCallbackData->pMessage));
   }
 
   return VK_FALSE;
@@ -107,6 +109,7 @@ UniqueDebugUtilsMessengerEXT CreateMessenger(
   vk::DebugUtilsMessengerCreateFlagsEXT create_flags;
   vk::DebugUtilsMessageSeverityFlagsEXT message_severity =
       vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose |
+      vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo |
       vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning |
       vk::DebugUtilsMessageSeverityFlagBitsEXT::eError;
   vk::DebugUtilsMessageTypeFlagsEXT message_type =
@@ -254,6 +257,15 @@ VkDevice::~VkDevice() {
 
 SwapChainSPtr VkDevice::CreateSwapChain(const void* window) const {
   return VkSwapChain::MakeShared(*this, window);
+}
+
+VertexShaderSPtr VkDevice::CreateVertexShader(const ByteData& byte_data) const {
+  return VkVertexShader::MakeShared(*this, byte_data);
+}
+
+FragmentShaderSPtr VkDevice::CreateFragmentShader(
+    const ByteData& byte_data) const {
+  return VkFragmentShader::MakeShared(*this, byte_data);
 }
 
 }  // namespace vulkan

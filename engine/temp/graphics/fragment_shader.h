@@ -7,14 +7,14 @@
 namespace temp {
 namespace graphics {
 
-class VertexShader {
+class FragmentShader {
  public:
-  virtual ~VertexShader() = default;
+  virtual ~FragmentShader() = default;
 
   virtual GraphicsApi graphics_api() const = 0;
 };
 
-using VertexShaderSPtr = std::shared_ptr<VertexShader>;
+using FragmentShaderSPtr = std::shared_ptr<FragmentShader>;
 
 }  // namespace graphics
 }  // namespace temp

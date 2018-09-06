@@ -19,6 +19,11 @@ class GlDevice : public Device, public SmartPointerType<GlDevice> {
 
   SwapChainSPtr CreateSwapChain(const void* window) const override;
 
+  VertexShaderSPtr CreateVertexShader(const ByteData& byte_data) const override;
+
+  FragmentShaderSPtr CreateFragmentShader(
+      const ByteData& byte_data) const override;
+
   SwapChainSPtr default_swap_chain() const override;
 
   GraphicsApi graphics_api() const override { return GraphicsApi::kOpenGl; }
