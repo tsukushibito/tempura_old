@@ -5,6 +5,14 @@
 #if defined(TEMP_PLATFORM_MAC)
 #include "temp/system/mac/mac_utility.h"
 #endif
+#if defined(TEMP_PLATFORM_WINDOWS)
+#if defined(max)
+#undef max
+#endif
+#if defined(min)
+#undef min
+#endif
+#endif
 
 namespace {
 const char* kVkSwapChainTag = "kVkSwapChain";
@@ -20,6 +28,12 @@ temp::graphics::vulkan::UniqueSurfaceKHR CreateSurface(
   surface =
       instance->createMacOSSurfaceMVKUnique(create_info, nullptr, dispatch);
 #elif defined(VK_USE_PLATFORM_WIN32_KHR)
+  HWND hwnd = reinterpret_cast<HWND>(const_cast<void*>(window));
+  HINSTANCE hinstance = GetModuleHandle(NULL);
+  vk::Win32SurfaceCreateInfoKHR create_info;
+  create_info.hwnd = hwnd;
+  create_info.hinstance = hinstance;
+  surface = instance->createWin32SurfaceKHRUnique(create_info, nullptr, dispatch);
 #elif defined(__ANDROID__)
 #elif defined(VK_USE_PLATFORM_WAYLAND_KHR)
 #else

@@ -23,7 +23,6 @@ class WindowsApplication : public ApplicationBase,
  private:
   void Init();
   void Term();
-  void MainLoop();
 
 };
 }  // namespace windows

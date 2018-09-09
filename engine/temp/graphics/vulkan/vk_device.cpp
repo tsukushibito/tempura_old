@@ -44,6 +44,8 @@ DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
               VkDebugUtilsMessageTypeFlagsEXT messageType,
               const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
               void* pUserData) {
+  (void)messageType;
+  (void)pUserData;
   if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT) {
     TEMP_LOG_ERROR(kVkDeviceTag,
                    fmt::format("Vulkan: {0}", pCallbackData->pMessage));
@@ -210,7 +212,7 @@ DeviceAndQueueFamilyIndex CreateVulkanDevice(
 
   vk::DeviceCreateInfo create_info(
       vk::DeviceCreateFlags(), 1, &queue_create_info, 0, nullptr,
-      kDeviceExtensions.size(), &kDeviceExtensions[0]);
+      static_cast<UInt32>(kDeviceExtensions.size()), &kDeviceExtensions[0]);
 
   auto device =
       physical_device.createDeviceUnique(vk::DeviceCreateInfo(create_info));

@@ -1,4 +1,4 @@
-#include "temp/graphics/opengl/gl_common.h"
+﻿#include "temp/graphics/opengl/gl_common.h"
 #if defined(TEMP_GRAPHICS_OPENGL)
 #include "temp/core/core.h"
 

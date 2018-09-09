@@ -23,15 +23,16 @@ LRESULT CALLBACK wndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 }  // namespace
 
 WindowsApplication::WindowsApplication() {
+  Init();
   TEMP_LOG_TRACE(kWinAppTag, "created");
 }
 
 WindowsApplication::~WindowsApplication() {
+  Term();
   TEMP_LOG_TRACE(kWinAppTag, "destroied");
 }
 
 Int32 WindowsApplication::Run() {
-  Init();
   on_initialize_();
 
   MSG msg;
@@ -50,7 +51,6 @@ Int32 WindowsApplication::Run() {
   }
 
   on_terminate_();
-  Term();
 
   return static_cast<Int32>(msg.wParam);
 }
