@@ -15,10 +15,10 @@ namespace {
 const char* kVkDeviceTag = "VkDevice";
 const char* kAppName = "TempuraEngine";
 const char* kEngineName = "Tempura";
-const std::array<const char*, 1> kValidationLayers = {
+const std::array<const char*, 1> kValidationLayers = {{
     "VK_LAYER_LUNARG_standard_validation",
-};
-const std::array<const char*, 3> kInstanceExtensions = {
+}};
+const std::array<const char*, 3> kInstanceExtensions = {{
     VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
     VK_KHR_SURFACE_EXTENSION_NAME,
 #ifdef __ANDROID__
@@ -34,10 +34,10 @@ const std::array<const char*, 3> kInstanceExtensions = {
 #else
     VK_KHR_XCB_SURFACE_EXTENSION_NAME,
 #endif
-};
-const std::array<const char*, 1> kDeviceExtensions = {
+}};
+const std::array<const char*, 1> kDeviceExtensions = {{
     VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-};
+}};
 
 VKAPI_ATTR VkBool32 VKAPI_CALL
 DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,

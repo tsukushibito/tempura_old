@@ -30,6 +30,12 @@ class VkSwapChain : public SwapChain, public SmartPointerType<VkSwapChain> {
 
   UniqueSurfaceKHR surface_;
   UniqueSwapchainKHR swapchain_;
+  vk::SurfaceFormatKHR format_;
+  vk::Extent2D extent_;
+  vk::PresentModeKHR present_mode_;
+
+  std::vector<vk::Image> images_;
+  std::vector<vk::UniqueImageView> image_views_;
 };
 }  // namespace vulkan
 }  // namespace graphics

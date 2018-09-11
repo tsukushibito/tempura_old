@@ -33,7 +33,8 @@ temp::graphics::vulkan::UniqueSurfaceKHR CreateSurface(
   vk::Win32SurfaceCreateInfoKHR create_info;
   create_info.hwnd = hwnd;
   create_info.hinstance = hinstance;
-  surface = instance->createWin32SurfaceKHRUnique(create_info, nullptr, dispatch);
+  surface =
+      instance->createWin32SurfaceKHRUnique(create_info, nullptr, dispatch);
 #elif defined(__ANDROID__)
 #elif defined(VK_USE_PLATFORM_WAYLAND_KHR)
 #else
@@ -42,7 +43,10 @@ temp::graphics::vulkan::UniqueSurfaceKHR CreateSurface(
 }
 
 vk::SurfaceFormatKHR ChooseFormat(
-    const std::vector<vk::SurfaceFormatKHR>& formats) {
+    const vk::PhysicalDevice& physical_device,
+    const temp::graphics::vulkan::UniqueSurfaceKHR& surface) {
+  auto formats = physical_device.getSurfaceFormatsKHR(*surface);
+
   if (formats.size() == 1 && formats[0].format == vk::Format::eUndefined) {
     return {vk::Format::eB8G8R8A8Unorm, vk::ColorSpaceKHR::eSrgbNonlinear};
   }
@@ -55,7 +59,10 @@ vk::SurfaceFormatKHR ChooseFormat(
   return formats[0];
 }
 
-vk::Extent2D ChooseExtent(const vk::SurfaceCapabilitiesKHR& capabilities) {
+vk::Extent2D ChooseExtent(
+    const vk::PhysicalDevice& physical_device,
+    const temp::graphics::vulkan::UniqueSurfaceKHR& surface) {
+  auto capabilities = physical_device.getSurfaceCapabilitiesKHR(*surface);
   if (capabilities.currentExtent.width !=
       std::numeric_limits<uint32_t>::max()) {
     return capabilities.currentExtent;
@@ -74,7 +81,9 @@ vk::Extent2D ChooseExtent(const vk::SurfaceCapabilitiesKHR& capabilities) {
 }
 
 vk::PresentModeKHR ChoosePresentMode(
-    const std::vector<vk::PresentModeKHR>& present_modes) {
+    const vk::PhysicalDevice& physical_device,
+    const temp::graphics::vulkan::UniqueSurfaceKHR& surface) {
+  auto present_modes = physical_device.getSurfacePresentModesKHR(*surface);
   vk::PresentModeKHR mode = vk::PresentModeKHR::eImmediate;
   for (const auto& present_mode : present_modes) {
     if (present_mode == vk::PresentModeKHR::eMailbox) {
@@ -90,18 +99,12 @@ vk::PresentModeKHR ChoosePresentMode(
 }
 
 temp::graphics::vulkan::UniqueSwapchainKHR CreateSwapChain(
-    const vk::PhysicalDevice& physical_device, const vk::UniqueDevice& device,
-    temp::UInt32 queue_family_index,
+    const vk::UniqueDevice& device,
     const temp::graphics::vulkan::UniqueSurfaceKHR& surface,
+    vk::SurfaceFormatKHR format, vk::Extent2D extent,
+    const vk::SurfaceCapabilitiesKHR& capabilities,
+    vk::PresentModeKHR present_mode,
     const vk::DispatchLoaderDynamic& dispatch) {
-  auto capabilities = physical_device.getSurfaceCapabilitiesKHR(*surface);
-  auto formats = physical_device.getSurfaceFormatsKHR(*surface);
-  auto present_modes = physical_device.getSurfacePresentModesKHR(*surface);
-
-  auto format = ChooseFormat(formats);
-  auto extent = ChooseExtent(capabilities);
-  auto present_mode = ChoosePresentMode(present_modes);
-
   vk::SwapchainCreateInfoKHR create_info;
   create_info.surface = *surface;
   create_info.minImageCount = capabilities.maxImageCount;
@@ -121,6 +124,30 @@ temp::graphics::vulkan::UniqueSwapchainKHR CreateSwapChain(
 
   return device->createSwapchainKHRUnique(create_info, nullptr, dispatch);
 }
+
+std::vector<vk::UniqueImageView> CreateImageViews(
+    const vk::UniqueDevice& device, const std::vector<vk::Image>& images,
+    vk::Format format) {
+  std::vector<vk::UniqueImageView> image_views;
+  for (auto&& image : images) {
+    vk::ImageViewCreateInfo create_info;
+    create_info.image = image;
+    create_info.viewType = vk::ImageViewType::e2D;
+    create_info.format = format;
+    create_info.components.r = vk::ComponentSwizzle::eIdentity;
+    create_info.components.g = vk::ComponentSwizzle::eIdentity;
+    create_info.components.b = vk::ComponentSwizzle::eIdentity;
+    create_info.components.a = vk::ComponentSwizzle::eIdentity;
+    create_info.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
+    create_info.subresourceRange.baseMipLevel = 0;
+    create_info.subresourceRange.levelCount = 1;
+    create_info.subresourceRange.baseArrayLayer = 0;
+    create_info.subresourceRange.layerCount = 1;
+    image_views.emplace_back(device->createImageViewUnique(create_info));
+  }
+
+  return image_views;
+}
 }  // namespace
 
 namespace temp {
@@ -135,9 +162,19 @@ VkSwapChain::VkSwapChain(const VkDevice& device, const void* window) {
     TEMP_LOG_ERROR(kVkSwapChainTag, "Surface is not supported.");
     return;
   }
-  swapchain_ = CreateSwapChain(device.physical_device(), device.device(),
-                               device.queue_family_indices().graphics_family,
-                               surface_, device.dispatch());
+
+  format_ = ChooseFormat(device.physical_device(), surface_);
+  extent_ = ChooseExtent(device.physical_device(), surface_);
+  present_mode_ = ChoosePresentMode(device.physical_device(), surface_);
+  auto capabilities =
+      device.physical_device().getSurfaceCapabilitiesKHR(*surface_);
+
+  swapchain_ = CreateSwapChain(device.device(), surface_, format_, extent_,
+                               capabilities, present_mode_, device.dispatch());
+
+  images_ = device.device()->getSwapchainImagesKHR(*swapchain_);
+
+  image_views_ = CreateImageViews(device.device(), images_, format_.format);
 }
 
 VkSwapChain::~VkSwapChain() {}
