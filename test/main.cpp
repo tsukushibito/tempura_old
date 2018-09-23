@@ -1,5 +1,9 @@
 #include <temp/tempura.h>
 #include <cstdlib>
+#include <string>
+
+void* operator new(size_t size) { return malloc(size); }
+void operator delete(void* p) { free(p); }
 
 int main(int argc, char* argv[]) {
   using namespace temp;

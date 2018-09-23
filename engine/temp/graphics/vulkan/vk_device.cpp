@@ -1,6 +1,7 @@
 #include "temp/core/define.h"
 #ifdef TEMP_GRAPHICS_VULKAN
 #include <new>
+#include <string>
 #include "temp/core/core.h"
 #include "temp/graphics/vulkan/vk_device.h"
 #include "temp/graphics/vulkan/vk_fragment_shader.h"
@@ -66,9 +67,9 @@ bool IsValidationLayerSupported() {
   using namespace temp;
   auto available_layers = vk::enumerateInstanceLayerProperties();
 
-  String msg = "Supported layers:\n";
+  std::string msg = "Supported layers:\n";
   for (auto layer_property : available_layers) {
-    msg += String(layer_property.layerName) + "\n";
+    msg += std::string(layer_property.layerName) + "\n";
   }
   TEMP_LOG_INFO(kVkDeviceTag, msg);
 

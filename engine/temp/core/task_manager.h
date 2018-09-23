@@ -6,8 +6,8 @@
 #include <future>
 #include <mutex>
 #include <queue>
+#include <string>
 #include <thread>
-#include "temp/core/container.h"
 #include "temp/core/type.h"
 
 namespace temp {
@@ -19,7 +19,7 @@ class TaskManager : public SmartPointerType<TaskManager> {
   using PackagedTaskType = std::function<void(void)>;
 
  private:
-  TaskManager(const String &name, Size thread_count);
+  TaskManager(const std::string &name, Size thread_count);
 
  public:
   ~TaskManager();
@@ -34,7 +34,7 @@ class TaskManager : public SmartPointerType<TaskManager> {
 
   PackagedTaskType PopTask(Int32 thread_index);
 
-  const String &name() const { return name_; }
+  const std::string &name() const { return name_; }
 
   Size thread_count() const { return worker_thread_list_.size(); }
 
@@ -46,7 +46,7 @@ class TaskManager : public SmartPointerType<TaskManager> {
   }
 
  private:
-  using TaskQueueType = Queue<PackagedTaskType>;
+  using TaskQueueType = std::queue<PackagedTaskType>;
   struct WorkerThread {
     std::thread thread_;
     std::thread::id thread_id_;
@@ -55,9 +55,9 @@ class TaskManager : public SmartPointerType<TaskManager> {
     std::condition_variable condition_;
   };
 
-  String name_;
+  std::string name_;
 
-  Vector<WorkerThread> worker_thread_list_;
+  std::vector<WorkerThread> worker_thread_list_;
 
   Bool stopped_;
 };

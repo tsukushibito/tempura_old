@@ -1,7 +1,7 @@
 #include "temp/core/task_manager.h"
 namespace temp {
 
-TaskManager::TaskManager(const String &name, Size thread_count)
+TaskManager::TaskManager(const std::string &name, Size thread_count)
     : name_(name), worker_thread_list_(thread_count), stopped_(false) {
   for (Int32 i = 0; i < thread_count; ++i) {
     auto worker_function = [this, i]() {

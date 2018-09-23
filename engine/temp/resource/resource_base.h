@@ -1,6 +1,7 @@
 #pragma once
 #include <functional>
 #include <mutex>
+#include <vector>
 #include <utility>
 #include "temp/core/core.h"
 
@@ -35,7 +36,7 @@ struct ResourceIdHash {
   }
 };
 
-using ByteData = Vector<UInt8>;
+using ByteData = std::vector<UInt8>;
 
 class ResourceManager;
 

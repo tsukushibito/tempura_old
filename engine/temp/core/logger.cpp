@@ -2,8 +2,8 @@
 #include <ctime>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 
-#include "temp/core/container.h"
 #include "temp/core/define.h"
 #include "temp/core/logger.h"
 
@@ -15,7 +15,7 @@ void Logger::Log(const char *tag, const char *msg, LogLevel level,
 
   auto now = std::chrono::system_clock::now();
   auto now_time = std::chrono::system_clock::to_time_t(now);
-  StringStream time_tag_stream;
+  std::stringstream time_tag_stream;
   tm local_now;
 #if defined(TEMP_PLATFORM_WINDOWS)
   localtime_s(&local_now, &now_time);
@@ -23,9 +23,9 @@ void Logger::Log(const char *tag, const char *msg, LogLevel level,
   localtime_r(&now_time, &local_now);
 #endif
   time_tag_stream << "[" << std::put_time(&local_now, "%Y-%m-%d %X") << "]";
-  String time_tag = time_tag_stream.str();
+  auto time_tag = time_tag_stream.str();
 
-  String level_tag;
+  std::string level_tag;
   switch (level) {
     case LogLevel::kTrace:
       level_tag = "[TRACE]";

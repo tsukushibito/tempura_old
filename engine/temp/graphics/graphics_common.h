@@ -1,4 +1,6 @@
-﻿#pragma once
+#pragma once
+#include <vector>
+#include <string>
 #include "temp/core/core.h"
 #ifdef TEMP_PLATFORM_WINDOWS
 #include <Windows.h>
@@ -7,7 +9,7 @@
 namespace temp {
 namespace graphics {
 
-using ByteData = Vector<UInt8>;
+using ByteData = std::vector<UInt8>;
 
 enum class GraphicsApi {
   kOpenGl,
@@ -117,7 +119,7 @@ Size VertexFormatSize(VertexFormat format) {
 }
 
 template <typename T = VertexAttribute>
-String VertexAttributeString(VertexAttribute attribute) {
+std::string VertexAttributeString(VertexAttribute attribute) {
   switch (attribute) {
     case VertexAttribute::kPosition:
       return "Position";
@@ -229,7 +231,7 @@ enum class TextureAttribute {
 };
 
 template <typename T = TextureAttribute>
-String TextureAttributeString(TextureAttribute attribute) {
+std::string TextureAttributeString(TextureAttribute attribute) {
   switch (attribute) {
     case TextureAttribute::kAlbedoMap:
       return "AlbedoMap";

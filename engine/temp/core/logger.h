@@ -1,6 +1,6 @@
 #pragma once
 #include <mutex>
-#include "temp/core/container.h"
+#include <string>
 #include "temp/core/type.h"
 
 namespace temp {
@@ -30,20 +30,6 @@ class Logger : public Singleton<Logger> {
   }
 
   static void Log(const std::string& tag, const char* msg, LogLevel level,
-                  const char* file, int line) {
-    Log(tag.c_str(), msg, level, file, line);
-  }
-
-  static void Log(const String& tag, const String& msg, LogLevel level,
-                  const char* file, int line) {
-    Log(tag.c_str(), msg.c_str(), level, file, line);
-  }
-  static void Log(const char* tag, const String& msg, LogLevel level,
-                  const char* file, int line) {
-    Log(tag, msg.c_str(), level, file, line);
-  }
-
-  static void Log(const String& tag, const char* msg, LogLevel level,
                   const char* file, int line) {
     Log(tag.c_str(), msg, level, file, line);
   }

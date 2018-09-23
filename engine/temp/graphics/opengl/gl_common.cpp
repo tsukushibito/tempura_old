@@ -1,5 +1,6 @@
-﻿#include "temp/graphics/opengl/gl_common.h"
+#include "temp/graphics/opengl/gl_common.h"
 #if defined(TEMP_GRAPHICS_OPENGL)
+#include <sstream>
 #include "temp/core/core.h"
 
 #if defined(TEMP_PLATFORM_MAC)
@@ -157,7 +158,7 @@ void CheckError() {
         break;
     }
 
-    StringStream ss;
+    std::stringstream ss;
     ss << "0x" << std::hex << error_code << ": " << msg;
     TEMP_LOG_ERROR(kOpenGLTag, ss.str());
 
@@ -177,13 +178,13 @@ void PrintShaderCompileInfoLog(GLuint shader) {
   glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &buf_size);
 
   if (buf_size > 1) {
-    String infoLog(buf_size, '\n');
+    std::string infoLog(buf_size, '\n');
 
     GLsizei length;
 
     /* シェーダのコンパイル時のログの内容を取得する */
     glGetShaderInfoLog(shader, buf_size, &length, &infoLog[0]);
-    StringStream ss;
+    std::stringstream ss;
     ss << "ShaderInfoLog:" << std::endl;
     ss << infoLog << std::endl;
     TEMP_LOG_INFO(kOpenGLTag, ss.str());
@@ -196,10 +197,10 @@ void PrintProgramInfoLog(GLuint program) {
   glCallWithErrorCheck(glGetProgramiv, program, GL_INFO_LOG_LENGTH, &length);
   if (length <= 1) return;
 
-  String infoLog("", length);
+  std::string infoLog("", length);
   glCallWithErrorCheck(glGetProgramInfoLog, program, length, &length,
                        (GLchar*)&infoLog[0]);
-  StringStream ss;
+  std::stringstream ss;
   ss << "ProgramInfoLog:" << std::endl;
   ss << infoLog << std::endl;
   TEMP_LOG_INFO(kOpenGLTag, ss.str());
