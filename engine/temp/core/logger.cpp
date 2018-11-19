@@ -55,7 +55,7 @@ void Logger::Log(const char *tag, const char *msg, LogLevel level,
             << file << " : " << line << std::endl;
 #else
   (void)file;
-  (void)(Size) line;
+  (void)(std::size_t) line;
   std::cout << time_tag << level_tag << "[" << tag << "] " << msg << std::endl;
 #endif
 }

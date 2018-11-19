@@ -41,7 +41,8 @@ class ResourceManager : public temp::SmartPointerType<ResourceManager> {
   TaskManager::SPtr task_manager_;
   graphics::DeviceSPtr graphics_device_;
 
-  std::unordered_map<Size, std::vector<filesystem::path>> hash_to_path_table_;
+  std::unordered_map<std::size_t, std::vector<filesystem::path>>
+      hash_to_path_table_;
 
   std::mutex resource_table_mutex_;
   std::unordered_map<ResourceId, ResourceBase::WPtr, ResourceIdHash>

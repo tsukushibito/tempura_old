@@ -6,25 +6,8 @@
 
 namespace temp {
 
-using Int8 = std::int8_t;
-using Int16 = std::int16_t;
-using Int32 = std::int32_t;
-using Int64 = std::int64_t;
-
-using UInt8 = std::uint8_t;
-using UInt16 = std::uint16_t;
-using UInt32 = std::uint32_t;
-using UInt64 = std::uint64_t;
-
 using Float32 = float;
 using Float64 = double;
-
-using Bool = bool;
-using Char = char;
-using Size = size_t;
-
-using IntPtr = intptr_t;
-using UIntPtr = uintptr_t;
 
 struct Color {
   Float32 red;
@@ -119,12 +102,12 @@ class SmartPointerType : private Uncopyable {
       Creator(Args &&... args) : T(std::forward<Args>(args)...) {}
 
       static void *operator new(std::size_t size) {
-        typename Allocator::template rebind<UInt8>::other allocator;
+        typename Allocator::template rebind<std::uint8_t>::other allocator;
         return allocator.allocate(size);
       }
       static void operator delete(void *p, std::size_t size) {
-        typename Allocator::template rebind<UInt8>::other allocator;
-        allocator.deallocate(reinterpret_cast<UInt8 *>(p), size);
+        typename Allocator::template rebind<std::uint8_t>::other allocator;
+        allocator.deallocate(reinterpret_cast<std::uint8_t *>(p), size);
       }
     };
     return std::unique_ptr<T>(new Creator(std::forward<Args>(args)...));

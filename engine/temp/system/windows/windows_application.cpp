@@ -32,7 +32,7 @@ WindowsApplication::~WindowsApplication() {
   TEMP_LOG_TRACE(kWinAppTag, "destroied");
 }
 
-Int32 WindowsApplication::Run() {
+std::int32_t WindowsApplication::Run() {
   on_initialize_();
 
   MSG msg;

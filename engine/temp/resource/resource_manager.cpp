@@ -6,7 +6,7 @@ namespace temp {
 namespace resource {
 
 namespace {
-const Char* kResourceManagerTag = "ResourceManager";
+const char* kResourceManagerTag = "ResourceManager";
 }
 
 ResourceManager::ResourceManager(const filesystem::path& resource_root,
@@ -38,10 +38,11 @@ ResourceId ResourceManager::ResourceIdFromTypeNameAndPath(
   ResourceId id;
   id.hash_value = hash;
   if (iter == path_list.end()) {
-    id.index = static_cast<Int32>(path_list.size());
+    id.index = static_cast<std::int32_t>(path_list.size());
     path_list.push_back(path);
   } else {
-    id.index = static_cast<Int32>(std::distance(path_list.begin(), iter));
+    id.index =
+        static_cast<std::int32_t>(std::distance(path_list.begin(), iter));
   }
 
   return id;

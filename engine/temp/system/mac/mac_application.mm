@@ -74,7 +74,7 @@ MacApplication::MacApplication()
 
 MacApplication::~MacApplication() { [properties_->app terminate:properties_->app]; }
 
-temp::Int32 MacApplication::Run() {
+std::int32_t MacApplication::Run() {
     on_initialize()();
 
     auto future = properties_->main_thread->PushTask([this](){ MainLoop(); });

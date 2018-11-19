@@ -15,7 +15,7 @@ vk::UniqueShaderModule CreateShaderModule(const vk::UniqueDevice& device,
                                           const ByteData& code) {
   vk::ShaderModuleCreateInfo create_info;
   create_info.codeSize = code.size();
-  create_info.pCode = reinterpret_cast<const UInt32*>(&code[0]);
+  create_info.pCode = reinterpret_cast<const std::uint32_t*>(&code[0]);
   return device->createShaderModuleUnique(create_info);
 }
 }  // namespace

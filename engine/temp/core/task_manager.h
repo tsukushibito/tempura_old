@@ -19,29 +19,29 @@ class TaskManager : public SmartPointerType<TaskManager> {
   using PackagedTaskType = std::function<void(void)>;
 
  private:
-  TaskManager(const std::string &name, Size thread_count);
+  TaskManager(const std::string &name, std::size_t thread_count);
 
  public:
   ~TaskManager();
 
   template <typename Task, typename... Args>
-  auto PushTaskTo(Int32 thread_index, Task &&task, Args &&... args)
+  auto PushTaskTo(std::int32_t thread_index, Task &&task, Args &&... args)
       -> std::future<typename std::result_of<Task(Args...)>::type>;
 
   template <typename Task, typename... Args>
   auto PushTask(Task &&task, Args &&... args)
       -> std::future<typename std::result_of<Task(Args...)>::type>;
 
-  PackagedTaskType PopTask(Int32 thread_index);
+  PackagedTaskType PopTask(std::int32_t thread_index);
 
   const std::string &name() const { return name_; }
 
-  Size thread_count() const { return worker_thread_list_.size(); }
+  std::size_t thread_count() const { return worker_thread_list_.size(); }
 
-  Size task_count(Int32 thread_index) const;
-  Bool is_task_empty(Int32 thread_index) const;
+  std::size_t task_count(std::int32_t thread_index) const;
+  bool is_task_empty(std::int32_t thread_index) const;
 
-  const std::thread::id &thread_id(Int32 thread_index) {
+  const std::thread::id &thread_id(std::int32_t thread_index) {
     return worker_thread_list_[thread_index].thread_id_;
   }
 
@@ -59,11 +59,12 @@ class TaskManager : public SmartPointerType<TaskManager> {
 
   std::vector<WorkerThread> worker_thread_list_;
 
-  Bool stopped_;
+  bool stopped_;
 };
 
 template <typename Task, typename... Args>
-auto TaskManager::PushTaskTo(Int32 thread_index, Task &&task, Args &&... args)
+auto TaskManager::PushTaskTo(std::int32_t thread_index, Task &&task,
+                             Args &&... args)
     -> std::future<typename std::result_of<Task(Args...)>::type> {
   using ReturnType = typename std::result_of<Task(Args...)>::type;
   using PackagedTask = std::packaged_task<ReturnType()>;
@@ -72,10 +73,10 @@ auto TaskManager::PushTaskTo(Int32 thread_index, Task &&task, Args &&... args)
       std::bind(std::forward<Task>(task), std::forward<Args>(args)...));
   std::future<ReturnType> result = pack->get_future();
 
-  Int32 index = 0;
+  std::int32_t index = 0;
   if (thread_index >= worker_thread_list_.size() || thread_index < 0) {
-    Size task_count_min = (Size)(-1);
-    for (Int32 i = 0; i < worker_thread_list_.size(); ++i) {
+    std::size_t task_count_min = (std::size_t)(-1);
+    for (std::int32_t i = 0; i < worker_thread_list_.size(); ++i) {
       auto &&task_queue = worker_thread_list_[i].task_queue_;
       if (task_queue.size() < task_count_min) {
         task_count_min = task_queue.size();

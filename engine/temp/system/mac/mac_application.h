@@ -16,7 +16,7 @@ class MacApplication : public ApplicationBase,
  public:
   virtual ~MacApplication();
 
-  Int32 Run() override;
+  std::int32_t Run() override;
   void Exit() override;
 
  private:

@@ -19,7 +19,7 @@ class Model {
   virtual ~Model();
 
  private:
-  UInt32 layer_bit_flags_;
+  std::uint32_t layer_bit_flags_;
 };
 }  // namespace rendering
 }  // namespace temp

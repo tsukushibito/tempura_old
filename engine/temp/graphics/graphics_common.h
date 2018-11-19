@@ -9,7 +9,7 @@
 namespace temp {
 namespace graphics {
 
-using ByteData = std::vector<UInt8>;
+using ByteData = std::vector<std::uint8_t>;
 
 enum class GraphicsApi {
   kOpenGl,
@@ -26,8 +26,8 @@ enum class RenderTargetFormat {
 
 struct RenderTargetDesc {
   RenderTargetFormat format;
-  Size width;
-  Size height;
+  std::size_t width;
+  std::size_t height;
 };
 
 enum class IndexBufferFormat {
@@ -43,11 +43,11 @@ enum class PrimitiveType {
 struct IndexBufferDesc {
   IndexBufferFormat format;
   PrimitiveType primitive_type;
-  Size size;
+  std::size_t size;
 };
 
 template <typename T = IndexBufferFormat>
-Size IndexBufferFormatSize(IndexBufferFormat format) {
+std::size_t IndexBufferFormatSize(IndexBufferFormat format) {
   switch (format) {
     case IndexBufferFormat::kUInt16:
       return 2;
@@ -95,13 +95,13 @@ struct VertexElementDesc {
 };
 
 struct VertexBufferDesc {
-  Size element_count;
+  std::size_t element_count;
   VertexElementDesc element_descs[8];
-  Size size;
+  std::size_t size;
 };
 
 template <typename T = VertexFormat>
-Size VertexFormatSize(VertexFormat format) {
+std::size_t VertexFormatSize(VertexFormat format) {
   switch (format) {
     case VertexFormat::kUInt8x4:
       return 4;
@@ -173,7 +173,7 @@ struct SamplerDesc {
 
 struct ShaderCode {
   ByteData code;
-  Bool is_binary = false;
+  bool is_binary = false;
 };
 
 struct Viewport {
@@ -195,7 +195,7 @@ enum class TextureFormat {
 };
 
 template <typename T = TextureFormat>
-Size TextureFormatBitPerPixel(TextureFormat format) {
+std::size_t TextureFormatBitPerPixel(TextureFormat format) {
   switch (format) {
     case TextureFormat::kRGBX32:
       return 32;
@@ -216,9 +216,9 @@ Size TextureFormatBitPerPixel(TextureFormat format) {
 
 struct TextureDesc {
   TextureFormat format;
-  Size width;
-  Size height;
-  Int32 mipLevel;
+  std::size_t width;
+  std::size_t height;
+  std::int32_t mipLevel;
 };
 
 enum class TextureAttribute {

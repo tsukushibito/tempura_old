@@ -10,7 +10,7 @@ class ApplicationBase {
   ApplicationBase() {}
   virtual ~ApplicationBase(){};
 
-  virtual Int32 Run() = 0;
+  virtual std::int32_t Run() = 0;
   virtual void Exit() = 0;
 
   std::function<void(void)> &on_initialize() { return on_initialize_; }

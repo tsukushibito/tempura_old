@@ -21,7 +21,7 @@ ResourceBase::ResourceBase(const std::string& type_name,
 
 ResourceBase::~ResourceBase() { on_destroy_(id_); }
 
-void ResourceBase::Load(Bool is_sync) {
+void ResourceBase::Load(bool is_sync) {
   if (state_ != ResourceState::kNotLoaded) return;
 
   auto task = [this]() { LoadImpl(false); };
@@ -32,7 +32,7 @@ void ResourceBase::Load(Bool is_sync) {
   }
 }
 
-void ResourceBase::Reload(Bool is_sync) {
+void ResourceBase::Reload(bool is_sync) {
   auto task = [this]() { LoadImpl(true); };
   if (is_sync) {
     ExecTaskInLoadThreadSync(task);
@@ -51,7 +51,7 @@ void ResourceBase::Save() {
   });
 }
 
-void ResourceBase::LoadImpl(Bool is_reload) {
+void ResourceBase::LoadImpl(bool is_reload) {
   auto lock = std::unique_lock<std::mutex>(mutex_);
 
   state_ = ResourceState::kLoading;
@@ -75,7 +75,7 @@ void ResourceBase::LoadImpl(Bool is_reload) {
 }
 
 void ResourceBase::ExecTaskInLoadThreadSync(std::function<void(void)> task) {
-  Bool is_load_thread = false;
+  auto is_load_thread = false;
 
   auto&& this_thread_id = std::this_thread::get_id();
   auto&& load_thread_id = manager_->task_manager()->thread_id(0);

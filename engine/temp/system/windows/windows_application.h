@@ -17,13 +17,12 @@ class WindowsApplication : public ApplicationBase,
  public:
   virtual ~WindowsApplication();
 
-  Int32 Run() override;
+  std::int32_t Run() override;
   void Exit() override;
 
  private:
   void Init();
   void Term();
-
 };
 }  // namespace windows
 using Application = windows::WindowsApplication;

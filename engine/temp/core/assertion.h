@@ -10,7 +10,8 @@
 #endif
 
 namespace temp {
-inline void ReportAssertion(const Char *msg, const Char *file, Size line) {
+inline void ReportAssertion(const char *msg, const char *file,
+                            std::size_t line) {
 #ifdef TEMP_PLATFORM_WINDOWS
   std::stringstream log;
   log << file << " : line[" << line << "] : " << msg << std::endl;

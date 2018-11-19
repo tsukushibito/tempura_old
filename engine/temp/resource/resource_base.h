@@ -1,8 +1,8 @@
 #pragma once
 #include <functional>
 #include <mutex>
-#include <vector>
 #include <utility>
+#include <vector>
 #include "temp/core/core.h"
 
 namespace temp {
@@ -16,8 +16,8 @@ enum class ResourceState {
 };
 
 struct ResourceId {
-  Size hash_value;
-  Int32 index;
+  std::size_t hash_value;
+  std::int32_t index;
 };
 
 inline bool operator==(const ResourceId& lhs, const ResourceId& rhs) {
@@ -29,14 +29,14 @@ inline bool operator!=(const ResourceId& lhs, const ResourceId& rhs) {
 }
 
 struct ResourceIdHash {
-  using result_type = Size;
+  using result_type = std::size_t;
 
   inline result_type operator()(const ResourceId& id) const {
     return id.hash_value;
   }
 };
 
-using ByteData = std::vector<UInt8>;
+using ByteData = std::vector<std::uint8_t>;
 
 class ResourceManager;
 
@@ -72,9 +72,9 @@ class ResourceBase {
 
   virtual ~ResourceBase();
 
-  void Load(Bool is_sync = false);
+  void Load(bool is_sync = false);
 
-  void Reload(Bool is_sync = false);
+  void Reload(bool is_sync = false);
 
   void Save();
 
@@ -85,7 +85,7 @@ class ResourceBase {
   const ResourceState& state() const { return state_; }
 
  private:
-  void LoadImpl(Bool is_reload);
+  void LoadImpl(bool is_reload);
 
   void ExecTaskInLoadThreadSync(std::function<void(void)> task);
 

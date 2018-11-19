@@ -1,9 +1,9 @@
 #include "temp/core/task_manager.h"
 namespace temp {
 
-TaskManager::TaskManager(const std::string &name, Size thread_count)
+TaskManager::TaskManager(const std::string &name, std::size_t thread_count)
     : name_(name), worker_thread_list_(thread_count), stopped_(false) {
-  for (Int32 i = 0; i < thread_count; ++i) {
+  for (std::int32_t i = 0; i < thread_count; ++i) {
     auto worker_function = [this, i]() {
       for (;;) {
         PackagedTaskType pack;
@@ -54,11 +54,11 @@ TaskManager::~TaskManager() {
   }
 }
 
-TaskManager::PackagedTaskType TaskManager::PopTask(Int32 thread_index) {
-  Int32 index = 0;
+TaskManager::PackagedTaskType TaskManager::PopTask(std::int32_t thread_index) {
+  std::int32_t index = 0;
   if (thread_index >= worker_thread_list_.size() || thread_index < 0) {
-    Size task_count_max = 0;
-    for (Int32 i = 0; i < worker_thread_list_.size(); ++i) {
+    std::size_t task_count_max = 0;
+    for (std::int32_t i = 0; i < worker_thread_list_.size(); ++i) {
       auto &&task_queue = worker_thread_list_[i].task_queue_;
       if (task_queue.size() > task_count_max) {
         task_count_max = task_queue.size();
@@ -80,11 +80,11 @@ TaskManager::PackagedTaskType TaskManager::PopTask(Int32 thread_index) {
   return pack;
 }
 
-Size TaskManager::task_count(Int32 thread_index) const {
+std::size_t TaskManager::task_count(std::int32_t thread_index) const {
   if (thread_index >= worker_thread_list_.size()) {
     return 0;
   } else if (thread_index < 0) {
-    Size count = 0;
+    std::size_t count = 0;
     for (auto &&set : worker_thread_list_) {
       count += set.task_queue_.size();
     }
@@ -94,11 +94,11 @@ Size TaskManager::task_count(Int32 thread_index) const {
   }
 }
 
-Bool TaskManager::is_task_empty(Int32 thread_index) const {
+bool TaskManager::is_task_empty(std::int32_t thread_index) const {
   if (thread_index >= worker_thread_list_.size()) {
     return true;
   } else if (thread_index < 0) {
-    Bool empty = true;
+    auto empty = true;
     for (auto &&set : worker_thread_list_) {
       empty &= set.task_queue_.empty();
     }

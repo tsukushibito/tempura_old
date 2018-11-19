@@ -3,23 +3,14 @@
 #if defined(TEMP_GRAPHICS_VULKAN)
 #include <utility>
 #include <vulkan/vulkan.hpp>
+
 #include "temp/graphics/device.h"
+
+#include "temp/graphics/vulkan/vk_utility.h"
 
 namespace temp {
 namespace graphics {
 namespace vulkan {
-
-using UniqueDebugUtilsMessengerEXT =
-    vk::UniqueHandle<vk::DebugUtilsMessengerEXT, vk::DispatchLoaderDynamic>;
-using UniqueSurfaceKHR =
-    vk::UniqueHandle<vk::SurfaceKHR, vk::DispatchLoaderDynamic>;
-
-using DispatchLoaderDynamicUPtr = std::unique_ptr<vk::DispatchLoaderDynamic>;
-
-struct QueueFamilyIndices {
-  UInt32 graphics_family = (UInt32)-1;
-  UInt32 present_family = (UInt32)-1;
-};
 
 class VkDevice : public Device, public SmartPointerType<VkDevice> {
   friend class SmartPointerType<VkDevice>;
